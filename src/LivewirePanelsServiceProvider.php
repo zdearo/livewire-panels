@@ -8,5 +8,9 @@ use Illuminate\Support\ServiceProvider;
 
 final class LivewirePanelsServiceProvider extends ServiceProvider
 {
-    //
+    #[\Override]
+    public function register(): void
+    {
+        $this->app->singleton(PanelRegistry::class);
+    }
 }

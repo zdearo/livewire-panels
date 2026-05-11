@@ -14,7 +14,7 @@
         }
     },
     "require": {
-        "php": "^8.3",
+        "php": "^8.4",
         "illuminate/contracts": "^13.0",
         "illuminate/routing": "^13.0",
         "illuminate/support": "^13.0",
@@ -24,7 +24,9 @@
         "laravel/pint": "^1.29",
         "orchestra/testbench": "^11.0",
         "pestphp/pest": "^4.0",
-        "pestphp/pest-plugin-laravel": "^4.0"
+        "pestphp/pest-plugin-laravel": "^4.0",
+        "phpstan/phpstan": "^2.1",
+        "rector/rector": "^2.4"
     },
     "config": {
         "allow-plugins": {
@@ -42,11 +44,17 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "scripts": {
-        "format": "pint",
-        "format:check": "pint --test",
+        "refactor": "rector",
+        "lint": "pint --parallel",
+        "test:refactor": "rector --dry-run",
+        "test:lint": "pint --parallel --test",
+        "test:types": "phpstan analyse --ansi",
+        "test:unit": "pest --colors=always --coverage --min=100 --parallel",
         "test": [
-            "@format:check",
-            "pest"
+            "@test:refactor",
+            "@test:lint",
+            "@test:types",
+            "@test:unit"
         ]
     }
 }
