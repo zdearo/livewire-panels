@@ -5,7 +5,8 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Zdearo\\LivewirePanels\\": "src/"
+            "Zdearo\\LivewirePanels\\": "packages/panels/src/",
+            "Zdearo\\LivewirePanels\\Support\\": "packages/support/src/"
         }
     },
     "autoload-dev": {

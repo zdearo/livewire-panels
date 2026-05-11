@@ -127,7 +127,7 @@ composer test
 
 This runs Rector dry-run, Pint in check mode, PHPStan, and then Pest with coverage in parallel.
 
-PHPStan is configured in `phpstan.neon.dist` and currently analyzes `src/`.
+PHPStan is configured in `phpstan.neon.dist` and currently analyzes `packages/`.
 
 Because `composer test` runs Pest with `--coverage`, the local PHP runtime must have a coverage driver such as Xdebug or PCOV enabled. If neither is available, `composer test:unit` will fail with "No code coverage driver is available" before running tests.
 
@@ -180,6 +180,15 @@ The user explicitly requested that no further commits be made for now.
 Do not commit unless the user explicitly asks again.
 
 The repository is inside `livewire-panels/`, not the parent `livewire-starter-kit/` directory.
+
+The repo root now acts as a small internal monorepo. Runtime package code lives under:
+
+```txt
+packages/panels/src
+packages/support/src
+```
+
+Composer autoload maps the public panel API from `Zdearo\LivewirePanels\` to `packages/panels/src`, and reserves `Zdearo\LivewirePanels\Support\` for shared support classes in `packages/support/src`.
 
 ## Dependency Notes
 
