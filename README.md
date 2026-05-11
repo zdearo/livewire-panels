@@ -4,11 +4,13 @@ Core package for developer-defined multi-panel Laravel applications built with L
 
 This repository contains the reusable panel infrastructure package. The starter kit will install this package and provide the application scaffold, authentication, Flux shell, and example panels.
 
+The current Composer package name is temporary; the final public package name will be decided before publication.
+
 ## Direction
 
 - Panel infrastructure lives in this package.
 - Application-specific panels live in the generated Laravel app.
-- The public contract is based on panel providers, not a required `app/Panels` directory structure.
+- The public contract is based on panel providers, not a required `app/Panels` directory structure or package config list.
 - Concrete panel APIs will be designed incrementally before implementation.
 
 ## Development
@@ -18,4 +20,3 @@ composer install
 composer test
 composer format
 ```
-

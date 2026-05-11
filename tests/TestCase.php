@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Dearo\LivewirePanels\Tests;
+namespace Zdearo\LivewirePanels\Tests;
 
-use Dearo\LivewirePanels\LivewirePanelsServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Zdearo\LivewirePanels\LivewirePanelsServiceProvider;
 
 abstract class TestCase extends Orchestra
 {
