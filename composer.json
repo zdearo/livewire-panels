@@ -1,0 +1,53 @@
+{
+    "name": "dearo/livewire-panels",
+    "description": "Developer-defined multi-panel foundation for Laravel and Livewire applications.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Dearo\\LivewirePanels\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Dearo\\LivewirePanels\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^8.3",
+        "illuminate/contracts": "^13.0",
+        "illuminate/routing": "^13.0",
+        "illuminate/support": "^13.0",
+        "livewire/livewire": "^4.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.29",
+        "orchestra/testbench": "^11.0",
+        "pestphp/pest": "^4.0",
+        "pestphp/pest-plugin-laravel": "^4.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        },
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Dearo\\LivewirePanels\\LivewirePanelsServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "scripts": {
+        "format": "pint",
+        "format:check": "pint --test",
+        "test": [
+            "@format:check",
+            "pest"
+        ]
+    }
+}
+
