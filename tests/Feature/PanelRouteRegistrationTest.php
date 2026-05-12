@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use Zdearo\LivewirePanels\Middleware\SetCurrentPanel;
+use Zdearo\LivewirePanels\Page;
 use Zdearo\LivewirePanels\Panel;
 use Zdearo\LivewirePanels\PanelProvider;
 
@@ -21,6 +23,19 @@ it('automatically registers panel routes inside the panel route group', function
         ->excludedMiddleware()->toBe(['csrf']);
 });
 
+it('automatically registers panel pages as Livewire page routes', function (): void {
+    app()->register(PageRouteTestingPanelProvider::class);
+    app()->boot();
+
+    $route = Route::getRoutes()->getByName('admin.dashboard');
+
+    expect($route)
+        ->not->toBeNull()
+        ->uri()->toBe('admin')
+        ->gatherMiddleware()->toContain('web', SetCurrentPanel::class.':admin')
+        ->and($route?->getAction('livewire_component'))->toBe('pages::admin.dashboard');
+});
+
 final class RouteTestingPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -34,5 +49,18 @@ final class RouteTestingPanelProvider extends PanelProvider
             ->routes(function (): void {
                 Route::get('/', fn (): string => 'Dashboard')->name('dashboard');
             });
+    }
+}
+
+final class PageRouteTestingPanelProvider extends PanelProvider
+{
+    public function panel(Panel $panel): Panel
+    {
+        return $panel
+            ->id('admin')
+            ->path('admin')
+            ->name('Admin')
+            ->middleware(['web'])
+            ->page(Page::make('/', 'pages::admin.dashboard')->name('dashboard'));
     }
 }

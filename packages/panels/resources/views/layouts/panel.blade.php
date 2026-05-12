@@ -1,4 +1,6 @@
-<x-dynamic-component :component="$appLayout ?? 'livewire-panels::layouts.app'">
+@php($currentPanel = app(\Zdearo\LivewirePanels\PanelManager::class)->getCurrentPanel())
+
+<x-dynamic-component :component="$appLayout ?? $currentPanel?->appLayout ?? 'livewire-panels::layouts.app'">
     <div data-livewire-panels-layout="panel">
         <aside data-livewire-panels-navigation>
             {{ $navigation ?? '' }}

@@ -6,11 +6,14 @@
 
         <title>{{ $title ?? config('app.name', 'Laravel') }}</title>
 
+        @fluxAppearance
         @stack('styles')
     </head>
     <body>
         {{ $slot }}
 
+        @livewireScripts
+        @fluxScripts
         @stack('scripts')
     </body>
 </html>

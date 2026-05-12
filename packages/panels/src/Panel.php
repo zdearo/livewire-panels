@@ -39,6 +39,11 @@ final class Panel
      */
     public private(set) array $routes = [];
 
+    /**
+     * @var array<int, Page>
+     */
+    public private(set) array $pages = [];
+
     public static function make(): self
     {
         return app(self::class);
@@ -112,6 +117,25 @@ final class Panel
     public function routes(Closure $routes): self
     {
         $this->routes[] = $routes;
+
+        return $this;
+    }
+
+    public function page(Page $page): self
+    {
+        $this->pages[] = $page;
+
+        return $this;
+    }
+
+    /**
+     * @param  array<int, Page>  $pages
+     */
+    public function pages(array $pages): self
+    {
+        foreach ($pages as $page) {
+            $this->page($page);
+        }
 
         return $this;
     }

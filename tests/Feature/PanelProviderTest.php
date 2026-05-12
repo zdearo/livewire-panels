@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Zdearo\LivewirePanels\Page;
 use Zdearo\LivewirePanels\Panel;
 use Zdearo\LivewirePanels\PanelProvider;
 use Zdearo\LivewirePanels\PanelRegistry;
@@ -19,7 +20,15 @@ it('automatically registers its panel in the registry', function (): void {
         ->appLayout->toBe('custom-app-layout')
         ->layout->toBe('custom-layout')
         ->middleware->toBe(['web', 'auth'])
-        ->withoutMiddleware->toBe(['csrf']);
+        ->withoutMiddleware->toBe(['csrf'])
+        ->pages->toHaveCount(1)
+        ->pages->sequence(
+            fn ($page) => $page
+                ->toBeInstanceOf(Page::class)
+                ->path->toBe('/')
+                ->component->toBe('pages::admin.dashboard')
+                ->name->toBe('dashboard'),
+        );
 });
 
 it('uses the default app layout when no custom app layout is configured', function (): void {
@@ -92,7 +101,10 @@ final class TestingPanelProvider extends PanelProvider
             ->appLayout('custom-app-layout')
             ->layout('custom-layout')
             ->middleware(['web', 'auth'])
-            ->withoutMiddleware('csrf');
+            ->withoutMiddleware('csrf')
+            ->pages([
+                Page::make('/', 'pages::admin.dashboard')->name('dashboard'),
+            ]);
     }
 }
 

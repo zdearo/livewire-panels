@@ -7,6 +7,7 @@ namespace Zdearo\LivewirePanels;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Zdearo\LivewirePanels\Commands\MakePanelCommand;
+use Zdearo\LivewirePanels\Commands\MakePanelPageCommand;
 
 final class LivewirePanelsServiceProvider extends ServiceProvider
 {
@@ -26,6 +27,7 @@ final class LivewirePanelsServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 MakePanelCommand::class,
+                MakePanelPageCommand::class,
             ]);
         }
     }

@@ -112,6 +112,21 @@ Panels have two layout layers:
 
 The package registers its views as both namespaced views and anonymous Blade components. This allows the panel layout to wrap itself with the app layout through Blade components.
 
+Panel pages use a descriptor object rather than forcing application components to extend a package base class:
+
+```php
+use Zdearo\LivewirePanels\Page;
+
+$panel->pages([
+    Page::make('/', 'pages::admin.dashboard')->name('dashboard'),
+    Page::make('/users', 'pages::admin.users')->name('users'),
+]);
+```
+
+The `Page` object is only a route descriptor. The Livewire component remains native Livewire 4 and may be SFC, MFC, or class-based.
+
+Panel page routes are registered as Livewire page routes and include package middleware that sets the current panel and configures Livewire's page layout to the panel layout.
+
 `PanelRegistry::get()` accepts an optional ID. When no ID is provided or the ID is not found, it falls back to `PanelRegistry::getDefault()`.
 
 Panels can be marked as default with:
@@ -166,6 +181,22 @@ Generator output should use package stubs. The panel provider template lives at:
 
 ```txt
 packages/panels/stubs/panel-provider.stub
+```
+
+Panel pages are generated through:
+
+```bash
+php artisan make:panel-page admin.dashboard --path=/ --name=dashboard --sfc
+```
+
+This command delegates component creation to Livewire's `make:livewire` using the `pages::` namespace, then prints the `Page::make(...)` registration snippet for the panel provider.
+
+It supports Livewire's page component modes and options:
+
+```bash
+php artisan make:panel-page reports.index --mfc
+php artisan make:panel-page reports.index --class
+php artisan make:panel-page reports.index --type=sfc --emoji=false
 ```
 
 ## Testing
