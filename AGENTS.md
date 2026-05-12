@@ -165,8 +165,23 @@ Panel pages do not appear in sidebar navigation by default. A page must opt in w
 ```php
 Page::make('/users', 'pages::admin.users')
     ->name('users')
-    ->navigation('Users', icon: 'users', group: 'Management', sort: 20);
+    ->navigation('Users', icon: 'users', group: 'management', sort: 20);
 ```
+
+Navigation item groups must be declared explicitly on the panel before any item references them. Group references use the group ID, not the visible label:
+
+```php
+use Zdearo\LivewirePanels\NavigationGroup;
+
+$panel->navigationGroups([
+    NavigationGroup::make('management')
+        ->label('Management')
+        ->icon('briefcase')
+        ->sort(20),
+]);
+```
+
+If a page or manual item references a group ID that was not declared, the panel must throw a `LogicException` when building its navigation contract.
 
 Panels may also define manual navigation items:
 
@@ -181,7 +196,7 @@ $panel->navigation([
 ]);
 ```
 
-The default panel sidebar renders navigation from the current panel. If no navigation is configured, it must not render demo items.
+The panel emits a normalized navigation contract through `navigationContract()`. The default panel sidebar must render from that contract. If no navigation is configured, it must not render demo items.
 
 `PanelRegistry::get()` accepts an optional ID. When no ID is provided or the ID is not found, it falls back to `PanelRegistry::getDefault()`.
 

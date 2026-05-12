@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Zdearo\LivewirePanels\NavigationContract;
+use Zdearo\LivewirePanels\NavigationGroup;
 use Zdearo\LivewirePanels\NavigationItem;
 use Zdearo\LivewirePanels\Page;
 use Zdearo\LivewirePanels\Panel;
@@ -101,11 +103,17 @@ it('returns all registered panels keyed by id', function (): void {
         ->and($panels['sales-panel']->id)->toBe('sales-panel');
 });
 
-it('builds navigation items from opted-in pages and manual items', function (): void {
+it('builds a navigation contract from declared groups, opted-in pages, and manual items', function (): void {
     $panel = Panel::make()
         ->id('admin')
         ->path('admin')
         ->name('Admin')
+        ->navigationGroups([
+            NavigationGroup::make('management')
+                ->label('Management')
+                ->icon('briefcase')
+                ->sort(20),
+        ])
         ->pages([
             Page::make('/hidden', 'pages::admin.hidden')->name('hidden'),
             Page::make('/', 'pages::admin.dashboard')
@@ -113,7 +121,7 @@ it('builds navigation items from opted-in pages and manual items', function (): 
                 ->navigation('Dashboard', icon: 'home', sort: 10),
             Page::make('/users', 'pages::admin.users')
                 ->name('users')
-                ->navigation('Users', icon: 'users', group: 'Management', sort: 20),
+                ->navigation('Users', icon: 'users', group: 'management', sort: 20),
         ])
         ->navigation([
             NavigationItem::make('Settings')
@@ -122,8 +130,12 @@ it('builds navigation items from opted-in pages and manual items', function (): 
                 ->sort(30),
         ]);
 
-    expect($panel->navigationItems())
-        ->toHaveCount(3)
+    $navigation = $panel->navigationContract();
+
+    expect($navigation)
+        ->toBeInstanceOf(NavigationContract::class)
+        ->and($navigation->items())
+        ->toHaveCount(2)
         ->sequence(
             fn ($item) => $item
                 ->label->toBe('Dashboard')
@@ -131,15 +143,64 @@ it('builds navigation items from opted-in pages and manual items', function (): 
                 ->icon->toBe('home')
                 ->sort->toBe(10),
             fn ($item) => $item
-                ->label->toBe('Users')
-                ->url->toBe('/admin/users')
-                ->group->toBe('Management')
-                ->sort->toBe(20),
-            fn ($item) => $item
                 ->label->toBe('Settings')
                 ->url->toBe('/admin/settings')
                 ->icon->toBe('cog-6-tooth')
                 ->sort->toBe(30),
+        )
+        ->and($navigation->groups())
+        ->toHaveCount(1)
+        ->sequence(
+            fn ($group) => $group
+                ->id->toBe('management')
+                ->label->toBe('Management')
+                ->icon->toBe('briefcase')
+                ->sort->toBe(20)
+                ->items->toHaveCount(1)
+                ->items->sequence(
+                    fn ($item) => $item
+                        ->label->toBe('Users')
+                        ->url->toBe('/admin/users')
+                        ->group->toBe('management')
+                        ->sort->toBe(20),
+                ),
+        )
+        ->and($navigation->allItems())
+        ->toHaveCount(3);
+});
+
+it('fails when a navigation item references an undeclared group', function (): void {
+    $panel = Panel::make()
+        ->id('admin')
+        ->path('admin')
+        ->name('Admin')
+        ->page(
+            Page::make('/users', 'pages::admin.users')
+                ->navigation('Users', group: 'management'),
+        );
+
+    expect(fn () => $panel->navigationContract())
+        ->toThrow(LogicException::class, 'Navigation group [management] has not been registered for panel [admin].');
+});
+
+it('can still return a flat navigation item list from the navigation contract', function (): void {
+    $panel = Panel::make()
+        ->id('admin')
+        ->path('admin')
+        ->name('Admin')
+        ->navigationGroups(NavigationGroup::make('management'))
+        ->pages([
+            Page::make('/users', 'pages::admin.users')
+                ->navigation('Users', group: 'management', sort: 20),
+            Page::make('/', 'pages::admin.dashboard')
+                ->navigation('Dashboard', sort: 10),
+        ]);
+
+    expect($panel->navigationItems())
+        ->toHaveCount(2)
+        ->sequence(
+            fn ($item) => $item->label->toBe('Dashboard'),
+            fn ($item) => $item->label->toBe('Users'),
         );
 });
 

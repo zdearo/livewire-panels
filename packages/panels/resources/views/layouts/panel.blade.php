@@ -18,27 +18,22 @@
                 @isset($navigation)
                     {{ $navigation }}
                 @else
-                    @php($navigationItems = $currentPanel?->navigationItems() ?? [])
-                    @php($renderedGroups = [])
+                    @php($navigationContract = $currentPanel?->navigationContract())
 
-                    @foreach($navigationItems as $navigationItem)
-                        @if($navigationItem->group === null)
-                            <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->badge" :href="$navigationItem->url ?? '#'" :current="$navigationItem->isCurrent()">
-                                {{ $navigationItem->label }}
-                            </flux:sidebar.item>
-                        @elseif(! in_array($navigationItem->group, $renderedGroups, true))
-                            @php($group = $navigationItem->group)
-                            @php($groupItems = array_values(array_filter($navigationItems, fn ($item) => $item->group === $group)))
-                            @php($renderedGroups[] = $group)
+                    @foreach($navigationContract?->items() ?? [] as $navigationItem)
+                        <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->badge" :href="$navigationItem->url ?? '#'" :current="$navigationItem->isCurrent()">
+                            {{ $navigationItem->label }}
+                        </flux:sidebar.item>
+                    @endforeach
 
-                            <flux:sidebar.group expandable heading="{{ $group }}" class="grid">
-                                @foreach($groupItems as $groupItem)
-                                    <flux:sidebar.item :icon="$groupItem->icon" :badge="$groupItem->badge" :href="$groupItem->url ?? '#'" :current="$groupItem->isCurrent()">
-                                        {{ $groupItem->label }}
-                                    </flux:sidebar.item>
-                                @endforeach
-                            </flux:sidebar.group>
-                        @endif
+                    @foreach($navigationContract?->groups() ?? [] as $navigationGroup)
+                        <flux:sidebar.group expandable :icon="$navigationGroup->icon" heading="{{ $navigationGroup->label }}" class="grid">
+                            @foreach($navigationGroup->items as $navigationItem)
+                                <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->badge" :href="$navigationItem->url ?? '#'" :current="$navigationItem->isCurrent()">
+                                    {{ $navigationItem->label }}
+                                </flux:sidebar.item>
+                            @endforeach
+                        </flux:sidebar.group>
                     @endforeach
                 @endisset
             </flux:sidebar.nav>

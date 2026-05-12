@@ -54,6 +54,11 @@ final class Panel
      */
     public private(set) array $navigation = [];
 
+    /**
+     * @var array<string, NavigationGroup>
+     */
+    public private(set) array $navigationGroups = [];
+
     public static function make(): self
     {
         return app(self::class);
@@ -173,9 +178,81 @@ final class Panel
     }
 
     /**
+     * @param  array<int, NavigationGroup>|NavigationGroup  $groups
+     */
+    public function navigationGroups(array|NavigationGroup $groups): self
+    {
+        foreach (Arr::wrap($groups) as $group) {
+            $this->navigationGroups[$group->id] = $group;
+        }
+
+        return $this;
+    }
+
+    public function navigationContract(): NavigationContract
+    {
+        $items = [];
+        $groups = array_map(
+            fn (NavigationGroup $group): NavigationGroup => clone $group,
+            $this->navigationGroups,
+        );
+
+        foreach ($groups as $group) {
+            $group->clearItems();
+        }
+
+        foreach ($this->resolvedNavigationItems() as $item) {
+            if ($item->group === null) {
+                $items[] = $item;
+
+                continue;
+            }
+
+            if (! isset($groups[$item->group])) {
+                throw new \LogicException(sprintf(
+                    'Navigation group [%s] has not been registered for panel [%s].',
+                    $item->group,
+                    $this->id ?? 'unknown',
+                ));
+            }
+
+            $groups[$item->group]->addItem($item);
+        }
+
+        usort(
+            $items,
+            fn (NavigationItem $first, NavigationItem $second): int => $first->sort <=> $second->sort,
+        );
+
+        $groups = array_values(array_filter(
+            $groups,
+            fn (NavigationGroup $group): bool => $group->items !== [],
+        ));
+
+        foreach ($groups as $group) {
+            $group->sortItems();
+        }
+
+        usort(
+            $groups,
+            fn (NavigationGroup $first, NavigationGroup $second): int => $first->sort <=> $second->sort,
+        );
+
+        return new NavigationContract($items, $groups);
+    }
+
+    /**
      * @return array<int, NavigationItem>
      */
     public function navigationItems(): array
+    {
+        return $this->navigationContract()->allItems();
+    }
+
+    /**
+     * @return array<int, NavigationItem>
+     */
+    private function resolvedNavigationItems(): array
     {
         $items = $this->navigation;
 

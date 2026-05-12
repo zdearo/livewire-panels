@@ -6,6 +6,7 @@ use Illuminate\Foundation\Vite;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\HtmlString;
+use Zdearo\LivewirePanels\NavigationGroup;
 use Zdearo\LivewirePanels\NavigationItem;
 use Zdearo\LivewirePanels\Page;
 use Zdearo\LivewirePanels\Panel;
@@ -77,12 +78,17 @@ it('renders configured panel navigation items in the Flux sidebar', function ():
         ->id('admin')
         ->path('admin')
         ->name('Admin')
+        ->navigationGroups([
+            NavigationGroup::make('management')
+                ->label('Management')
+                ->icon('briefcase'),
+        ])
         ->pages([
             Page::make('/hidden', 'pages::admin.hidden'),
             Page::make('/', 'pages::admin.dashboard')
                 ->navigation('Dashboard', icon: 'home', sort: 10),
             Page::make('/users', 'pages::admin.users')
-                ->navigation('Users', icon: 'users', group: 'Management', sort: 20),
+                ->navigation('Users', icon: 'users', group: 'management', sort: 20),
         ])
         ->navigation([
             NavigationItem::make('Settings')
