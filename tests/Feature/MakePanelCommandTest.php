@@ -57,10 +57,18 @@ it('creates the first panel provider and registers it as default', function (): 
         ->toContain("->id('admin')")
         ->toContain("->path('admin')")
         ->toContain("->name('Admin')")
+        ->toContain("->vite('resources/css/panels/admin.css')")
         ->toContain("->middleware(['web'])")
         ->toContain('->default();')
         ->and(File::get(base_path('bootstrap/providers.php')))
         ->toContain('App\Providers\AdminPanelProvider::class');
+
+    expect(resource_path('css/panels/admin.css'))
+        ->toBeFile()
+        ->and(File::get(resource_path('css/panels/admin.css')))
+        ->toContain("@import 'tailwindcss';")
+        ->toContain("@import '../../../vendor/zdearo/livewire-panels/packages/panels/resources/css/panels.css';")
+        ->toContain("@source '../../../vendor/zdearo/livewire-panels/packages/panels/resources/views/**/*.blade.php';");
 });
 
 it('can ask for the panel id when it is not provided', function (): void {
@@ -77,7 +85,10 @@ it('can ask for the panel id when it is not provided', function (): void {
         ->toContain("->id('support')")
         ->toContain("->path('support')")
         ->toContain("->name('Support')")
+        ->toContain("->vite('resources/css/panels/support.css')")
         ->toContain('->default();');
+
+    expect(resource_path('css/panels/support.css'))->toBeFile();
 });
 
 it('creates a custom panel provider without default when another panel exists', function (): void {
@@ -101,10 +112,13 @@ it('creates a custom panel provider without default when another panel exists', 
         ->toContain("->id('customer-app')")
         ->toContain("->path('customers')")
         ->toContain("->name('Customers')")
+        ->toContain("->vite('resources/css/panels/customer-app.css')")
         ->toContain("->middleware(['web', 'auth']);")
         ->not->toContain('->default()')
         ->and(File::get(base_path('bootstrap/providers.php')))
         ->toContain('App\Providers\CustomerAppPanelProvider::class');
+
+    expect(resource_path('css/panels/customer-app.css'))->toBeFile();
 });
 
 it('does not overwrite an existing panel provider without force', function (): void {
@@ -117,6 +131,19 @@ it('does not overwrite an existing panel provider without force', function (): v
         ->assertFailed();
 
     expect(File::get($providerPath))->toBe('<?php // existing');
+});
+
+it('does not overwrite an existing panel stylesheet without force', function (): void {
+    $stylesheetPath = resource_path('css/panels/admin.css');
+
+    File::ensureDirectoryExists(dirname($stylesheetPath));
+    File::put($stylesheetPath, '/* existing */');
+
+    $this
+        ->artisan('make:panel', ['id' => 'admin'])
+        ->assertFailed();
+
+    expect(File::get($stylesheetPath))->toBe('/* existing */');
 });
 
 it('overwrites an existing panel provider with force', function (): void {
@@ -134,5 +161,8 @@ it('overwrites an existing panel provider with force', function (): void {
 
     expect(File::get($providerPath))
         ->toContain('final class AdminPanelProvider extends PanelProvider')
+        ->toContain("->vite('resources/css/panels/admin.css')")
         ->toContain('->default();');
+
+    expect(resource_path('css/panels/admin.css'))->toBeFile();
 });

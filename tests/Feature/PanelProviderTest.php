@@ -19,6 +19,10 @@ it('automatically registers its panel in the registry', function (): void {
         ->name->toBe('Admin')
         ->appLayout->toBe('custom-app-layout')
         ->layout->toBe('custom-layout')
+        ->vite->toBe([
+            'resources/css/admin.css',
+            'resources/js/admin.js',
+        ])
         ->middleware->toBe(['web', 'auth'])
         ->withoutMiddleware->toBe(['csrf'])
         ->pages->toHaveCount(1)
@@ -41,6 +45,12 @@ it('uses the default panel layout when no custom layout is configured', function
     $panel = Panel::make();
 
     expect($panel->layout)->toBe('livewire-panels::layouts.panel');
+});
+
+it('does not assume app Vite entrypoints by default', function (): void {
+    $panel = Panel::make();
+
+    expect($panel->vite)->toBe([]);
 });
 
 it('does not allow panel properties to be changed externally', function (): void {
@@ -100,6 +110,7 @@ final class TestingPanelProvider extends PanelProvider
             ->name('Admin')
             ->appLayout('custom-app-layout')
             ->layout('custom-layout')
+            ->vite(['resources/css/admin.css', 'resources/js/admin.js'])
             ->middleware(['web', 'auth'])
             ->withoutMiddleware('csrf')
             ->pages([

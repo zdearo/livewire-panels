@@ -16,6 +16,7 @@ final class {{ class }} extends PanelProvider
             ->id({{ id }})
             ->path({{ path }})
             ->name({{ name }})
+            ->vite({{ vite }})
             ->middleware({{ middleware }}){{ default }};
     }
 }

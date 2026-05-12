@@ -112,6 +112,39 @@ Panels have two layout layers:
 
 The package registers its views as both namespaced views and anonymous Blade components. This allows the panel layout to wrap itself with the app layout through Blade components.
 
+The package app layout does not assume fixed Vite entrypoint names such as `resources/css/app.css`.
+
+Each panel can define the Vite entrypoints that should be loaded for that panel:
+
+```php
+$panel->vite(['resources/css/app.css', 'resources/js/app.js']);
+```
+
+The package ships a panel stylesheet source that should be imported by the consuming app's chosen CSS entrypoint:
+
+```css
+@import '../../vendor/zdearo/livewire-panels/packages/panels/resources/css/panels.css';
+```
+
+Because this package depends on Flux, the package stylesheet imports Flux's CSS itself. The consuming app should not need to import Flux separately for panel styling.
+
+The consuming app's Tailwind source list must include the package Blade views so Tailwind sees classes used by the default Flux panel shell:
+
+```css
+@source '../../vendor/zdearo/livewire-panels/packages/panels/resources/views/**/*.blade.php';
+```
+
+Panel assets are configured through a single `vite()` entrypoint list. Add panel-specific CSS or JavaScript there when needed:
+
+```php
+$panel->vite([
+    'resources/css/panels/admin.css',
+    'resources/js/panels/admin.js',
+]);
+```
+
+The package does not expose a separate `viteTheme()` API.
+
 Panel pages use a descriptor object rather than forcing application components to extend a package base class:
 
 ```php
@@ -159,7 +192,21 @@ This command creates an app panel provider at:
 app/Providers/AdminPanelProvider.php
 ```
 
-It also registers the provider in Laravel's `bootstrap/providers.php`.
+It also creates a panel CSS entrypoint at:
+
+```txt
+resources/css/panels/admin.css
+```
+
+The generated provider must reference that entrypoint with:
+
+```php
+->vite('resources/css/panels/admin.css')
+```
+
+The generated CSS file imports Tailwind and the package panel stylesheet, which itself imports Flux CSS.
+
+The command also registers the provider in Laravel's `bootstrap/providers.php`.
 
 The first generated panel is marked as default automatically. Additional panels are not marked as default unless the developer passes `--default`.
 
@@ -175,12 +222,18 @@ php artisan make:panel customer-app \
     --force
 ```
 
-The command should only scaffold the panel provider. It must not create app pages, auth, CRUD resources, Flux layouts, or final starter-kit structure.
+The command should only scaffold the panel provider and its panel CSS entrypoint. It must not create app pages, auth, CRUD resources, Flux layouts beyond the package defaults, or final starter-kit structure.
 
 Generator output should use package stubs. The panel provider template lives at:
 
 ```txt
 packages/panels/stubs/panel-provider.stub
+```
+
+The panel CSS template lives at:
+
+```txt
+packages/panels/stubs/panel.css.stub
 ```
 
 Panel pages are generated through:

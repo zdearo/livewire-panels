@@ -27,6 +27,11 @@ final class Panel
     /**
      * @var array<int, string>
      */
+    public private(set) array $vite = [];
+
+    /**
+     * @var array<int, string>
+     */
     public private(set) array $middleware = [];
 
     /**
@@ -87,6 +92,16 @@ final class Panel
     public function appLayout(string $layout): self
     {
         $this->appLayout = $layout;
+
+        return $this;
+    }
+
+    /**
+     * @param  array<int, string>|string  $entries
+     */
+    public function vite(array|string $entries): self
+    {
+        $this->vite = Arr::wrap($entries);
 
         return $this;
     }

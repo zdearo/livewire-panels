@@ -27,6 +27,8 @@ final class MakePanelCommand extends Command
         $panelId = $this->panelId();
         $providerClass = $this->providerClass($panelId);
         $providerPath = $this->laravel->basePath("app/Providers/{$providerClass}.php");
+        $stylesheetPath = $this->stylesheetPath($panelId);
+        $vite = $this->vite($panelId);
 
         if ($files->exists($providerPath) && ! $this->option('force')) {
             $this->error("Panel provider [{$providerClass}] already exists.");
@@ -34,7 +36,14 @@ final class MakePanelCommand extends Command
             return self::FAILURE;
         }
 
+        if ($files->exists($stylesheetPath) && ! $this->option('force')) {
+            $this->error("Panel stylesheet [{$vite}] already exists.");
+
+            return self::FAILURE;
+        }
+
         $files->ensureDirectoryExists(dirname($providerPath));
+        $files->ensureDirectoryExists(dirname($stylesheetPath));
 
         $files->put(
             $providerPath,
@@ -44,10 +53,13 @@ final class MakePanelCommand extends Command
                 panelId: $panelId,
                 path: $this->panelPath($panelId),
                 name: $this->panelName($panelId),
+                vite: $vite,
                 middleware: $this->middleware(),
                 isDefault: $this->isDefaultPanel($providerClass),
             ),
         );
+
+        $files->put($stylesheetPath, $files->get($this->stylesheetStubPath()));
 
         LaravelServiceProvider::addProviderToBootstrapFile(
             $this->providerNamespace().'\\'.$providerClass,
@@ -71,6 +83,16 @@ final class MakePanelCommand extends Command
     private function providerClass(string $panelId): string
     {
         return Str::studly($panelId).'PanelProvider';
+    }
+
+    private function stylesheetPath(string $panelId): string
+    {
+        return $this->laravel->resourcePath("css/panels/{$panelId}.css");
+    }
+
+    private function vite(string $panelId): string
+    {
+        return "resources/css/panels/{$panelId}.css";
     }
 
     private function panelPath(string $panelId): string
@@ -139,6 +161,7 @@ final class MakePanelCommand extends Command
         string $panelId,
         string $path,
         string $name,
+        string $vite,
         array $middleware,
         bool $isDefault,
     ): string {
@@ -150,6 +173,7 @@ final class MakePanelCommand extends Command
             '{{ id }}' => $this->quote($panelId),
             '{{ path }}' => $this->quote($path),
             '{{ name }}' => $this->quote($name),
+            '{{ vite }}' => $this->quote($vite),
             '{{ middleware }}' => $this->array($middleware),
             '{{ default }}' => $defaultCall,
         ]);
@@ -158,6 +182,11 @@ final class MakePanelCommand extends Command
     private function stubPath(): string
     {
         return __DIR__.'/../../stubs/panel-provider.stub';
+    }
+
+    private function stylesheetStubPath(): string
+    {
+        return __DIR__.'/../../stubs/panel.css.stub';
     }
 
     private function providerNamespace(): string
