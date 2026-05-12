@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 final class MakePanelCommand extends Command
 {
     protected $signature = 'make:panel
-        {id : The panel identifier}
+        {id? : The panel identifier}
         {--path= : The panel route path}
         {--name= : The panel display name}
         {--middleware=* : The panel route middleware}
@@ -61,7 +61,7 @@ final class MakePanelCommand extends Command
 
     private function panelId(): string
     {
-        $id = $this->argument('id');
+        $id = $this->argument('id') ?? $this->ask('What is the panel id?');
 
         assert(is_string($id));
 

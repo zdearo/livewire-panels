@@ -63,6 +63,23 @@ it('creates the first panel provider and registers it as default', function (): 
         ->toContain('App\Providers\AdminPanelProvider::class');
 });
 
+it('can ask for the panel id when it is not provided', function (): void {
+    $this
+        ->artisan('make:panel')
+        ->expectsQuestion('What is the panel id?', 'support')
+        ->assertSuccessful();
+
+    $providerPath = app_path('Providers/SupportPanelProvider.php');
+
+    expect($providerPath)
+        ->toBeFile()
+        ->and(File::get($providerPath))
+        ->toContain("->id('support')")
+        ->toContain("->path('support')")
+        ->toContain("->name('Support')")
+        ->toContain('->default();');
+});
+
 it('creates a custom panel provider without default when another panel exists', function (): void {
     File::put(app_path('Providers/AdminPanelProvider.php'), '<?php');
 

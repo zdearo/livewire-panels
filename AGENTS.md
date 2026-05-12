@@ -123,6 +123,12 @@ The core package exposes one app-facing generator command:
 php artisan make:panel admin
 ```
 
+If the `id` argument is omitted, the command asks for it interactively:
+
+```bash
+php artisan make:panel
+```
+
 This command creates an app panel provider at:
 
 ```txt
