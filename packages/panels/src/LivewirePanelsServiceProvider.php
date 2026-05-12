@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Zdearo\LivewirePanels;
 
 use Illuminate\Support\ServiceProvider;
+use Zdearo\LivewirePanels\Commands\MakePanelCommand;
 
 final class LivewirePanelsServiceProvider extends ServiceProvider
 {
@@ -19,5 +20,11 @@ final class LivewirePanelsServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'livewire-panels');
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                MakePanelCommand::class,
+            ]);
+        }
     }
 }

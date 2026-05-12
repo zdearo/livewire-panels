@@ -113,7 +113,45 @@ $panel->default();
 
 `PanelRegistry` supports non-strict lookup for normalized IDs, so values like `sales-panel`, `sales_panel`, and `salespanel` can resolve to the same panel when strict lookup is disabled.
 
-Do not add routing, navigation, layout, Livewire page registration, resources, CRUD builders, current-panel resolution, or commands until the API is discussed first.
+Do not add routing, navigation, layout, Livewire page registration, resources, CRUD builders, current-panel resolution, or additional commands until the API is discussed first.
+
+## Artisan Commands
+
+The core package exposes one app-facing generator command:
+
+```bash
+php artisan make:panel admin
+```
+
+This command creates an app panel provider at:
+
+```txt
+app/Providers/AdminPanelProvider.php
+```
+
+It also registers the provider in Laravel's `bootstrap/providers.php`.
+
+The first generated panel is marked as default automatically. Additional panels are not marked as default unless the developer passes `--default`.
+
+Supported options:
+
+```bash
+php artisan make:panel customer-app \
+    --path=customers \
+    --name=Customers \
+    --middleware=web \
+    --middleware=auth \
+    --default \
+    --force
+```
+
+The command should only scaffold the panel provider. It must not create app pages, auth, CRUD resources, Flux layouts, or final starter-kit structure.
+
+Generator output should use package stubs. The panel provider template lives at:
+
+```txt
+packages/panels/stubs/panel-provider.stub
+```
 
 ## Testing
 

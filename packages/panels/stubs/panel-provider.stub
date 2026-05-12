@@ -1,0 +1,21 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Zdearo\LivewirePanels\Panel;
+use Zdearo\LivewirePanels\PanelProvider;
+
+final class {{ class }} extends PanelProvider
+{
+    #[\Override]
+    public function panel(Panel $panel): Panel
+    {
+        return $panel
+            ->id({{ id }})
+            ->path({{ path }})
+            ->name({{ name }})
+            ->middleware({{ middleware }}){{ default }};
+    }
+}
