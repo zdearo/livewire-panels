@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Zdearo\LivewirePanels;
 
+use Closure;
 use Illuminate\Support\Arr;
 use Zdearo\LivewirePanels\Support\Concerns\ConfiguresPropertiesOnce;
 
@@ -23,6 +24,16 @@ final class Panel
      * @var array<int, string>
      */
     public private(set) array $middleware = [];
+
+    /**
+     * @var array<int, string>
+     */
+    public private(set) array $withoutMiddleware = [];
+
+    /**
+     * @var array<int, Closure(): void>
+     */
+    public private(set) array $routes = [];
 
     public static function make(): self
     {
@@ -63,6 +74,26 @@ final class Panel
     public function middleware(array|string $middleware): self
     {
         $this->middleware = Arr::wrap($middleware);
+
+        return $this;
+    }
+
+    /**
+     * @param  array<int, string>|string  $middleware
+     */
+    public function withoutMiddleware(array|string $middleware): self
+    {
+        $this->withoutMiddleware = Arr::wrap($middleware);
+
+        return $this;
+    }
+
+    /**
+     * @param  Closure(): void  $routes
+     */
+    public function routes(Closure $routes): self
+    {
+        $this->routes[] = $routes;
 
         return $this;
     }

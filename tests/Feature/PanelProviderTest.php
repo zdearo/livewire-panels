@@ -16,7 +16,8 @@ it('automatically registers its panel in the registry', function (): void {
         ->id->toBe('admin')
         ->path->toBe('admin')
         ->name->toBe('Admin')
-        ->middleware->toBe(['web', 'auth']);
+        ->middleware->toBe(['web', 'auth'])
+        ->withoutMiddleware->toBe(['csrf']);
 });
 
 it('does not allow panel properties to be changed externally', function (): void {
@@ -74,7 +75,8 @@ final class TestingPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->name('Admin')
-            ->middleware(['web', 'auth']);
+            ->middleware(['web', 'auth'])
+            ->withoutMiddleware('csrf');
     }
 }
 
