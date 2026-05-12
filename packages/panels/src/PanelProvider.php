@@ -12,10 +12,17 @@ abstract class PanelProvider extends ServiceProvider
     final public function register(): void
     {
         $this->app->singletonIf(PanelRegistry::class);
+        $this->app->singletonIf(PanelManager::class);
 
-        $this->app->make(PanelRegistry::class)->register(
-            $this->panel(Panel::make())
-        );
+        $panel = $this->panel(Panel::make());
+
+        $this->app->make(PanelRegistry::class)->register($panel);
+
+        $manager = $this->app->make(PanelManager::class);
+
+        if ($manager->getCurrentPanel() === null || $panel->isDefault) {
+            $manager->setCurrentPanel($panel);
+        }
     }
 
     abstract public function panel(Panel $panel): Panel;

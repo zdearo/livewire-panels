@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Zdearo\LivewirePanels;
 
 use Illuminate\Support\Arr;
-use LogicException;
+use Zdearo\LivewirePanels\Support\Concerns\ConfiguresPropertiesOnce;
 
 final class Panel
 {
+    use ConfiguresPropertiesOnce;
+
     public private(set) string $id;
 
     public private(set) string $path;
@@ -29,9 +31,12 @@ final class Panel
 
     public function id(string $id): self
     {
-        if (isset($this->id)) {
-            throw new LogicException("The panel already has the ID [{$this->id}].");
-        }
+        $this->guardAgainstConfiguringPropertyAgain(
+            isset($this->id),
+            $this->id ?? '',
+            'panel',
+            'ID',
+        );
 
         $this->id = $id;
 

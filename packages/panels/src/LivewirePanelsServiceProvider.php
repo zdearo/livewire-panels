@@ -12,5 +12,6 @@ final class LivewirePanelsServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(PanelRegistry::class);
+        $this->app->singleton(PanelManager::class);
     }
 }
