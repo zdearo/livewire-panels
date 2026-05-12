@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Zdearo\LivewirePanels;
+namespace Zdearo\LivewirePanels\Routing;
 
 use Illuminate\Routing\Route as LaravelRoute;
 use Illuminate\Support\Facades\Route;
 use Livewire\Mechanisms\HandleRouting\LivewirePageController;
 use Zdearo\LivewirePanels\Middleware\SetCurrentPanel;
+use Zdearo\LivewirePanels\Panel\Page;
+use Zdearo\LivewirePanels\Panel\Panel;
 
 final class PanelRouter
 {

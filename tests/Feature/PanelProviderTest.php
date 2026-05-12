@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use Zdearo\LivewirePanels\NavigationContract;
-use Zdearo\LivewirePanels\NavigationGroup;
-use Zdearo\LivewirePanels\NavigationItem;
-use Zdearo\LivewirePanels\Page;
-use Zdearo\LivewirePanels\Panel;
-use Zdearo\LivewirePanels\PanelProvider;
-use Zdearo\LivewirePanels\PanelRegistry;
+use Zdearo\LivewirePanels\Navigation\NavigationContract;
+use Zdearo\LivewirePanels\Navigation\NavigationGroup;
+use Zdearo\LivewirePanels\Navigation\NavigationItem;
+use Zdearo\LivewirePanels\Panel\Page;
+use Zdearo\LivewirePanels\Panel\Panel;
+use Zdearo\LivewirePanels\Panel\PanelProvider;
+use Zdearo\LivewirePanels\Panel\PanelRegistry;
 
 it('automatically registers its panel in the registry', function (): void {
     app()->register(TestingPanelProvider::class);

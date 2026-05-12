@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
 use Zdearo\LivewirePanels\Middleware\SetCurrentPanel;
-use Zdearo\LivewirePanels\Page;
-use Zdearo\LivewirePanels\Panel;
-use Zdearo\LivewirePanels\PanelProvider;
+use Zdearo\LivewirePanels\Panel\Page;
+use Zdearo\LivewirePanels\Panel\Panel;
+use Zdearo\LivewirePanels\Panel\PanelProvider;
 
 it('automatically registers panel routes inside the panel route group', function (): void {
     app()->register(RouteTestingPanelProvider::class);

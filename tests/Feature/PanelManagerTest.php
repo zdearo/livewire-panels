@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Zdearo\LivewirePanels\Panel;
-use Zdearo\LivewirePanels\PanelManager;
-use Zdearo\LivewirePanels\PanelProvider;
+use Zdearo\LivewirePanels\Panel\Panel;
+use Zdearo\LivewirePanels\Panel\PanelManager;
+use Zdearo\LivewirePanels\Panel\PanelProvider;
 
 it('is registered as a singleton', function (): void {
     expect(app(PanelManager::class))->toBe(app(PanelManager::class));

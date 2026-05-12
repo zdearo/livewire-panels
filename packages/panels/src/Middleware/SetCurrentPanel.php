@@ -6,7 +6,7 @@ namespace Zdearo\LivewirePanels\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Zdearo\LivewirePanels\PanelManager;
+use Zdearo\LivewirePanels\Panel\PanelManager;
 
 final readonly class SetCurrentPanel
 {

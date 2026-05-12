@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Zdearo\LivewirePanels;
+namespace Zdearo\LivewirePanels\Panel;
+
+use Zdearo\LivewirePanels\Navigation\NavigationItem;
 
 final class Page
 {

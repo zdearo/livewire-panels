@@ -51,8 +51,8 @@ The Composer package name is not final yet. The current package name may be temp
 A consumer-facing panel provider should look like this:
 
 ```php
-use Zdearo\LivewirePanels\Panel;
-use Zdearo\LivewirePanels\PanelProvider;
+use Zdearo\LivewirePanels\Panel\Panel;
+use Zdearo\LivewirePanels\Panel\PanelProvider;
 
 final class AdminPanelProvider extends PanelProvider
 {
@@ -100,10 +100,16 @@ $panel->id = 'app'; // should fail outside the class
 
 The first implementation layer is intentionally small:
 
-- `Panel`: fluent configuration object with PHP 8.4 read access through properties.
-- `PanelProvider`: base Laravel service provider for one panel.
-- `PanelRegistry`: stores registered panels by ID.
-- `LivewirePanelsServiceProvider`: package provider that registers shared package services.
+- `Panel\Panel`: fluent configuration object with PHP 8.4 read access through properties.
+- `Panel\Page`: route descriptor for Livewire page routes.
+- `Panel\PanelProvider`: base Laravel service provider for one panel.
+- `Panel\PanelRegistry`: stores registered panels by ID.
+- `Panel\PanelManager`: tracks the current panel.
+- `Navigation\NavigationItem`, `Navigation\NavigationGroup`, and `Navigation\NavigationContract`: normalized sidebar/navigation primitives.
+- `Routing\PanelRouter`: converts panel pages and panel route callbacks into Laravel routes.
+- `LivewirePanelsServiceProvider`: the only root-level package provider in `packages/panels/src`.
+
+Keep `packages/panels/src` organized by domain. The root of `src` should only contain package-level entry points that genuinely sit above a single domain, such as `LivewirePanelsServiceProvider`.
 
 Panels have two layout layers:
 
@@ -148,7 +154,7 @@ The package does not expose a separate `viteTheme()` API.
 Panel pages use a descriptor object rather than forcing application components to extend a package base class:
 
 ```php
-use Zdearo\LivewirePanels\Page;
+use Zdearo\LivewirePanels\Panel\Page;
 
 $panel->pages([
     Page::make('/', 'pages::admin.dashboard')->name('dashboard'),
@@ -171,7 +177,7 @@ Page::make('/users', 'pages::admin.users')
 Navigation item groups must be declared explicitly on the panel before any item references them. Group references use the group ID, not the visible label:
 
 ```php
-use Zdearo\LivewirePanels\NavigationGroup;
+use Zdearo\LivewirePanels\Navigation\NavigationGroup;
 
 $panel->navigationGroups([
     NavigationGroup::make('management')
@@ -186,7 +192,7 @@ If a page or manual item references a group ID that was not declared, the panel 
 Panels may also define manual navigation items:
 
 ```php
-use Zdearo\LivewirePanels\NavigationItem;
+use Zdearo\LivewirePanels\Navigation\NavigationItem;
 
 $panel->navigation([
     NavigationItem::make('Settings')

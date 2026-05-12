@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use Livewire\Component;
-use Zdearo\LivewirePanels\NavigationContract;
-use Zdearo\LivewirePanels\Panel;
-use Zdearo\LivewirePanels\PanelManager;
+use Zdearo\LivewirePanels\Navigation\NavigationContract;
+use Zdearo\LivewirePanels\Panel\Panel;
+use Zdearo\LivewirePanels\Panel\PanelManager;
 
 return new class extends Component
 {

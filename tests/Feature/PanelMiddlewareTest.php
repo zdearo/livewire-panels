@@ -5,9 +5,9 @@ declare(strict_types=1);
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Zdearo\LivewirePanels\Middleware\SetCurrentPanel;
-use Zdearo\LivewirePanels\Panel;
-use Zdearo\LivewirePanels\PanelManager;
-use Zdearo\LivewirePanels\PanelRegistry;
+use Zdearo\LivewirePanels\Panel\Panel;
+use Zdearo\LivewirePanels\Panel\PanelManager;
+use Zdearo\LivewirePanels\Panel\PanelRegistry;
 
 it('sets the current panel and Livewire page layout for panel requests', function (): void {
     $panel = Panel::make()

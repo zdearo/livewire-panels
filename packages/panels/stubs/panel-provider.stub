@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace {{ namespace }};
 
-use Zdearo\LivewirePanels\Panel;
-use Zdearo\LivewirePanels\PanelProvider;
+use Zdearo\LivewirePanels\Panel\Panel;
+use Zdearo\LivewirePanels\Panel\PanelProvider;
 
 final class {{ class }} extends PanelProvider
 {

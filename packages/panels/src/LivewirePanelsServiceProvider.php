@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Livewire\LivewireManager;
 use Zdearo\LivewirePanels\Commands\MakePanelCommand;
+use Zdearo\LivewirePanels\Panel\PanelManager;
+use Zdearo\LivewirePanels\Panel\PanelRegistry;
+use Zdearo\LivewirePanels\Routing\PanelRouter;
 
 final class LivewirePanelsServiceProvider extends ServiceProvider
 {

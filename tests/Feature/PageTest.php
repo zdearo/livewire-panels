@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Zdearo\LivewirePanels\Page;
+use Zdearo\LivewirePanels\Panel\Page;
 
 it('configures a panel page descriptor', function (): void {
     $page = Page::make('/users', 'pages::admin.users')

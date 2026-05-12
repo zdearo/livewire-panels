@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Zdearo\LivewirePanels\NavigationGroup;
-use Zdearo\LivewirePanels\NavigationItem;
+use Zdearo\LivewirePanels\Navigation\NavigationGroup;
+use Zdearo\LivewirePanels\Navigation\NavigationItem;
 
 it('configures a navigation group descriptor', function (): void {
     $group = NavigationGroup::make('management')

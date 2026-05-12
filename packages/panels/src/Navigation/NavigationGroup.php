@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Zdearo\LivewirePanels;
+namespace Zdearo\LivewirePanels\Navigation;
 
 use Illuminate\Support\Str;
 

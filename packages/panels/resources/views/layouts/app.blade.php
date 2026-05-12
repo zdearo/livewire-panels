@@ -1,5 +1,5 @@
 @php
-    $currentPanel = app(\Zdearo\LivewirePanels\PanelManager::class)->getCurrentPanel();
+    $currentPanel = app(\Zdearo\LivewirePanels\Panel\PanelManager::class)->getCurrentPanel();
     $vite = $currentPanel?->vite ?? [];
 @endphp
 

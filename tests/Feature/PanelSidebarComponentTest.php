@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 use Livewire\Livewire;
-use Zdearo\LivewirePanels\NavigationGroup;
-use Zdearo\LivewirePanels\NavigationItem;
-use Zdearo\LivewirePanels\Page;
-use Zdearo\LivewirePanels\Panel;
-use Zdearo\LivewirePanels\PanelManager;
+use Zdearo\LivewirePanels\Navigation\NavigationGroup;
+use Zdearo\LivewirePanels\Navigation\NavigationItem;
+use Zdearo\LivewirePanels\Panel\Page;
+use Zdearo\LivewirePanels\Panel\Panel;
+use Zdearo\LivewirePanels\Panel\PanelManager;
 
 it('registers the panel sidebar as a Livewire component', function (): void {
     expect(app('livewire')->exists('livewire-panels::panel-sidebar'))->toBeTrue();

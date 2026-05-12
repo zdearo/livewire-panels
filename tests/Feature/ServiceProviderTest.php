@@ -6,11 +6,11 @@ use Illuminate\Foundation\Vite;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\HtmlString;
-use Zdearo\LivewirePanels\NavigationGroup;
-use Zdearo\LivewirePanels\NavigationItem;
-use Zdearo\LivewirePanels\Page;
-use Zdearo\LivewirePanels\Panel;
-use Zdearo\LivewirePanels\PanelManager;
+use Zdearo\LivewirePanels\Navigation\NavigationGroup;
+use Zdearo\LivewirePanels\Navigation\NavigationItem;
+use Zdearo\LivewirePanels\Panel\Page;
+use Zdearo\LivewirePanels\Panel\Panel;
+use Zdearo\LivewirePanels\Panel\PanelManager;
 
 beforeEach(function (): void {
     fakeViteForLivewirePanelsTests();

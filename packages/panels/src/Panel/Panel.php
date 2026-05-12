@@ -2,10 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Zdearo\LivewirePanels;
+namespace Zdearo\LivewirePanels\Panel;
 
 use Closure;
 use Illuminate\Support\Arr;
+use Zdearo\LivewirePanels\Navigation\NavigationContract;
+use Zdearo\LivewirePanels\Navigation\NavigationGroup;
+use Zdearo\LivewirePanels\Navigation\NavigationItem;
 use Zdearo\LivewirePanels\Support\Concerns\ConfiguresPropertiesOnce;
 
 final class Panel

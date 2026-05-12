@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Zdearo\LivewirePanels\NavigationItem;
+use Zdearo\LivewirePanels\Navigation\NavigationItem;
 
 it('configures a navigation item descriptor', function (): void {
     $item = NavigationItem::make('Inbox')

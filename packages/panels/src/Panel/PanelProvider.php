@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Zdearo\LivewirePanels;
+namespace Zdearo\LivewirePanels\Panel;
 
 use Illuminate\Support\ServiceProvider;
+use Zdearo\LivewirePanels\Routing\PanelRouter;
 
 abstract class PanelProvider extends ServiceProvider
 {
