@@ -36,6 +36,23 @@ it('automatically registers panel pages as Livewire page routes', function (): v
         ->and($route?->getAction('livewire_component'))->toBe('pages::admin.dashboard');
 });
 
+it('automatically registers grouped panel pages with path and name prefixes', function (): void {
+    app()->register(GroupedPageRouteTestingPanelProvider::class);
+    app()->boot();
+
+    $indexRoute = Route::getRoutes()->getByName('admin.settings.index');
+    $usersRoute = Route::getRoutes()->getByName('admin.settings.users');
+
+    expect($indexRoute)
+        ->not->toBeNull()
+        ->uri()->toBe('admin/settings')
+        ->and($indexRoute?->getAction('livewire_component'))->toBe('pages::admin.settings.index')
+        ->and($usersRoute)
+        ->not->toBeNull()
+        ->uri()->toBe('admin/settings/users')
+        ->and($usersRoute?->getAction('livewire_component'))->toBe('pages::admin.settings.users');
+});
+
 final class RouteTestingPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -62,5 +79,25 @@ final class PageRouteTestingPanelProvider extends PanelProvider
             ->name('Admin')
             ->middleware(['web'])
             ->page(Page::make('/', 'pages::admin.dashboard')->name('dashboard'));
+    }
+}
+
+final class GroupedPageRouteTestingPanelProvider extends PanelProvider
+{
+    public function panel(Panel $panel): Panel
+    {
+        return $panel
+            ->id('admin')
+            ->path('admin')
+            ->name('Admin')
+            ->middleware(['web'])
+            ->pages([
+                Page::group('/settings')
+                    ->name('settings')
+                    ->pages([
+                        Page::make('/', 'pages::admin.settings.index')->name('index'),
+                        Page::make('/users', 'pages::admin.settings.users')->name('users'),
+                    ]),
+            ]);
     }
 }

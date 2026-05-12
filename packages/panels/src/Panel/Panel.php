@@ -48,7 +48,7 @@ final class Panel
     public private(set) array $routes = [];
 
     /**
-     * @var array<int, Page>
+     * @var array<int, Page|PageGroup>
      */
     public private(set) array $pages = [];
 
@@ -149,7 +149,7 @@ final class Panel
         return $this;
     }
 
-    public function page(Page $page): self
+    public function page(Page|PageGroup $page): self
     {
         $this->pages[] = $page;
 
@@ -157,7 +157,7 @@ final class Panel
     }
 
     /**
-     * @param  array<int, Page>  $pages
+     * @param  array<int, Page|PageGroup>  $pages
      */
     public function pages(array $pages): self
     {
@@ -259,19 +259,7 @@ final class Panel
     {
         $items = $this->navigation;
 
-        foreach ($this->pages as $page) {
-            if ($page->navigation === null) {
-                continue;
-            }
-
-            $item = clone $page->navigation;
-
-            if ($item->url === null) {
-                $item->url($this->pageUrl($page));
-            }
-
-            $items[] = $item;
-        }
+        array_push($items, ...$this->resolvedPageNavigationItems($this->pages));
 
         usort(
             $items,
@@ -281,11 +269,61 @@ final class Panel
         return $items;
     }
 
-    private function pageUrl(Page $page): string
+    /**
+     * @param  array<int, Page|PageGroup>  $pages
+     * @return array<int, NavigationItem>
+     */
+    private function resolvedPageNavigationItems(array $pages, string $pathPrefix = ''): array
     {
-        $panelPath = trim($this->path, '/');
-        $pagePath = trim($page->path, '/');
-        $path = trim($panelPath.'/'.$pagePath, '/');
+        $items = [];
+
+        foreach ($pages as $page) {
+            if ($page instanceof PageGroup) {
+                array_push(
+                    $items,
+                    ...$this->resolvedPageNavigationItems(
+                        $page->pages,
+                        $this->joinPaths($pathPrefix, $page->path),
+                    ),
+                );
+
+                continue;
+            }
+
+            if ($page->navigation === null) {
+                continue;
+            }
+
+            $item = clone $page->navigation;
+
+            if ($item->url === null) {
+                $item->url($this->pageUrl($page, $pathPrefix));
+            }
+
+            $items[] = $item;
+        }
+
+        return $items;
+    }
+
+    private function pageUrl(Page $page, string $pathPrefix = ''): string
+    {
+        return $this->joinPaths($this->path, $pathPrefix, $page->path);
+    }
+
+    private function joinPaths(string ...$paths): string
+    {
+        $segments = [];
+
+        foreach ($paths as $path) {
+            $path = trim($path, '/');
+
+            if ($path !== '') {
+                $segments[] = $path;
+            }
+        }
+
+        $path = implode('/', $segments);
 
         return $path === '' ? '/' : "/{$path}";
     }

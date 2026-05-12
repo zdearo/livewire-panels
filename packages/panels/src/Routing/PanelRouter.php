@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Mechanisms\HandleRouting\LivewirePageController;
 use Zdearo\LivewirePanels\Middleware\SetCurrentPanel;
 use Zdearo\LivewirePanels\Panel\Page;
+use Zdearo\LivewirePanels\Panel\PageGroup;
 use Zdearo\LivewirePanels\Panel\Panel;
 
 final class PanelRouter
@@ -25,13 +26,7 @@ final class PanelRouter
             ->prefix($panel->path)
             ->as($panel->id.'.')
             ->group(function () use ($panel): void {
-                foreach ($panel->pages as $page) {
-                    $route = $this->livewireRoute($page);
-
-                    if ($page->name !== null) {
-                        $route->name($page->name);
-                    }
-                }
+                $this->registerPages($panel->pages);
             });
 
         foreach ($panel->routes as $routes) {
@@ -45,11 +40,65 @@ final class PanelRouter
         Route::getRoutes()->refreshNameLookups();
     }
 
-    private function livewireRoute(Page $page): LaravelRoute
+    /**
+     * @param  array<int, Page|PageGroup>  $pages
+     */
+    private function registerPages(array $pages, string $pathPrefix = '', string $namePrefix = ''): void
     {
-        $route = Route::get($page->path, LivewirePageController::class);
+        foreach ($pages as $page) {
+            if ($page instanceof PageGroup) {
+                $this->registerPages(
+                    $page->pages,
+                    $this->joinPaths($pathPrefix, $page->path),
+                    $this->joinNames($namePrefix, $page->name),
+                );
+
+                continue;
+            }
+
+            $route = $this->livewireRoute($page, $this->joinPaths($pathPrefix, $page->path));
+
+            if ($page->name !== null) {
+                $route->name($this->joinNames($namePrefix, $page->name));
+            }
+        }
+    }
+
+    private function livewireRoute(Page $page, string $path): LaravelRoute
+    {
+        $route = Route::get($path, LivewirePageController::class);
         $route->action['livewire_component'] = $page->component;
 
         return $route;
+    }
+
+    private function joinPaths(string ...$paths): string
+    {
+        $segments = [];
+
+        foreach ($paths as $path) {
+            $path = trim($path, '/');
+
+            if ($path !== '') {
+                $segments[] = $path;
+            }
+        }
+
+        $path = implode('/', $segments);
+
+        return $path === '' ? '/' : "/{$path}";
+    }
+
+    private function joinNames(?string ...$names): string
+    {
+        $segments = [];
+
+        foreach ($names as $name) {
+            if ($name !== null && $name !== '') {
+                $segments[] = $name;
+            }
+        }
+
+        return implode('.', $segments);
     }
 }

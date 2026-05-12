@@ -102,6 +102,7 @@ The first implementation layer is intentionally small:
 
 - `Panel\Panel`: fluent configuration object with PHP 8.4 read access through properties.
 - `Panel\Page`: route descriptor for Livewire page routes.
+- `Panel\PageGroup`: structural page group for sharing route path and route name prefixes.
 - `Panel\PanelProvider`: base Laravel service provider for one panel.
 - `Panel\PanelRegistry`: stores registered panels by ID.
 - `Panel\PanelManager`: tracks the current panel.
@@ -163,6 +164,19 @@ $panel->pages([
 ```
 
 The `Page` object is only a route descriptor. The Livewire component remains native Livewire 4 and may be SFC, MFC, or class-based.
+
+Page groups are structural route groups, not sidebar navigation groups:
+
+```php
+Page::group('/settings')
+    ->name('settings')
+    ->pages([
+        Page::make('/', 'pages::admin.settings.index')->name('index'),
+        Page::make('/users', 'pages::admin.settings.users')->name('users'),
+    ]);
+```
+
+Inside an `admin` panel, this registers `/admin/settings` as `admin.settings.index` and `/admin/settings/users` as `admin.settings.users`.
 
 Panel page routes are registered as Livewire page routes and include package middleware that sets the current panel and configures Livewire's page layout to the panel layout.
 

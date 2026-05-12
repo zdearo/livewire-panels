@@ -119,6 +119,13 @@ it('builds a navigation contract from declared groups, opted-in pages, and manua
             Page::make('/', 'pages::admin.dashboard')
                 ->name('dashboard')
                 ->navigation('Dashboard', icon: 'home', sort: 10),
+            Page::group('/settings')
+                ->name('settings')
+                ->pages([
+                    Page::make('/', 'pages::admin.settings.index')
+                        ->name('index')
+                        ->navigation('Settings', icon: 'cog-6-tooth', sort: 15),
+                ]),
             Page::make('/users', 'pages::admin.users')
                 ->name('users')
                 ->navigation('Users', icon: 'users', group: 'management', sort: 20),
@@ -135,13 +142,18 @@ it('builds a navigation contract from declared groups, opted-in pages, and manua
     expect($navigation)
         ->toBeInstanceOf(NavigationContract::class)
         ->and($navigation->items())
-        ->toHaveCount(2)
+        ->toHaveCount(3)
         ->sequence(
             fn ($item) => $item
                 ->label->toBe('Dashboard')
                 ->url->toBe('/admin')
                 ->icon->toBe('home')
                 ->sort->toBe(10),
+            fn ($item) => $item
+                ->label->toBe('Settings')
+                ->url->toBe('/admin/settings')
+                ->icon->toBe('cog-6-tooth')
+                ->sort->toBe(15),
             fn ($item) => $item
                 ->label->toBe('Settings')
                 ->url->toBe('/admin/settings')
@@ -166,7 +178,7 @@ it('builds a navigation contract from declared groups, opted-in pages, and manua
                 ),
         )
         ->and($navigation->allItems())
-        ->toHaveCount(3);
+        ->toHaveCount(4);
 });
 
 it('fails when a navigation item references an undeclared group', function (): void {

@@ -25,6 +25,11 @@ final class Page
         return $page;
     }
 
+    public static function group(string $path): PageGroup
+    {
+        return PageGroup::make($path);
+    }
+
     public function name(string $name): self
     {
         $this->name = $name;
