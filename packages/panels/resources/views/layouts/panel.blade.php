@@ -2,44 +2,7 @@
 
 <x-dynamic-component :component="$appLayout ?? $currentPanel?->appLayout ?? 'livewire-panels::layouts.app'">
     <div data-livewire-panels-layout="panel">
-        <flux:sidebar sticky collapsible class="bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700" data-livewire-panels-navigation>
-            <flux:sidebar.header>
-                <flux:sidebar.brand
-                    href="#"
-                    logo="https://fluxui.dev/img/demo/logo.png"
-                    logo:dark="https://fluxui.dev/img/demo/dark-mode-logo.png"
-                    name="Acme Inc."
-                />
-
-                <flux:sidebar.collapse class="in-data-flux-sidebar-on-desktop:not-in-data-flux-sidebar-collapsed-desktop:-mr-2" />
-            </flux:sidebar.header>
-
-            <flux:sidebar.nav>
-                @isset($navigation)
-                    {{ $navigation }}
-                @else
-                    @php($navigationContract = $currentPanel?->navigationContract())
-
-                    @foreach($navigationContract?->items() ?? [] as $navigationItem)
-                        <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->badge" :href="$navigationItem->url ?? '#'" :current="$navigationItem->isCurrent()">
-                            {{ $navigationItem->label }}
-                        </flux:sidebar.item>
-                    @endforeach
-
-                    @foreach($navigationContract?->groups() ?? [] as $navigationGroup)
-                        <flux:sidebar.group expandable :icon="$navigationGroup->icon" heading="{{ $navigationGroup->label }}" class="grid">
-                            @foreach($navigationGroup->items as $navigationItem)
-                                <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->badge" :href="$navigationItem->url ?? '#'" :current="$navigationItem->isCurrent()">
-                                    {{ $navigationItem->label }}
-                                </flux:sidebar.item>
-                            @endforeach
-                        </flux:sidebar.group>
-                    @endforeach
-                @endisset
-            </flux:sidebar.nav>
-
-            <flux:sidebar.spacer />
-        </flux:sidebar>
+        <livewire:livewire-panels::panel-sidebar />
 
         <flux:header class="lg:hidden">
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />

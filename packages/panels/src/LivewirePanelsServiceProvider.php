@@ -6,6 +6,7 @@ namespace Zdearo\LivewirePanels;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Livewire\LivewireManager;
 use Zdearo\LivewirePanels\Commands\MakePanelCommand;
 
 final class LivewirePanelsServiceProvider extends ServiceProvider
@@ -22,6 +23,7 @@ final class LivewirePanelsServiceProvider extends ServiceProvider
     {
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'livewire-panels');
         Blade::anonymousComponentPath(__DIR__.'/../resources/views', 'livewire-panels');
+        app(LivewireManager::class)->addNamespace('livewire-panels', viewPath: __DIR__.'/../resources/views/components');
 
         if ($this->app->runningInConsole()) {
             $this->commands([

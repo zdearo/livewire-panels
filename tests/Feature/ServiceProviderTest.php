@@ -63,6 +63,7 @@ it('renders the default Flux sidebar shell without demo navigation items', funct
     $html = Blade::render('<x-livewire-panels::layouts.panel>Panel body</x-livewire-panels::layouts.panel>');
 
     expect($html)
+        ->toContain('wire:snapshot')
         ->toContain('Acme Inc.')
         ->not->toContain('Inbox')
         ->not->toContain('Documents')

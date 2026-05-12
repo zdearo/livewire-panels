@@ -198,6 +198,19 @@ $panel->navigation([
 
 The panel emits a normalized navigation contract through `navigationContract()`. The default panel sidebar must render from that contract. If no navigation is configured, it must not render demo items.
 
+The default panel sidebar is a Livewire 4 multi-file component, not a class component. Keep it in:
+
+```txt
+packages/panels/resources/views/components/panel-sidebar/panel-sidebar.php
+packages/panels/resources/views/components/panel-sidebar/panel-sidebar.blade.php
+```
+
+The package registers the Livewire namespace `livewire-panels` against `packages/panels/resources/views/components`, and the panel layout mounts the sidebar with:
+
+```blade
+<livewire:livewire-panels::panel-sidebar />
+```
+
 `PanelRegistry::get()` accepts an optional ID. When no ID is provided or the ID is not found, it falls back to `PanelRegistry::getDefault()`.
 
 Panels can be marked as default with:
