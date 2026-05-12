@@ -15,4 +15,9 @@ final class LivewirePanelsServiceProvider extends ServiceProvider
         $this->app->singleton(PanelManager::class);
         $this->app->singleton(PanelRouter::class);
     }
+
+    public function boot(): void
+    {
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'livewire-panels');
+    }
 }

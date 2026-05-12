@@ -19,6 +19,7 @@
         "illuminate/contracts": "^13.0",
         "illuminate/routing": "^13.0",
         "illuminate/support": "^13.0",
+        "livewire/flux": "^2.14",
         "livewire/livewire": "^4.0"
     },
     "require-dev": {

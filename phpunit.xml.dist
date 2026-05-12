@@ -12,7 +12,8 @@
     </testsuites>
     <source>
         <include>
-            <directory suffix=".php">packages</directory>
+            <directory suffix=".php">packages/panels/src</directory>
+            <directory suffix=".php">packages/support/src</directory>
         </include>
     </source>
 </phpunit>

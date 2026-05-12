@@ -16,8 +16,15 @@ it('automatically registers its panel in the registry', function (): void {
         ->id->toBe('admin')
         ->path->toBe('admin')
         ->name->toBe('Admin')
+        ->layout->toBe('custom-layout')
         ->middleware->toBe(['web', 'auth'])
         ->withoutMiddleware->toBe(['csrf']);
+});
+
+it('uses the default panel layout when no custom layout is configured', function (): void {
+    $panel = Panel::make();
+
+    expect($panel->layout)->toBe('livewire-panels::layouts.panel');
 });
 
 it('does not allow panel properties to be changed externally', function (): void {
@@ -75,6 +82,7 @@ final class TestingPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->name('Admin')
+            ->layout('custom-layout')
             ->middleware(['web', 'auth'])
             ->withoutMiddleware('csrf');
     }
