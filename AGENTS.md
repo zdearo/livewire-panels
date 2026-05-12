@@ -238,21 +238,9 @@ The panel CSS template lives at:
 packages/panels/stubs/panel.css.stub
 ```
 
-Panel pages are generated through:
+The package must not expose a page generator command. Developers should create Livewire page components with Livewire's own generator and register them in panel providers with `Page::make(...)`.
 
-```bash
-php artisan make:panel-page admin.dashboard --path=/ --name=dashboard --sfc
-```
-
-This command delegates component creation to Livewire's `make:livewire` using the `pages::` namespace, then prints the `Page::make(...)` registration snippet for the panel provider.
-
-It supports Livewire's page component modes and options:
-
-```bash
-php artisan make:panel-page reports.index --mfc
-php artisan make:panel-page reports.index --class
-php artisan make:panel-page reports.index --type=sfc --emoji=false
-```
+The package-owned generator surface is intentionally limited to `php artisan make:panel`.
 
 ## Testing
 
