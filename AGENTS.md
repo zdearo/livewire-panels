@@ -206,6 +206,8 @@ The generated provider must reference that entrypoint with:
 
 The generated CSS file imports Tailwind and the package panel stylesheet, which itself imports Flux CSS.
 
+The command should also add that CSS entrypoint to `vite.config.js` when it can safely find a Laravel Vite `input: [...]` array. If the file is missing or the input shape is not recognized, the command should warn the developer to add the entrypoint manually instead of failing.
+
 The command also registers the provider in Laravel's `bootstrap/providers.php`.
 
 The first generated panel is marked as default automatically. Additional panels are not marked as default unless the developer passes `--default`.

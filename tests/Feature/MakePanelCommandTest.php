@@ -30,6 +30,20 @@ PHP);
 }
 JSON);
 
+    File::put($basePath.'/vite.config.js', <<<'JS'
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+
+export default defineConfig({
+    plugins: [
+        laravel({
+            input: ['resources/css/app.css', 'resources/js/app.js'],
+            refresh: true,
+        }),
+    ],
+});
+JS);
+
     app()->setBasePath($basePath);
 
     return $basePath;
@@ -69,6 +83,10 @@ it('creates the first panel provider and registers it as default', function (): 
         ->toContain("@import 'tailwindcss';")
         ->toContain("@import '../../../vendor/zdearo/livewire-panels/packages/panels/resources/css/panels.css';")
         ->toContain("@source '../../../vendor/zdearo/livewire-panels/packages/panels/resources/views/**/*.blade.php';");
+
+    expect(File::get(base_path('vite.config.js')))
+        ->toContain("'resources/css/panels/admin.css'")
+        ->toContain("'resources/css/app.css',");
 });
 
 it('can ask for the panel id when it is not provided', function (): void {
@@ -89,6 +107,9 @@ it('can ask for the panel id when it is not provided', function (): void {
         ->toContain('->default();');
 
     expect(resource_path('css/panels/support.css'))->toBeFile();
+
+    expect(File::get(base_path('vite.config.js')))
+        ->toContain("'resources/css/panels/support.css'");
 });
 
 it('creates a custom panel provider without default when another panel exists', function (): void {
@@ -119,6 +140,9 @@ it('creates a custom panel provider without default when another panel exists', 
         ->toContain('App\Providers\CustomerAppPanelProvider::class');
 
     expect(resource_path('css/panels/customer-app.css'))->toBeFile();
+
+    expect(File::get(base_path('vite.config.js')))
+        ->toContain("'resources/css/panels/customer-app.css'");
 });
 
 it('does not overwrite an existing panel provider without force', function (): void {
@@ -165,4 +189,142 @@ it('overwrites an existing panel provider with force', function (): void {
         ->toContain('->default();');
 
     expect(resource_path('css/panels/admin.css'))->toBeFile();
+});
+
+it('does not duplicate an existing panel stylesheet Vite input', function (): void {
+    File::put(base_path('vite.config.js'), <<<'JS'
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+
+export default defineConfig({
+    plugins: [
+        laravel({
+            input: [
+                'resources/css/app.css',
+                'resources/css/panels/admin.css',
+                'resources/js/app.js',
+            ],
+            refresh: true,
+        }),
+    ],
+});
+JS);
+
+    $this
+        ->artisan('make:panel', ['id' => 'admin'])
+        ->assertSuccessful();
+
+    expect(substr_count(File::get(base_path('vite.config.js')), "'resources/css/panels/admin.css'"))
+        ->toBe(1);
+});
+
+it('does not duplicate an existing double quoted panel stylesheet Vite input', function (): void {
+    File::put(base_path('vite.config.js'), <<<'JS'
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+
+export default defineConfig({
+    plugins: [
+        laravel({
+            input: ["resources/css/panels/admin.css", "resources/js/app.js"],
+            refresh: true,
+        }),
+    ],
+});
+JS);
+
+    $this
+        ->artisan('make:panel', ['id' => 'admin'])
+        ->assertSuccessful();
+
+    expect(substr_count(File::get(base_path('vite.config.js')), '"resources/css/panels/admin.css"'))
+        ->toBe(1);
+});
+
+it('adds the panel stylesheet to a multiline Vite input array', function (): void {
+    File::put(base_path('vite.config.js'), <<<'JS'
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+
+export default defineConfig({
+    plugins: [
+        laravel({
+            input: [
+                'resources/css/app.css',
+                'resources/js/app.js',
+            ],
+            refresh: true,
+        }),
+    ],
+});
+JS);
+
+    $this
+        ->artisan('make:panel', ['id' => 'admin'])
+        ->assertSuccessful();
+
+    expect(File::get(base_path('vite.config.js')))
+        ->toContain("                'resources/css/panels/admin.css',");
+});
+
+it('warns when the Vite config file is missing', function (): void {
+    File::delete(base_path('vite.config.js'));
+
+    $this
+        ->artisan('make:panel', ['id' => 'admin'])
+        ->expectsOutputToContain('Add [resources/css/panels/admin.css] to your Vite inputs.')
+        ->assertSuccessful();
+
+    expect(base_path('vite.config.js'))->not->toBeFile();
+});
+
+it('warns when the Vite config cannot be updated automatically', function (): void {
+    File::put(base_path('vite.config.js'), <<<'JS'
+export default {};
+JS);
+
+    $this
+        ->artisan('make:panel', ['id' => 'admin'])
+        ->expectsOutputToContain('Add [resources/css/panels/admin.css] to your Vite inputs.')
+        ->assertSuccessful();
+
+    expect(File::get(base_path('vite.config.js')))->toBe('export default {};');
+});
+
+it('warns when the Vite input option is not an array', function (): void {
+    File::put(base_path('vite.config.js'), <<<'JS'
+export default {
+    input: 'resources/css/app.css',
+};
+JS);
+
+    $this
+        ->artisan('make:panel', ['id' => 'admin'])
+        ->expectsOutputToContain('Add [resources/css/panels/admin.css] to your Vite inputs.')
+        ->assertSuccessful();
+
+    expect(File::get(base_path('vite.config.js')))->toBe(<<<'JS'
+export default {
+    input: 'resources/css/app.css',
+};
+JS);
+});
+
+it('warns when the Vite input array is not closed', function (): void {
+    File::put(base_path('vite.config.js'), <<<'JS'
+export default {
+    input: ['resources/css/app.css',
+};
+JS);
+
+    $this
+        ->artisan('make:panel', ['id' => 'admin'])
+        ->expectsOutputToContain('Add [resources/css/panels/admin.css] to your Vite inputs.')
+        ->assertSuccessful();
+
+    expect(File::get(base_path('vite.config.js')))->toBe(<<<'JS'
+export default {
+    input: ['resources/css/app.css',
+};
+JS);
 });

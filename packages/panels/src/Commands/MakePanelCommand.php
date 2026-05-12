@@ -60,6 +60,7 @@ final class MakePanelCommand extends Command
         );
 
         $files->put($stylesheetPath, $files->get($this->stylesheetStubPath()));
+        $this->addViteInput($files, $vite);
 
         LaravelServiceProvider::addProviderToBootstrapFile(
             $this->providerNamespace().'\\'.$providerClass,
@@ -187,6 +188,98 @@ final class MakePanelCommand extends Command
     private function stylesheetStubPath(): string
     {
         return __DIR__.'/../../stubs/panel.css.stub';
+    }
+
+    private function addViteInput(Filesystem $files, string $vite): void
+    {
+        $viteConfigPath = $this->laravel->basePath('vite.config.js');
+
+        if (! $files->exists($viteConfigPath)) {
+            $this->warn("Add [{$vite}] to your Vite inputs.");
+
+            return;
+        }
+
+        $contents = $files->get($viteConfigPath);
+
+        if (str_contains($contents, $this->quote($vite)) || str_contains($contents, '"'.$vite.'"')) {
+            return;
+        }
+
+        $updatedContents = $this->addViteInputToArray($contents, $vite);
+
+        if ($updatedContents === null) {
+            $this->warn("Add [{$vite}] to your Vite inputs.");
+
+            return;
+        }
+
+        $files->put($viteConfigPath, $updatedContents);
+    }
+
+    private function addViteInputToArray(string $contents, string $vite): ?string
+    {
+        $position = strpos($contents, 'input:');
+
+        if ($position !== false) {
+            $arrayStart = strpos($contents, '[', $position);
+
+            if ($arrayStart === false) {
+                return null;
+            }
+
+            $arrayEnd = $this->findClosingBracket($contents, $arrayStart);
+
+            if ($arrayEnd === null) {
+                return null;
+            }
+
+            return substr_replace(
+                $contents,
+                $this->viteInputInsertion($contents, $arrayStart, $arrayEnd, $vite),
+                $arrayEnd,
+                0,
+            );
+        }
+
+        return null;
+    }
+
+    private function findClosingBracket(string $contents, int $arrayStart): ?int
+    {
+        $depth = 0;
+        $length = strlen($contents);
+
+        for ($index = $arrayStart; $index < $length; $index++) {
+            if ($contents[$index] === '[') {
+                $depth++;
+            }
+
+            if ($contents[$index] === ']') {
+                $depth--;
+
+                if ($depth === 0) {
+                    return $index;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private function viteInputInsertion(string $contents, int $arrayStart, int $arrayEnd, string $vite): string
+    {
+        $arrayContents = substr($contents, $arrayStart + 1, $arrayEnd - $arrayStart - 1);
+
+        if (! str_contains($arrayContents, "\n")) {
+            return ', '.$this->quote($vite);
+        }
+
+        $lineStart = strrpos(substr($contents, 0, $arrayEnd), "\n");
+        $closingIndent = $lineStart === false ? '' : substr($contents, $lineStart + 1, $arrayEnd - $lineStart - 1);
+        $itemIndent = $closingIndent.'    ';
+
+        return "{$itemIndent}{$this->quote($vite)},\n{$closingIndent}";
     }
 
     private function providerNamespace(): string
