@@ -62,6 +62,8 @@ final class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->name('Admin')
+            ->appLayout('livewire-panels::layouts.app')
+            ->layout('livewire-panels::layouts.panel')
             ->middleware(['web', 'auth'])
             ->default();
     }
@@ -102,6 +104,13 @@ The first implementation layer is intentionally small:
 - `PanelProvider`: base Laravel service provider for one panel.
 - `PanelRegistry`: stores registered panels by ID.
 - `LivewirePanelsServiceProvider`: package provider that registers shared package services.
+
+Panels have two layout layers:
+
+- `appLayout`: the outer HTML document shell, defaulting to `livewire-panels::layouts.app`.
+- `layout`: the inner panel layout, defaulting to `livewire-panels::layouts.panel`.
+
+The package registers its views as both namespaced views and anonymous Blade components. This allows the panel layout to wrap itself with the app layout through Blade components.
 
 `PanelRegistry::get()` accepts an optional ID. When no ID is provided or the ID is not found, it falls back to `PanelRegistry::getDefault()`.
 

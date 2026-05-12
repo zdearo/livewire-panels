@@ -1,9 +1,11 @@
-<div data-livewire-panels-layout="panel">
-    <aside data-livewire-panels-navigation>
-        {{ $navigation ?? '' }}
-    </aside>
+<x-dynamic-component :component="$appLayout ?? 'livewire-panels::layouts.app'">
+    <div data-livewire-panels-layout="panel">
+        <aside data-livewire-panels-navigation>
+            {{ $navigation ?? '' }}
+        </aside>
 
-    <main data-livewire-panels-content>
-        {{ $slot }}
-    </main>
-</div>
+        <main data-livewire-panels-content>
+            {{ $slot }}
+        </main>
+    </div>
+</x-dynamic-component>

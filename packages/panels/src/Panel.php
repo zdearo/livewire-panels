@@ -18,6 +18,8 @@ final class Panel
 
     public private(set) string $name;
 
+    public private(set) string $appLayout = 'livewire-panels::layouts.app';
+
     public private(set) string $layout = 'livewire-panels::layouts.panel';
 
     public private(set) bool $isDefault = false;
@@ -73,6 +75,13 @@ final class Panel
     public function layout(string $layout): self
     {
         $this->layout = $layout;
+
+        return $this;
+    }
+
+    public function appLayout(string $layout): self
+    {
+        $this->appLayout = $layout;
 
         return $this;
     }
