@@ -6,6 +6,8 @@ use Illuminate\Foundation\Vite;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\HtmlString;
+use Zdearo\LivewirePanels\NavigationItem;
+use Zdearo\LivewirePanels\Page;
 use Zdearo\LivewirePanels\Panel;
 use Zdearo\LivewirePanels\PanelManager;
 
@@ -49,7 +51,7 @@ it('wraps the panel layout with the package app layout', function (): void {
         ->toContain('Panel body');
 });
 
-it('renders the default Flux sidebar shell around panel content', function (): void {
+it('renders the default Flux sidebar shell without demo navigation items', function (): void {
     $panel = Panel::make()
         ->id('admin')
         ->path('admin')
@@ -61,14 +63,44 @@ it('renders the default Flux sidebar shell around panel content', function (): v
 
     expect($html)
         ->toContain('Acme Inc.')
-        ->toContain('Home')
-        ->toContain('Inbox')
-        ->toContain('Documents')
-        ->toContain('Calendar')
-        ->toContain('Favorites')
+        ->not->toContain('Inbox')
+        ->not->toContain('Documents')
+        ->not->toContain('Favorites')
+        ->not->toContain('Settings')
+        ->not->toContain('Help')
+        ->not->toContain('Olivia Martin')
+        ->toContain('Panel body');
+});
+
+it('renders configured panel navigation items in the Flux sidebar', function (): void {
+    $panel = Panel::make()
+        ->id('admin')
+        ->path('admin')
+        ->name('Admin')
+        ->pages([
+            Page::make('/hidden', 'pages::admin.hidden'),
+            Page::make('/', 'pages::admin.dashboard')
+                ->navigation('Dashboard', icon: 'home', sort: 10),
+            Page::make('/users', 'pages::admin.users')
+                ->navigation('Users', icon: 'users', group: 'Management', sort: 20),
+        ])
+        ->navigation([
+            NavigationItem::make('Settings')
+                ->url('/admin/settings')
+                ->icon('cog-6-tooth')
+                ->sort(30),
+        ]);
+
+    app(PanelManager::class)->setCurrentPanel($panel);
+
+    $html = Blade::render('<x-livewire-panels::layouts.panel>Panel body</x-livewire-panels::layouts.panel>');
+
+    expect($html)
+        ->toContain('Dashboard')
+        ->toContain('Management')
+        ->toContain('Users')
         ->toContain('Settings')
-        ->toContain('Help')
-        ->toContain('Olivia Martin')
+        ->not->toContain('Hidden')
         ->toContain('Panel body');
 });
 

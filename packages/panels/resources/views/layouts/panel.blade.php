@@ -18,61 +18,38 @@
                 @isset($navigation)
                     {{ $navigation }}
                 @else
-                    <flux:sidebar.item icon="home" href="#" current>Home</flux:sidebar.item>
-                    <flux:sidebar.item icon="inbox" badge="12" href="#">Inbox</flux:sidebar.item>
-                    <flux:sidebar.item icon="document-text" href="#">Documents</flux:sidebar.item>
-                    <flux:sidebar.item icon="calendar" href="#">Calendar</flux:sidebar.item>
+                    @php($navigationItems = $currentPanel?->navigationItems() ?? [])
+                    @php($renderedGroups = [])
 
-                    <flux:sidebar.group expandable icon="star" heading="Favorites" class="grid">
-                        <flux:sidebar.item href="#">Marketing site</flux:sidebar.item>
-                        <flux:sidebar.item href="#">Android app</flux:sidebar.item>
-                        <flux:sidebar.item href="#">Brand guidelines</flux:sidebar.item>
-                    </flux:sidebar.group>
+                    @foreach($navigationItems as $navigationItem)
+                        @if($navigationItem->group === null)
+                            <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->badge" :href="$navigationItem->url ?? '#'" :current="$navigationItem->isCurrent()">
+                                {{ $navigationItem->label }}
+                            </flux:sidebar.item>
+                        @elseif(! in_array($navigationItem->group, $renderedGroups, true))
+                            @php($group = $navigationItem->group)
+                            @php($groupItems = array_values(array_filter($navigationItems, fn ($item) => $item->group === $group)))
+                            @php($renderedGroups[] = $group)
+
+                            <flux:sidebar.group expandable heading="{{ $group }}" class="grid">
+                                @foreach($groupItems as $groupItem)
+                                    <flux:sidebar.item :icon="$groupItem->icon" :badge="$groupItem->badge" :href="$groupItem->url ?? '#'" :current="$groupItem->isCurrent()">
+                                        {{ $groupItem->label }}
+                                    </flux:sidebar.item>
+                                @endforeach
+                            </flux:sidebar.group>
+                        @endif
+                    @endforeach
                 @endisset
             </flux:sidebar.nav>
 
             <flux:sidebar.spacer />
-
-            <flux:sidebar.nav>
-                <flux:sidebar.item icon="cog-6-tooth" href="#">Settings</flux:sidebar.item>
-                <flux:sidebar.item icon="information-circle" href="#">Help</flux:sidebar.item>
-            </flux:sidebar.nav>
-
-            <flux:dropdown position="top" align="start" class="max-lg:hidden">
-                <flux:sidebar.profile avatar="https://fluxui.dev/img/demo/user.png" name="Olivia Martin" />
-
-                <flux:menu>
-                    <flux:menu.radio.group>
-                        <flux:menu.radio checked>Olivia Martin</flux:menu.radio>
-                        <flux:menu.radio>Truly Delta</flux:menu.radio>
-                    </flux:menu.radio.group>
-
-                    <flux:menu.separator />
-
-                    <flux:menu.item icon="arrow-right-start-on-rectangle">Logout</flux:menu.item>
-                </flux:menu>
-            </flux:dropdown>
         </flux:sidebar>
 
         <flux:header class="lg:hidden">
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
             <flux:spacer />
-
-            <flux:dropdown position="top" align="start">
-                <flux:profile avatar="https://fluxui.dev/img/demo/user.png" />
-
-                <flux:menu>
-                    <flux:menu.radio.group>
-                        <flux:menu.radio checked>Olivia Martin</flux:menu.radio>
-                        <flux:menu.radio>Truly Delta</flux:menu.radio>
-                    </flux:menu.radio.group>
-
-                    <flux:menu.separator />
-
-                    <flux:menu.item icon="arrow-right-start-on-rectangle">Logout</flux:menu.item>
-                </flux:menu>
-            </flux:dropdown>
         </flux:header>
 
         <flux:main data-livewire-panels-content>

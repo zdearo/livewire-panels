@@ -160,6 +160,29 @@ The `Page` object is only a route descriptor. The Livewire component remains nat
 
 Panel page routes are registered as Livewire page routes and include package middleware that sets the current panel and configures Livewire's page layout to the panel layout.
 
+Panel pages do not appear in sidebar navigation by default. A page must opt in with `navigation()`:
+
+```php
+Page::make('/users', 'pages::admin.users')
+    ->name('users')
+    ->navigation('Users', icon: 'users', group: 'Management', sort: 20);
+```
+
+Panels may also define manual navigation items:
+
+```php
+use Zdearo\LivewirePanels\NavigationItem;
+
+$panel->navigation([
+    NavigationItem::make('Settings')
+        ->url('/admin/settings')
+        ->icon('cog-6-tooth')
+        ->sort(100),
+]);
+```
+
+The default panel sidebar renders navigation from the current panel. If no navigation is configured, it must not render demo items.
+
 `PanelRegistry::get()` accepts an optional ID. When no ID is provided or the ID is not found, it falls back to `PanelRegistry::getDefault()`.
 
 Panels can be marked as default with:
@@ -170,7 +193,7 @@ $panel->default();
 
 `PanelRegistry` supports non-strict lookup for normalized IDs, so values like `sales-panel`, `sales_panel`, and `salespanel` can resolve to the same panel when strict lookup is disabled.
 
-Do not add routing, navigation, layout, Livewire page registration, resources, CRUD builders, current-panel resolution, or additional commands until the API is discussed first.
+Do not add additional routing, navigation, layout, Livewire page registration, resources, CRUD builders, current-panel resolution, or commands until the API is discussed first.
 
 ## Artisan Commands
 

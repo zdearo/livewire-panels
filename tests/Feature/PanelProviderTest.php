@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Zdearo\LivewirePanels\NavigationItem;
 use Zdearo\LivewirePanels\Page;
 use Zdearo\LivewirePanels\Panel;
 use Zdearo\LivewirePanels\PanelProvider;
@@ -98,6 +99,48 @@ it('returns all registered panels keyed by id', function (): void {
         ->toHaveKeys(['admin', 'sales-panel'])
         ->and($panels['admin']->id)->toBe('admin')
         ->and($panels['sales-panel']->id)->toBe('sales-panel');
+});
+
+it('builds navigation items from opted-in pages and manual items', function (): void {
+    $panel = Panel::make()
+        ->id('admin')
+        ->path('admin')
+        ->name('Admin')
+        ->pages([
+            Page::make('/hidden', 'pages::admin.hidden')->name('hidden'),
+            Page::make('/', 'pages::admin.dashboard')
+                ->name('dashboard')
+                ->navigation('Dashboard', icon: 'home', sort: 10),
+            Page::make('/users', 'pages::admin.users')
+                ->name('users')
+                ->navigation('Users', icon: 'users', group: 'Management', sort: 20),
+        ])
+        ->navigation([
+            NavigationItem::make('Settings')
+                ->url('/admin/settings')
+                ->icon('cog-6-tooth')
+                ->sort(30),
+        ]);
+
+    expect($panel->navigationItems())
+        ->toHaveCount(3)
+        ->sequence(
+            fn ($item) => $item
+                ->label->toBe('Dashboard')
+                ->url->toBe('/admin')
+                ->icon->toBe('home')
+                ->sort->toBe(10),
+            fn ($item) => $item
+                ->label->toBe('Users')
+                ->url->toBe('/admin/users')
+                ->group->toBe('Management')
+                ->sort->toBe(20),
+            fn ($item) => $item
+                ->label->toBe('Settings')
+                ->url->toBe('/admin/settings')
+                ->icon->toBe('cog-6-tooth')
+                ->sort->toBe(30),
+        );
 });
 
 final class TestingPanelProvider extends PanelProvider

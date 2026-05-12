@@ -49,6 +49,11 @@ final class Panel
      */
     public private(set) array $pages = [];
 
+    /**
+     * @var array<int, NavigationItem>
+     */
+    public private(set) array $navigation = [];
+
     public static function make(): self
     {
         return app(self::class);
@@ -153,6 +158,56 @@ final class Panel
         }
 
         return $this;
+    }
+
+    /**
+     * @param  array<int, NavigationItem>|NavigationItem  $items
+     */
+    public function navigation(array|NavigationItem $items): self
+    {
+        foreach (Arr::wrap($items) as $item) {
+            $this->navigation[] = $item;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return array<int, NavigationItem>
+     */
+    public function navigationItems(): array
+    {
+        $items = $this->navigation;
+
+        foreach ($this->pages as $page) {
+            if ($page->navigation === null) {
+                continue;
+            }
+
+            $item = clone $page->navigation;
+
+            if ($item->url === null) {
+                $item->url($this->pageUrl($page));
+            }
+
+            $items[] = $item;
+        }
+
+        usort(
+            $items,
+            fn (NavigationItem $first, NavigationItem $second): int => $first->sort <=> $second->sort,
+        );
+
+        return $items;
+    }
+
+    private function pageUrl(Page $page): string
+    {
+        $panelPath = trim($this->path, '/');
+        $pagePath = trim($page->path, '/');
+        $path = trim($panelPath.'/'.$pagePath, '/');
+
+        return $path === '' ? '/' : "/{$path}";
     }
 
     public function default(bool $condition = true): self
