@@ -56,6 +56,17 @@ it('renders current page group items in the secondary sidebar for topbar with si
         ->assertDontSeeHtml('wire:mouseenter');
 });
 
+it('resolves a group URL from the first item in that group', function (): void {
+    app(PanelManager::class)->setCurrentPanel(
+        navigationTestingPanel()->navigationMode(NavigationMode::TopbarWithSidebar),
+    );
+
+    $component = panelNavigationComponent();
+
+    expect($component->groupUrl($component->navigationGroups()[0]))->toBe('/admin/users')
+        ->and($component->groupUrl($component->navigationGroups()[1]))->toBe('/admin/posts');
+});
+
 it('resolves the active group from the current page', function (): void {
     requestPath('/admin/users');
 

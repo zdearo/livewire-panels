@@ -59,4 +59,9 @@ return new class extends Component
 
         return null;
     }
+
+    public function groupUrl(NavigationGroup $group): string
+    {
+        return $group->items[0]->url ?? '#';
+    }
 };

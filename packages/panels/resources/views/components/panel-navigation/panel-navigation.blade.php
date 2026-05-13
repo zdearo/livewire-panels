@@ -85,7 +85,7 @@
                     @else
                         <flux:navbar.item
                             :icon="$navigationGroup->icon"
-                            type="button"
+                            :href="$this->groupUrl($navigationGroup)"
                             :current="$activeGroup?->id === $navigationGroup->id"
                         >
                             {{ $navigationGroup->label }}
