@@ -106,6 +106,7 @@ The first implementation layer is intentionally small:
 - `Panel\PanelProvider`: base Laravel service provider for one panel.
 - `Panel\PanelRegistry`: stores registered panels by ID.
 - `Panel\PanelManager`: tracks the current panel.
+- `Auth\Contracts\CanAccessPanel`: optional model contract for panel-specific access checks.
 - `Navigation\NavigationItem`, `Navigation\NavigationGroup`, and `Navigation\NavigationContract`: normalized sidebar/navigation primitives.
 - `Routing\PanelRouter`: converts panel pages and panel route callbacks into Laravel routes.
 - `LivewirePanelsServiceProvider`: the only root-level package provider in `packages/panels/src`.
@@ -151,6 +152,42 @@ $panel->vite([
 ```
 
 The package does not expose a separate `viteTheme()` API.
+
+Panel authentication is opt-in. A panel without `authenticatables()` must remain public unless the developer manually adds auth middleware:
+
+```php
+$panel
+    ->id('public')
+    ->path('public');
+```
+
+Calling `authenticatables()` makes the panel authenticated automatically. The package adds its panel authentication middleware to the panel routes and validates the current authenticated model:
+
+```php
+$panel
+    ->authenticatables([
+        App\Models\Admin::class,
+    ]);
+```
+
+`authGuard()` is optional and only defines which Laravel guard should be used to resolve the current user. If it is omitted, Laravel's default guard is used:
+
+```php
+$panel
+    ->authGuard('admin')
+    ->authenticatables([
+        App\Models\Admin::class,
+    ]);
+```
+
+Allowed models may implement `Zdearo\LivewirePanels\Auth\Contracts\CanAccessPanel` for panel-specific rules:
+
+```php
+public function canAccessPanel(Panel $panel): bool
+{
+    return $panel->id === 'admin' && $this->is_admin;
+}
+```
 
 Panel pages use a descriptor object rather than forcing application components to extend a package base class:
 

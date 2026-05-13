@@ -7,6 +7,7 @@ namespace Zdearo\LivewirePanels\Routing;
 use Illuminate\Routing\Route as LaravelRoute;
 use Illuminate\Support\Facades\Route;
 use Livewire\Mechanisms\HandleRouting\LivewirePageController;
+use Zdearo\LivewirePanels\Middleware\AuthenticatePanel;
 use Zdearo\LivewirePanels\Middleware\SetCurrentPanel;
 use Zdearo\LivewirePanels\Panel\Page;
 use Zdearo\LivewirePanels\Panel\PageGroup;
@@ -20,6 +21,10 @@ final class PanelRouter
             ...$panel->middleware,
             SetCurrentPanel::class.':'.$panel->id,
         ];
+
+        if ($panel->hasAuthentication()) {
+            $middleware[] = AuthenticatePanel::class.':'.$panel->id;
+        }
 
         Route::middleware($middleware)
             ->withoutMiddleware($panel->withoutMiddleware)

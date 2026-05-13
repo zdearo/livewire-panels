@@ -27,6 +27,13 @@ final class Panel
 
     public private(set) bool $isDefault = false;
 
+    public private(set) ?string $authGuard = null;
+
+    /**
+     * @var array<int, class-string>
+     */
+    public private(set) array $authenticatables = [];
+
     /**
      * @var array<int, string>
      */
@@ -107,6 +114,28 @@ final class Panel
         $this->appLayout = $layout;
 
         return $this;
+    }
+
+    public function authGuard(?string $guard): self
+    {
+        $this->authGuard = $guard;
+
+        return $this;
+    }
+
+    /**
+     * @param  array<int, class-string>|class-string  $models
+     */
+    public function authenticatables(array|string $models): self
+    {
+        $this->authenticatables = Arr::wrap($models);
+
+        return $this;
+    }
+
+    public function hasAuthentication(): bool
+    {
+        return $this->authenticatables !== [];
     }
 
     /**
