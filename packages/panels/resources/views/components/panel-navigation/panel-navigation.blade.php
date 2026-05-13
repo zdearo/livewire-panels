@@ -85,9 +85,9 @@
                     @else
                         <flux:navbar.item
                             :icon="$navigationGroup->icon"
-                            href="#"
+                            type="button"
                             :current="$activeGroup?->id === $navigationGroup->id"
-                            wire:click.prevent="setActiveGroup('{{ $navigationGroup->id }}')"
+                            wire:click="setActiveGroup('{{ $navigationGroup->id }}')"
                             wire:mouseenter="setActiveGroup('{{ $navigationGroup->id }}')"
                         >
                             {{ $navigationGroup->label }}
