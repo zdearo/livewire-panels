@@ -52,6 +52,22 @@ it('wraps the panel layout with the package app layout', function (): void {
         ->toContain('Panel body');
 });
 
+it('renders the configured panel navigation mode in the panel layout', function (): void {
+    $panel = Panel::make()
+        ->id('admin')
+        ->path('admin')
+        ->name('Admin')
+        ->navigationMode('topbar');
+
+    app(PanelManager::class)->setCurrentPanel($panel);
+
+    $html = Blade::render('<x-livewire-panels::layouts.panel>Panel body</x-livewire-panels::layouts.panel>');
+
+    expect($html)
+        ->toContain('data-livewire-panels-navigation-mode="topbar"')
+        ->toContain('Panel body');
+});
+
 it('renders the default Flux sidebar shell without demo navigation items', function (): void {
     $panel = Panel::make()
         ->id('admin')

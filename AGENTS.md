@@ -107,7 +107,7 @@ The first implementation layer is intentionally small:
 - `Panel\PanelRegistry`: stores registered panels by ID.
 - `Panel\PanelManager`: tracks the current panel.
 - `Auth\Contracts\CanAccessPanel`: optional model contract for panel-specific access checks.
-- `Navigation\NavigationItem`, `Navigation\NavigationGroup`, and `Navigation\NavigationContract`: normalized sidebar/navigation primitives.
+- `Navigation\NavigationItem`, `Navigation\NavigationGroup`, `Navigation\NavigationContract`, and `Navigation\NavigationMode`: normalized panel navigation primitives.
 - `Routing\PanelRouter`: converts panel pages and panel route callbacks into Laravel routes.
 - `LivewirePanelsServiceProvider`: the only root-level package provider in `packages/panels/src`.
 
@@ -255,17 +255,52 @@ $panel->navigation([
 
 The panel emits a normalized navigation contract through `navigationContract()`. The default panel sidebar must render from that contract. If no navigation is configured, it must not render demo items.
 
-The default panel sidebar is a Livewire 4 multi-file component, not a class component. Keep it in:
+Panels support three navigation modes:
+
+```php
+use Zdearo\LivewirePanels\Navigation\NavigationMode;
+
+$panel->navigationMode(NavigationMode::Sidebar);
+$panel->navigationMode(NavigationMode::Topbar);
+$panel->navigationMode(NavigationMode::TopbarWithSidebar);
+```
+
+String values are also accepted:
+
+```php
+$panel->navigationMode('sidebar');
+$panel->navigationMode('topbar');
+$panel->navigationMode('topbar-sidebar');
+```
+
+`Sidebar` is the default mode and preserves the original sidebar shell.
+
+`Topbar` renders flat navigation items in the topbar. Navigation groups render as hover dropdowns in the topbar.
+
+`TopbarWithSidebar` renders flat navigation items and group triggers in the topbar. The active group's items render in a secondary sidebar inside the main content area. The active group is Livewire state and changes on hover or click.
+
+For mobile, topbar modes render a collapsible sidebar containing the full navigation contract.
+
+The default panel navigation shell is a Livewire 4 multi-file component, not a class component. Keep it in:
+
+```txt
+packages/panels/resources/views/components/panel-navigation/panel-navigation.php
+packages/panels/resources/views/components/panel-navigation/panel-navigation.blade.php
+```
+
+The older sidebar-only component remains available in:
 
 ```txt
 packages/panels/resources/views/components/panel-sidebar/panel-sidebar.php
 packages/panels/resources/views/components/panel-sidebar/panel-sidebar.blade.php
 ```
 
-The package registers the Livewire namespace `livewire-panels` against `packages/panels/resources/views/components`, and the panel layout mounts the sidebar with:
+The package registers the Livewire namespace `livewire-panels` against `packages/panels/resources/views/components`, and the panel layout wraps the page slot with:
 
 ```blade
-<livewire:livewire-panels::panel-sidebar />
+<livewire:livewire-panels::panel-navigation>
+    {{ $slot }}
+</livewire:livewire-panels::panel-navigation>
 ```
 
 `PanelRegistry::get()` accepts an optional ID. When no ID is provided or the ID is not found, it falls back to `PanelRegistry::getDefault()`.

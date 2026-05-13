@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Zdearo\LivewirePanels\Navigation\NavigationContract;
 use Zdearo\LivewirePanels\Navigation\NavigationGroup;
 use Zdearo\LivewirePanels\Navigation\NavigationItem;
+use Zdearo\LivewirePanels\Navigation\NavigationMode;
 use Zdearo\LivewirePanels\Panel\Page;
 use Zdearo\LivewirePanels\Panel\Panel;
 use Zdearo\LivewirePanels\Panel\PanelProvider;
@@ -54,6 +55,26 @@ it('does not assume app Vite entrypoints by default', function (): void {
     $panel = Panel::make();
 
     expect($panel->vite)->toBe([]);
+});
+
+it('uses sidebar navigation mode by default', function (): void {
+    $panel = Panel::make();
+
+    expect($panel->navigationMode)->toBe(NavigationMode::Sidebar);
+});
+
+it('can configure the panel navigation mode', function (): void {
+    $panel = Panel::make()
+        ->navigationMode(NavigationMode::TopbarWithSidebar);
+
+    expect($panel->navigationMode)->toBe(NavigationMode::TopbarWithSidebar);
+});
+
+it('can configure the panel navigation mode from a string', function (): void {
+    $panel = Panel::make()
+        ->navigationMode('topbar');
+
+    expect($panel->navigationMode)->toBe(NavigationMode::Topbar);
 });
 
 it('does not allow panel properties to be changed externally', function (): void {

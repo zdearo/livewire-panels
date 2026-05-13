@@ -1,0 +1,161 @@
+@php
+    $mode = $this->navigationMode();
+    $navigationItems = $this->navigationItems();
+    $navigationGroups = $this->navigationGroups();
+    $activeGroup = $this->activeGroup();
+@endphp
+
+<section data-livewire-panels-navigation data-livewire-panels-navigation-mode="{{ $mode->value }}">
+    @if($mode->value === 'sidebar')
+        <flux:sidebar sticky collapsible class="bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700" data-livewire-panels-primary-sidebar>
+            <flux:sidebar.header>
+                <flux:sidebar.brand
+                    href="#"
+                    logo="https://fluxui.dev/img/demo/logo.png"
+                    logo:dark="https://fluxui.dev/img/demo/dark-mode-logo.png"
+                    name="Acme Inc."
+                />
+
+                <flux:sidebar.collapse class="in-data-flux-sidebar-on-desktop:not-in-data-flux-sidebar-collapsed-desktop:-mr-2" />
+            </flux:sidebar.header>
+
+            <flux:sidebar.nav>
+                @foreach($navigationItems as $navigationItem)
+                    <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->badge" :href="$navigationItem->url ?? '#'" :current="$navigationItem->isCurrent()">
+                        {{ $navigationItem->label }}
+                    </flux:sidebar.item>
+                @endforeach
+
+                @foreach($navigationGroups as $navigationGroup)
+                    <flux:sidebar.group expandable :icon="$navigationGroup->icon" heading="{{ $navigationGroup->label }}" class="grid">
+                        @foreach($navigationGroup->items as $navigationItem)
+                            <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->badge" :href="$navigationItem->url ?? '#'" :current="$navigationItem->isCurrent()">
+                                {{ $navigationItem->label }}
+                            </flux:sidebar.item>
+                        @endforeach
+                    </flux:sidebar.group>
+                @endforeach
+            </flux:sidebar.nav>
+
+            <flux:sidebar.spacer />
+        </flux:sidebar>
+
+        <flux:header class="lg:hidden">
+            <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
+
+            <flux:spacer />
+        </flux:header>
+
+        <flux:main data-livewire-panels-content>
+            {{ $slot }}
+        </flux:main>
+    @else
+        <flux:header container class="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700" data-livewire-panels-topbar>
+            <flux:sidebar.toggle class="lg:hidden" icon="bars-2" />
+
+            <flux:brand href="#" logo="https://fluxui.dev/img/demo/logo.png" name="Acme Inc." class="max-lg:hidden dark:hidden" />
+            <flux:brand href="#" logo="https://fluxui.dev/img/demo/dark-mode-logo.png" name="Acme Inc." class="max-lg:hidden! hidden dark:flex" />
+
+            <flux:navbar class="-mb-px max-lg:hidden">
+                @foreach($navigationItems as $navigationItem)
+                    <flux:navbar.item :icon="$navigationItem->icon" :badge="$navigationItem->badge" :href="$navigationItem->url ?? '#'" :current="$navigationItem->isCurrent()">
+                        {{ $navigationItem->label }}
+                    </flux:navbar.item>
+                @endforeach
+
+                @if($navigationItems !== [] && $navigationGroups !== [])
+                    <flux:separator vertical variant="subtle" class="my-2" />
+                @endif
+
+                @foreach($navigationGroups as $navigationGroup)
+                    @if($mode->value === 'topbar')
+                        <flux:dropdown hover class="max-lg:hidden" wire:mouseenter="setActiveGroup('{{ $navigationGroup->id }}')">
+                            <flux:navbar.item :icon="$navigationGroup->icon" icon:trailing="chevron-down">
+                                {{ $navigationGroup->label }}
+                            </flux:navbar.item>
+
+                            <flux:navmenu>
+                                @foreach($navigationGroup->items as $navigationItem)
+                                    <flux:navmenu.item :href="$navigationItem->url ?? '#'" :current="$navigationItem->isCurrent()">
+                                        {{ $navigationItem->label }}
+                                    </flux:navmenu.item>
+                                @endforeach
+                            </flux:navmenu>
+                        </flux:dropdown>
+                    @else
+                        <flux:navbar.item
+                            :icon="$navigationGroup->icon"
+                            href="#"
+                            :current="$activeGroup?->id === $navigationGroup->id"
+                            wire:click.prevent="setActiveGroup('{{ $navigationGroup->id }}')"
+                            wire:mouseenter="setActiveGroup('{{ $navigationGroup->id }}')"
+                        >
+                            {{ $navigationGroup->label }}
+                        </flux:navbar.item>
+                    @endif
+                @endforeach
+            </flux:navbar>
+
+            <flux:spacer />
+        </flux:header>
+
+        <flux:sidebar sticky collapsible="mobile" class="lg:hidden bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700" data-livewire-panels-mobile-sidebar>
+            <flux:sidebar.header>
+                <flux:sidebar.brand
+                    href="#"
+                    logo="https://fluxui.dev/img/demo/logo.png"
+                    logo:dark="https://fluxui.dev/img/demo/dark-mode-logo.png"
+                    name="Acme Inc."
+                />
+
+                <flux:sidebar.collapse class="in-data-flux-sidebar-on-desktop:not-in-data-flux-sidebar-collapsed-desktop:-mr-2" />
+            </flux:sidebar.header>
+
+            <flux:sidebar.nav>
+                @foreach($navigationItems as $navigationItem)
+                    <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->badge" :href="$navigationItem->url ?? '#'" :current="$navigationItem->isCurrent()">
+                        {{ $navigationItem->label }}
+                    </flux:sidebar.item>
+                @endforeach
+
+                @foreach($navigationGroups as $navigationGroup)
+                    <flux:sidebar.group expandable :icon="$navigationGroup->icon" heading="{{ $navigationGroup->label }}" class="grid">
+                        @foreach($navigationGroup->items as $navigationItem)
+                            <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->badge" :href="$navigationItem->url ?? '#'" :current="$navigationItem->isCurrent()">
+                                {{ $navigationItem->label }}
+                            </flux:sidebar.item>
+                        @endforeach
+                    </flux:sidebar.group>
+                @endforeach
+            </flux:sidebar.nav>
+
+            <flux:sidebar.spacer />
+        </flux:sidebar>
+
+        <flux:main container data-livewire-panels-content>
+            @if($mode->value === 'topbar-sidebar')
+                <div class="flex max-md:flex-col items-start">
+                    @if($activeGroup !== null)
+                        <div class="w-full md:w-[220px] pb-4 me-10" data-livewire-panels-secondary-navigation data-livewire-panels-active-group="{{ $activeGroup->id }}">
+                            <flux:navlist>
+                                @foreach($activeGroup->items as $navigationItem)
+                                    <flux:navlist.item :href="$navigationItem->url ?? '#'" :badge="$navigationItem->badge" :current="$navigationItem->isCurrent()">
+                                        {{ $navigationItem->label }}
+                                    </flux:navlist.item>
+                                @endforeach
+                            </flux:navlist>
+                        </div>
+
+                        <flux:separator class="md:hidden" />
+                    @endif
+
+                    <div class="flex-1 max-md:pt-6 self-stretch">
+                        {{ $slot }}
+                    </div>
+                </div>
+            @else
+                {{ $slot }}
+            @endif
+        </flux:main>
+    @endif
+</section>

@@ -2,16 +2,8 @@
 
 <x-dynamic-component :component="$appLayout ?? $currentPanel?->appLayout ?? 'livewire-panels::layouts.app'">
     <div data-livewire-panels-layout="panel">
-        <livewire:livewire-panels::panel-sidebar />
-
-        <flux:header class="lg:hidden">
-            <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
-
-            <flux:spacer />
-        </flux:header>
-
-        <flux:main data-livewire-panels-content>
+        <livewire:livewire-panels::panel-navigation>
             {{ $slot }}
-        </flux:main>
+        </livewire:livewire-panels::panel-navigation>
     </div>
 </x-dynamic-component>

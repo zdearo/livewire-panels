@@ -9,6 +9,7 @@ use Illuminate\Support\Arr;
 use Zdearo\LivewirePanels\Navigation\NavigationContract;
 use Zdearo\LivewirePanels\Navigation\NavigationGroup;
 use Zdearo\LivewirePanels\Navigation\NavigationItem;
+use Zdearo\LivewirePanels\Navigation\NavigationMode;
 use Zdearo\LivewirePanels\Support\Concerns\ConfiguresPropertiesOnce;
 
 final class Panel
@@ -26,6 +27,8 @@ final class Panel
     public private(set) string $layout = 'livewire-panels::layouts.panel';
 
     public private(set) bool $isDefault = false;
+
+    public private(set) NavigationMode $navigationMode = NavigationMode::Sidebar;
 
     public private(set) ?string $authGuard = null;
 
@@ -112,6 +115,15 @@ final class Panel
     public function appLayout(string $layout): self
     {
         $this->appLayout = $layout;
+
+        return $this;
+    }
+
+    public function navigationMode(NavigationMode|string $mode): self
+    {
+        $this->navigationMode = is_string($mode)
+            ? NavigationMode::from($mode)
+            : $mode;
 
         return $this;
     }
