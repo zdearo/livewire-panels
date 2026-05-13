@@ -81,6 +81,8 @@ it('allows requests through the authentication middleware when the panel has no 
 });
 
 it('requires an authenticated user when authenticatable models are configured', function (): void {
+    Route::get('/admin/login', fn (): string => 'Login')->name('admin.login');
+
     $panel = Panel::make()
         ->id('admin')
         ->path('admin')
@@ -94,6 +96,78 @@ it('requires an authenticated user when authenticatable models are configured', 
         fn (): Response => new Response('ok'),
         'admin',
     ))->toThrow(AuthenticationException::class);
+});
+
+it('redirects unauthenticated panel requests to the conventional panel login route', function (): void {
+    Route::get('/admin/login', fn (): string => 'Login')->name('admin.login');
+
+    $panel = Panel::make()
+        ->id('admin')
+        ->path('admin')
+        ->name('Admin')
+        ->authenticatables(PanelUser::class);
+
+    app(PanelRegistry::class)->register($panel);
+
+    try {
+        app(AuthenticatePanel::class)->handle(
+            Request::create('/admin'),
+            fn (): Response => new Response('ok'),
+            'admin',
+        );
+    } catch (AuthenticationException $exception) {
+        expect($exception->redirectTo(Request::create('/admin')))->toBe('http://localhost/admin/login');
+
+        return;
+    }
+
+    $this->fail('Expected an authentication exception.');
+});
+
+it('redirects unauthenticated panel requests to a configured login route', function (): void {
+    Route::get('/sign-in', fn (): string => 'Login')->name('custom.login');
+
+    $panel = Panel::make()
+        ->id('admin')
+        ->path('admin')
+        ->name('Admin')
+        ->loginRoute('custom.login')
+        ->authenticatables(PanelUser::class);
+
+    app(PanelRegistry::class)->register($panel);
+
+    try {
+        app(AuthenticatePanel::class)->handle(
+            Request::create('/admin'),
+            fn (): Response => new Response('ok'),
+            'admin',
+        );
+    } catch (AuthenticationException $exception) {
+        expect($exception->redirectTo(Request::create('/admin')))->toBe('http://localhost/sign-in');
+
+        return;
+    }
+
+    $this->fail('Expected an authentication exception.');
+});
+
+it('fails clearly when an authenticated panel login route is missing', function (): void {
+    $panel = Panel::make()
+        ->id('admin')
+        ->path('admin')
+        ->name('Admin')
+        ->authenticatables(PanelUser::class);
+
+    app(PanelRegistry::class)->register($panel);
+
+    expect(fn () => app(AuthenticatePanel::class)->handle(
+        Request::create('/admin'),
+        fn (): Response => new Response('ok'),
+        'admin',
+    ))->toThrow(
+        LogicException::class,
+        'Panel [admin] requires authentication but no login route [admin.login] was registered.',
+    );
 });
 
 it('allows authenticated users that match the configured authenticatable model', function (): void {

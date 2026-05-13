@@ -74,6 +74,16 @@ final class AdminPanelProvider extends PanelProvider
 
 Do not require each panel provider to manually resolve or call the registry.
 
+Application code may use the facade instead of resolving `PanelManager` manually:
+
+```php
+use Zdearo\LivewirePanels\Facades\LivewirePanels;
+
+$panel = LivewirePanels::currentPanel();
+```
+
+The package also registers the Laravel alias `LivewirePanels`, but explicit imports are still preferred in package docs and tests.
+
 ## PHP Version And Properties
 
 The package targets PHP 8.4+.
@@ -106,6 +116,7 @@ The first implementation layer is intentionally small:
 - `Panel\PanelProvider`: base Laravel service provider for one panel.
 - `Panel\PanelRegistry`: stores registered panels by ID.
 - `Panel\PanelManager`: tracks the current panel.
+- `Facades\LivewirePanels`: Laravel facade for resolving panels and reading or setting the current panel through `PanelManager`.
 - `Auth\Contracts\CanAccessPanel`: optional model contract for panel-specific access checks.
 - `Navigation\NavigationItem`, `Navigation\NavigationGroup`, `Navigation\NavigationContract`, and `Navigation\NavigationMode`: normalized panel navigation primitives.
 - `Routing\PanelRouter`: converts panel pages and panel route callbacks into Laravel routes.
@@ -179,6 +190,28 @@ $panel
         App\Models\Admin::class,
     ]);
 ```
+
+When an authenticated panel receives an unauthenticated request, the package redirects to the panel login route. If `loginRoute()` is not configured, the conventional fallback is `{panelId}.login`:
+
+```php
+$panel
+    ->id('admin')
+    ->authenticatables([
+        App\Models\Admin::class,
+    ]);
+```
+
+This expects a route named `admin.login`. A panel may override it:
+
+```php
+$panel
+    ->loginRoute('auth.admin.login')
+    ->authenticatables([
+        App\Models\Admin::class,
+    ]);
+```
+
+If the selected route does not exist, the package must throw a clear `LogicException` naming the panel and missing route. The package should not provide a default login page; that belongs to the starter kit or consuming app.
 
 Allowed models may implement `Zdearo\LivewirePanels\Auth\Contracts\CanAccessPanel` for panel-specific rules:
 

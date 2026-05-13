@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Zdearo\LivewirePanels\Facades\LivewirePanels;
 use Zdearo\LivewirePanels\Panel\Panel;
 use Zdearo\LivewirePanels\Panel\PanelManager;
 use Zdearo\LivewirePanels\Panel\PanelProvider;
@@ -27,14 +28,25 @@ it('stores the current panel', function (): void {
 
     $manager->setCurrentPanel($panel);
 
-    expect($manager->getCurrentPanel())->toBe($panel);
+    expect($manager->currentPanel())->toBe($panel);
+});
+
+it('exposes the panel manager through a facade', function (): void {
+    app()->register(ManagerDefaultPanelProvider::class);
+
+    $panel = LivewirePanels::panel('admin');
+
+    LivewirePanels::setCurrentPanel($panel);
+
+    expect(LivewirePanels::currentPanel())->toBe($panel)
+        ->and(app(PanelManager::class)->currentPanel)->toBe($panel);
 });
 
 it('uses the default registered panel as the current panel', function (): void {
     app()->register(ManagerSecondaryPanelProvider::class);
     app()->register(ManagerDefaultPanelProvider::class);
 
-    expect(app(PanelManager::class)->getCurrentPanel())
+    expect(app(PanelManager::class)->currentPanel())
         ->toBeInstanceOf(Panel::class)
         ->id->toBe('admin');
 });

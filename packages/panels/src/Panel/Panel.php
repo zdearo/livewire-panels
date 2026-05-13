@@ -39,6 +39,8 @@ final class Panel
 
     public private(set) ?string $authGuard = null;
 
+    public private(set) ?string $loginRoute = null;
+
     /**
      * @var array<int, class-string>
      */
@@ -148,6 +150,13 @@ final class Panel
     public function authGuard(?string $guard): self
     {
         $this->authGuard = $guard;
+
+        return $this;
+    }
+
+    public function loginRoute(?string $route): self
+    {
+        $this->loginRoute = $route;
 
         return $this;
     }

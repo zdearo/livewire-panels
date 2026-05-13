@@ -6,7 +6,7 @@ namespace Zdearo\LivewirePanels\Panel;
 
 final class PanelManager
 {
-    private ?Panel $currentPanel = null;
+    public private(set) ?Panel $currentPanel = null;
 
     public function __construct(
         private readonly PanelRegistry $registry,
@@ -17,7 +17,7 @@ final class PanelManager
         $this->currentPanel = $panel;
     }
 
-    public function getCurrentPanel(): ?Panel
+    public function currentPanel(): ?Panel
     {
         return $this->currentPanel;
     }
