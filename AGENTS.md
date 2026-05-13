@@ -287,6 +287,16 @@ Navigation group hover must not trigger Livewire requests. Only the `Topbar` mod
 
 For mobile, topbar modes render a collapsible sidebar containing the full navigation contract.
 
+The Flux navigation shell is customizable through a shell class, not by adding many visual options directly to the panel provider. The provider should only point to the class:
+
+```php
+$panel->shell(AdminPanelShell::class);
+```
+
+Shell classes extend `Zdearo\LivewirePanels\Shell\PanelShell` and may override focused render hooks such as `sidebarBrand()`, `topbarBrand()`, `mobileSidebarBrand()`, `sidebarFooter()`, `topbarEnd()`, and `mobileHeaderEnd()`. Hooks may return a Blade view, an `Htmlable`, a string, or `null`.
+
+The default shell uses Flux patterns and the panel name for the brand. When a panel has `authenticatables()` configured and a user is authenticated, the default shell renders a Flux user dropdown in the sidebar/topbar header locations.
+
 The default panel navigation shell is a Livewire 4 multi-file component, not a class component. Keep it in:
 
 ```txt

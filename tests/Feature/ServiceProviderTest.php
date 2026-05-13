@@ -112,7 +112,8 @@ it('renders the default Flux sidebar shell without demo navigation items', funct
 
     expect($html)
         ->toContain('wire:snapshot')
-        ->toContain('Acme Inc.')
+        ->toContain('Admin')
+        ->not->toContain('Acme Inc.')
         ->not->toContain('Inbox')
         ->not->toContain('Documents')
         ->not->toContain('Favorites')

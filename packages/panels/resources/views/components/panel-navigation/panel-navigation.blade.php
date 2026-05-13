@@ -9,12 +9,7 @@
     @if($mode->value === 'sidebar')
         <flux:sidebar sticky collapsible class="bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700" data-livewire-panels-primary-sidebar>
             <flux:sidebar.header>
-                <flux:sidebar.brand
-                    href="#"
-                    logo="https://fluxui.dev/img/demo/logo.png"
-                    logo:dark="https://fluxui.dev/img/demo/dark-mode-logo.png"
-                    name="Acme Inc."
-                />
+                {!! $this->sidebarBrand() !!}
 
                 <flux:sidebar.collapse class="in-data-flux-sidebar-on-desktop:not-in-data-flux-sidebar-collapsed-desktop:-mr-2" />
             </flux:sidebar.header>
@@ -38,12 +33,16 @@
             </flux:sidebar.nav>
 
             <flux:sidebar.spacer />
+
+            {!! $this->sidebarFooter() !!}
         </flux:sidebar>
 
         <flux:header class="lg:hidden">
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
             <flux:spacer />
+
+            {!! $this->mobileHeaderEnd() !!}
         </flux:header>
 
         <flux:main data-livewire-panels-content>
@@ -53,8 +52,7 @@
         <flux:header container class="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700" data-livewire-panels-topbar>
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" />
 
-            <flux:brand href="#" logo="https://fluxui.dev/img/demo/logo.png" name="Acme Inc." class="max-lg:hidden dark:hidden" />
-            <flux:brand href="#" logo="https://fluxui.dev/img/demo/dark-mode-logo.png" name="Acme Inc." class="max-lg:hidden! hidden dark:flex" />
+            {!! $this->topbarBrand() !!}
 
             <flux:navbar class="-mb-px max-lg:hidden">
                 @foreach($navigationItems as $navigationItem)
@@ -95,16 +93,13 @@
             </flux:navbar>
 
             <flux:spacer />
+
+            {!! $this->topbarEnd() !!}
         </flux:header>
 
         <flux:sidebar sticky collapsible="mobile" class="lg:hidden bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700" data-livewire-panels-mobile-sidebar>
             <flux:sidebar.header>
-                <flux:sidebar.brand
-                    href="#"
-                    logo="https://fluxui.dev/img/demo/logo.png"
-                    logo:dark="https://fluxui.dev/img/demo/dark-mode-logo.png"
-                    name="Acme Inc."
-                />
+                {!! $this->mobileSidebarBrand() !!}
 
                 <flux:sidebar.collapse class="in-data-flux-sidebar-on-desktop:not-in-data-flux-sidebar-collapsed-desktop:-mr-2" />
             </flux:sidebar.header>

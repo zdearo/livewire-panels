@@ -10,6 +10,8 @@ use Zdearo\LivewirePanels\Navigation\NavigationContract;
 use Zdearo\LivewirePanels\Navigation\NavigationGroup;
 use Zdearo\LivewirePanels\Navigation\NavigationItem;
 use Zdearo\LivewirePanels\Navigation\NavigationMode;
+use Zdearo\LivewirePanels\Shell\DefaultPanelShell;
+use Zdearo\LivewirePanels\Shell\PanelShell;
 use Zdearo\LivewirePanels\Support\Concerns\ConfiguresPropertiesOnce;
 
 final class Panel
@@ -29,6 +31,11 @@ final class Panel
     public private(set) bool $isDefault = false;
 
     public private(set) NavigationMode $navigationMode = NavigationMode::Sidebar;
+
+    /**
+     * @var class-string<PanelShell>
+     */
+    public private(set) string $shell = DefaultPanelShell::class;
 
     public private(set) ?string $authGuard = null;
 
@@ -124,6 +131,16 @@ final class Panel
         $this->navigationMode = is_string($mode)
             ? NavigationMode::from($mode)
             : $mode;
+
+        return $this;
+    }
+
+    /**
+     * @param  class-string<PanelShell>  $shell
+     */
+    public function shell(string $shell): self
+    {
+        $this->shell = $shell;
 
         return $this;
     }

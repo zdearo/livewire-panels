@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Request;
 use Livewire\Livewire;
 use Zdearo\LivewirePanels\Navigation\NavigationGroup;
@@ -10,6 +11,7 @@ use Zdearo\LivewirePanels\Navigation\NavigationMode;
 use Zdearo\LivewirePanels\Panel\Page;
 use Zdearo\LivewirePanels\Panel\Panel;
 use Zdearo\LivewirePanels\Panel\PanelManager;
+use Zdearo\LivewirePanels\Shell\PanelShell;
 
 it('registers the panel navigation as a Livewire component', function (): void {
     expect(app('livewire')->exists('livewire-panels::panel-navigation'))->toBeTrue();
@@ -26,6 +28,44 @@ it('renders the sidebar navigation mode by default', function (): void {
         ->assertSee('Users')
         ->assertSee('Settings')
         ->assertDontSee('Hidden');
+});
+
+it('renders a custom panel shell', function (): void {
+    app(PanelManager::class)->setCurrentPanel(
+        navigationTestingPanel()->shell(CustomPanelShell::class),
+    );
+
+    Livewire::test('livewire-panels::panel-navigation')
+        ->assertSeeHtml('data-custom-sidebar-brand')
+        ->assertSee('Custom Admin')
+        ->assertSeeHtml('data-custom-sidebar-footer');
+});
+
+it('renders the default authenticated user menu in the sidebar shell', function (): void {
+    $this->be((new PanelNavigationUser)->forceFill(['name' => 'Olivia Martin']));
+
+    app(PanelManager::class)->setCurrentPanel(
+        navigationTestingPanel()
+            ->authenticatables(PanelNavigationUser::class),
+    );
+
+    Livewire::test('livewire-panels::panel-navigation')
+        ->assertSeeHtml('data-livewire-panels-user-menu')
+        ->assertSee('Olivia Martin');
+});
+
+it('renders the default authenticated user menu in the topbar shell', function (): void {
+    $this->be((new PanelNavigationUser)->forceFill(['name' => 'Olivia Martin']));
+
+    app(PanelManager::class)->setCurrentPanel(
+        navigationTestingPanel()
+            ->authenticatables(PanelNavigationUser::class)
+            ->navigationMode(NavigationMode::Topbar),
+    );
+
+    Livewire::test('livewire-panels::panel-navigation')
+        ->assertSeeHtml('data-livewire-panels-user-menu')
+        ->assertSee('Olivia Martin');
 });
 
 it('renders grouped navigation in the topbar mode', function (): void {
@@ -149,3 +189,20 @@ function panelNavigationComponent(): object
 {
     return require __DIR__.'/../../packages/panels/resources/views/components/panel-navigation/panel-navigation.php';
 }
+
+final class CustomPanelShell extends PanelShell
+{
+    #[Override]
+    public function sidebarBrand(Panel $panel): string
+    {
+        return '<div data-custom-sidebar-brand>Custom '.$panel->name.'</div>';
+    }
+
+    #[Override]
+    public function sidebarFooter(Panel $panel): string
+    {
+        return '<div data-custom-sidebar-footer>Custom footer</div>';
+    }
+}
+
+final class PanelNavigationUser extends Authenticatable {}
