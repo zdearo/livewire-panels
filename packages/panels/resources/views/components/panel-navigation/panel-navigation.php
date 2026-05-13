@@ -12,13 +12,6 @@ use Zdearo\LivewirePanels\Panel\PanelManager;
 
 return new class extends Component
 {
-    public ?string $activeGroupId = null;
-
-    public function mount(): void
-    {
-        $this->activeGroupId = $this->firstGroup()?->id;
-    }
-
     public function currentPanel(): ?Panel
     {
         return app(PanelManager::class)->getCurrentPanel();
@@ -56,33 +49,14 @@ return new class extends Component
         return $this->navigationContract()?->groups() ?? [];
     }
 
-    public function setActiveGroup(string $groupId): void
-    {
-        foreach ($this->navigationGroups() as $group) {
-            if ($group->id === $groupId) {
-                $this->activeGroupId = $groupId;
-
-                return;
-            }
-        }
-    }
-
     public function activeGroup(): ?NavigationGroup
     {
         foreach ($this->navigationGroups() as $group) {
-            if ($group->id === $this->activeGroupId) {
+            if (array_any($group->items, fn (NavigationItem $item): bool => $item->isCurrent())) {
                 return $group;
             }
         }
 
-        $group = $this->firstGroup();
-        $this->activeGroupId = $group?->id;
-
-        return $group;
-    }
-
-    private function firstGroup(): ?NavigationGroup
-    {
-        return $this->navigationGroups()[0] ?? null;
+        return null;
     }
 };

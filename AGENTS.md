@@ -277,7 +277,9 @@ $panel->navigationMode('topbar-sidebar');
 
 `Topbar` renders flat navigation items in the topbar. Navigation groups render as hover dropdowns in the topbar.
 
-`TopbarWithSidebar` renders flat navigation items and group triggers in the topbar. The active group's items render in a secondary sidebar inside the main content area. The active group is Livewire state and changes on hover or click.
+`TopbarWithSidebar` renders flat navigation items and group labels in the topbar. The secondary sidebar renders only when the current page belongs to a navigation group, and it shows the items from that current page group. If the current page is a flat item with no group, the secondary sidebar is hidden.
+
+Navigation group hover must not trigger Livewire requests. Only the `Topbar` mode uses hover dropdowns, and that hover is handled by Flux locally. Navigation happens only when the user clicks an actual page/item link.
 
 For mobile, topbar modes render a collapsible sidebar containing the full navigation contract.
 

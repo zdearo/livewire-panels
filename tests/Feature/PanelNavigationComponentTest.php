@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Http\Request;
 use Livewire\Livewire;
 use Zdearo\LivewirePanels\Navigation\NavigationGroup;
 use Zdearo\LivewirePanels\Navigation\NavigationItem;
@@ -35,27 +36,48 @@ it('renders grouped navigation in the topbar mode', function (): void {
     Livewire::test('livewire-panels::panel-navigation')
         ->assertSeeHtml('data-livewire-panels-navigation-mode="topbar"')
         ->assertSeeHtml('data-livewire-panels-topbar')
+        ->assertSeeHtml('data-livewire-panels-navigation-dropdown')
         ->assertSee('Dashboard')
         ->assertSee('Management')
         ->assertSee('Users')
         ->assertSee('Settings')
+        ->assertDontSeeHtml('wire:mouseenter')
         ->assertDontSeeHtml('data-livewire-panels-secondary-navigation');
 });
 
-it('renders active group items in the secondary sidebar for topbar with sidebar mode', function (): void {
+it('renders current page group items in the secondary sidebar for topbar with sidebar mode', function (): void {
     app(PanelManager::class)->setCurrentPanel(
         navigationTestingPanel()->navigationMode(NavigationMode::TopbarWithSidebar),
     );
 
     Livewire::test('livewire-panels::panel-navigation')
-        ->assertSet('activeGroupId', 'management')
         ->assertSeeHtml('data-livewire-panels-navigation-mode="topbar-sidebar"')
-        ->assertSeeHtml('data-livewire-panels-active-group="management"')
-        ->assertSee('Users')
-        ->call('setActiveGroup', 'content')
-        ->assertSet('activeGroupId', 'content')
-        ->assertSeeHtml('data-livewire-panels-active-group="content"')
-        ->assertSee('Posts');
+        ->assertDontSeeHtml('wire:click')
+        ->assertDontSeeHtml('wire:mouseenter');
+});
+
+it('resolves the active group from the current page', function (): void {
+    requestPath('/admin/users');
+
+    app(PanelManager::class)->setCurrentPanel(
+        navigationTestingPanel()->navigationMode(NavigationMode::TopbarWithSidebar),
+    );
+
+    $component = panelNavigationComponent();
+
+    expect($component->activeGroup())
+        ->not->toBeNull()
+        ->id->toBe('management');
+});
+
+it('does not resolve an active group when the current page has no group', function (): void {
+    requestPath('/admin');
+
+    app(PanelManager::class)->setCurrentPanel(
+        navigationTestingPanel()->navigationMode(NavigationMode::TopbarWithSidebar),
+    );
+
+    expect(panelNavigationComponent()->activeGroup())->toBeNull();
 });
 
 function navigationTestingPanel(): Panel
@@ -89,4 +111,14 @@ function navigationTestingPanel(): Panel
                 ->icon('cog-6-tooth')
                 ->sort(40),
         ]);
+}
+
+function requestPath(string $path): void
+{
+    app()->instance('request', Request::create($path));
+}
+
+function panelNavigationComponent(): object
+{
+    return require __DIR__.'/../../packages/panels/resources/views/components/panel-navigation/panel-navigation.php';
 }

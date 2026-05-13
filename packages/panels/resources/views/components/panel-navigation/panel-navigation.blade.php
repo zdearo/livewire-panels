@@ -69,7 +69,7 @@
 
                 @foreach($navigationGroups as $navigationGroup)
                     @if($mode->value === 'topbar')
-                        <flux:dropdown hover class="max-lg:hidden" wire:mouseenter="setActiveGroup('{{ $navigationGroup->id }}')">
+                        <flux:dropdown hover class="max-lg:hidden" data-livewire-panels-navigation-dropdown>
                             <flux:navbar.item :icon="$navigationGroup->icon" icon:trailing="chevron-down">
                                 {{ $navigationGroup->label }}
                             </flux:navbar.item>
@@ -87,8 +87,6 @@
                             :icon="$navigationGroup->icon"
                             type="button"
                             :current="$activeGroup?->id === $navigationGroup->id"
-                            wire:click="setActiveGroup('{{ $navigationGroup->id }}')"
-                            wire:mouseenter="setActiveGroup('{{ $navigationGroup->id }}')"
                         >
                             {{ $navigationGroup->label }}
                         </flux:navbar.item>
