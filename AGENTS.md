@@ -217,6 +217,10 @@ Inside an `admin` panel, this registers `/admin/settings` as `admin.settings.ind
 
 Panel page routes are registered as Livewire page routes and include package middleware that sets the current panel and configures Livewire's page layout to the panel layout.
 
+The package binds `originalRequest` as a scoped container entry. Outside Livewire update requests it returns the current request. During Livewire update requests it uses `Support\Http\OriginalRequestResolver`, backed by Livewire's `PersistentMiddleware` internals, to rebuild the original page request and resolve its route.
+
+Code that needs to know the active page URL during Livewire updates should use `originalRequest` instead of `request()`. Navigation current-state detection uses this binding so active items and active groups still match the page route while the browser is posting to Livewire's update endpoint.
+
 Panel pages do not appear in sidebar navigation by default. A page must opt in with `navigation()`:
 
 ```php

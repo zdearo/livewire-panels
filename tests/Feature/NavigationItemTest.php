@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Http\Request;
 use Zdearo\LivewirePanels\Navigation\NavigationItem;
 
 it('configures a navigation item descriptor', function (): void {
@@ -34,4 +35,11 @@ it('does not mark navigation items without a usable path as current', function (
 
 it('checks whether a navigation item matches the current request path', function (): void {
     expect(NavigationItem::make('Inbox')->url('/admin/inbox')->isCurrent())->toBeFalse();
+});
+
+it('checks whether a navigation item matches the original request path when available', function (): void {
+    app()->instance('request', Request::create('/livewire/update'));
+    app()->instance('originalRequest', Request::create('/admin/inbox'));
+
+    expect(NavigationItem::make('Inbox')->url('/admin/inbox')->isCurrent())->toBeTrue();
 });

@@ -3,14 +3,19 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Vite;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\HtmlString;
+use Livewire\Mechanisms\PersistentMiddleware\PersistentMiddleware;
 use Zdearo\LivewirePanels\Navigation\NavigationGroup;
 use Zdearo\LivewirePanels\Navigation\NavigationItem;
 use Zdearo\LivewirePanels\Panel\Page;
 use Zdearo\LivewirePanels\Panel\Panel;
 use Zdearo\LivewirePanels\Panel\PanelManager;
+
+use function Livewire\invade;
 
 beforeEach(function (): void {
     fakeViteForLivewirePanelsTests();
@@ -26,6 +31,33 @@ it('loads the package app layout views', function (): void {
 
 it('loads the package panel layout views', function (): void {
     expect(view()->exists('livewire-panels::layouts.panel'))->toBeTrue();
+});
+
+it('binds the current request as the original request outside Livewire requests', function (): void {
+    app()->instance('request', Request::create('/admin/users'));
+
+    expect(app('originalRequest'))
+        ->toBeInstanceOf(Request::class)
+        ->path()->toBe('admin/users');
+});
+
+it('binds a fake original route request during Livewire requests', function (): void {
+    Route::get('/admin/users', fn (): string => 'Users')->name('admin.users');
+
+    app()->instance('request', Request::create('/livewire/update', 'POST', [], [], [], [
+        'HTTP_X_LIVEWIRE' => 'true',
+    ]));
+
+    $persistentMiddleware = app(PersistentMiddleware::class);
+    invade($persistentMiddleware)->path = 'admin/users';
+    invade($persistentMiddleware)->method = 'GET';
+
+    $request = app('originalRequest');
+
+    expect($request)
+        ->toBeInstanceOf(Request::class)
+        ->path()->toBe('admin/users')
+        ->and($request->route()?->getName())->toBe('admin.users');
 });
 
 it('provides a panel stylesheet source for the consuming app build', function (): void {

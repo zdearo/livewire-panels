@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Zdearo\LivewirePanels\Navigation;
 
+use Illuminate\Http\Request;
+
 final class NavigationItem
 {
     public private(set) string $label;
@@ -73,6 +75,13 @@ final class NavigationItem
             return false;
         }
 
-        return request()->is(ltrim($path, '/'));
+        return $this->currentRequest()->is(ltrim($path, '/'));
+    }
+
+    private function currentRequest(): Request
+    {
+        $request = app()->bound('originalRequest') ? app('originalRequest') : request();
+
+        return $request instanceof Request ? $request : request();
     }
 }
