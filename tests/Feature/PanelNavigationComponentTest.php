@@ -81,6 +81,22 @@ it('resolves the active group from the current page', function (): void {
         ->id->toBe('management');
 });
 
+it('resolves the active group from the original request during Livewire updates', function (): void {
+    app()->instance('request', Request::create('/livewire/update'));
+    app()->instance('originalRequest', Request::create('/admin/users'));
+
+    app(PanelManager::class)->setCurrentPanel(
+        navigationTestingPanel()->navigationMode(NavigationMode::TopbarWithSidebar),
+    );
+
+    $activeGroup = panelNavigationComponent()->activeGroup();
+
+    expect($activeGroup)
+        ->not->toBeNull()
+        ->id->toBe('management')
+        ->and($activeGroup->items[0]->isCurrent())->toBeTrue();
+});
+
 it('does not resolve an active group when the current page has no group', function (): void {
     requestPath('/admin');
 
