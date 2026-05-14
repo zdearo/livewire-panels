@@ -111,14 +111,16 @@ $panel->id = 'app'; // should fail outside the class
 The first implementation layer is intentionally small:
 
 - `Panel\Panel`: fluent configuration object with PHP 8.4 read access through properties.
-- `Panel\Page`: route descriptor for Livewire page routes.
-- `Panel\PageGroup`: structural page group for sharing route path and route name prefixes.
 - `Panel\PanelProvider`: base Laravel service provider for one panel.
 - `Panel\PanelRegistry`: stores registered panels by ID.
 - `Panel\PanelManager`: tracks the current panel.
+- `Page\Page`: route descriptor for Livewire page routes.
+- `Page\PageGroup`: structural page group for sharing route path and route name prefixes.
 - `Facades\LivewirePanels`: Laravel facade for resolving panels and reading or setting the current panel through `PanelManager`.
 - `Auth\Contracts\CanAccessPanel`: optional model contract for panel-specific access checks.
-- `Navigation\NavigationItem`, `Navigation\NavigationGroup`, `Navigation\NavigationContract`, and `Navigation\NavigationMode`: normalized panel navigation primitives.
+- `Navigation\NavigationBuilder`: builds the normalized navigation contract from panel navigation items and page descriptors.
+- `Navigation\NavigationItem`, `Navigation\NavigationGroup`, and `Navigation\NavigationContract`: normalized panel navigation primitives.
+- `Enums\NavigationMode`: Flux navigation layout mode.
 - `Routing\PanelRouter`: converts panel pages and panel route callbacks into Laravel routes.
 - `LivewirePanelsServiceProvider`: the only root-level package provider in `packages/panels/src`.
 
@@ -225,7 +227,7 @@ public function canAccessPanel(Panel $panel): bool
 Panel pages use a descriptor object rather than forcing application components to extend a package base class:
 
 ```php
-use Zdearo\LivewirePanels\Panel\Page;
+use Zdearo\LivewirePanels\Page\Page;
 
 $panel->pages([
     Page::make('/', 'pages::admin.dashboard')->name('dashboard'),
@@ -295,7 +297,7 @@ The panel emits a normalized navigation contract through `navigationContract()`.
 Panels support three navigation modes:
 
 ```php
-use Zdearo\LivewirePanels\Navigation\NavigationMode;
+use Zdearo\LivewirePanels\Enums\NavigationMode;
 
 $panel->navigationMode(NavigationMode::Sidebar);
 $panel->navigationMode(NavigationMode::Topbar);

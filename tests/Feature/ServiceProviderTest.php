@@ -11,7 +11,7 @@ use Illuminate\Support\HtmlString;
 use Livewire\Mechanisms\PersistentMiddleware\PersistentMiddleware;
 use Zdearo\LivewirePanels\Navigation\NavigationGroup;
 use Zdearo\LivewirePanels\Navigation\NavigationItem;
-use Zdearo\LivewirePanels\Panel\Page;
+use Zdearo\LivewirePanels\Page\Page;
 use Zdearo\LivewirePanels\Panel\Panel;
 use Zdearo\LivewirePanels\Panel\PanelManager;
 

@@ -6,10 +6,13 @@ namespace Zdearo\LivewirePanels\Panel;
 
 use Closure;
 use Illuminate\Support\Arr;
+use Zdearo\LivewirePanels\Enums\NavigationMode;
+use Zdearo\LivewirePanels\Navigation\NavigationBuilder;
 use Zdearo\LivewirePanels\Navigation\NavigationContract;
 use Zdearo\LivewirePanels\Navigation\NavigationGroup;
 use Zdearo\LivewirePanels\Navigation\NavigationItem;
-use Zdearo\LivewirePanels\Navigation\NavigationMode;
+use Zdearo\LivewirePanels\Page\Page;
+use Zdearo\LivewirePanels\Page\PageGroup;
 use Zdearo\LivewirePanels\Shell\DefaultPanelShell;
 use Zdearo\LivewirePanels\Shell\PanelShell;
 use Zdearo\LivewirePanels\Support\Concerns\ConfiguresPropertiesOnce;
@@ -130,9 +133,7 @@ final class Panel
 
     public function navigationMode(NavigationMode|string $mode): self
     {
-        $this->navigationMode = is_string($mode)
-            ? NavigationMode::from($mode)
-            : $mode;
+        $this->navigationMode = is_string($mode) ? NavigationMode::from($mode) : $mode;
 
         return $this;
     }
@@ -261,54 +262,7 @@ final class Panel
 
     public function navigationContract(): NavigationContract
     {
-        $items = [];
-        $groups = array_map(
-            fn (NavigationGroup $group): NavigationGroup => clone $group,
-            $this->navigationGroups,
-        );
-
-        foreach ($groups as $group) {
-            $group->clearItems();
-        }
-
-        foreach ($this->resolvedNavigationItems() as $item) {
-            if ($item->group === null) {
-                $items[] = $item;
-
-                continue;
-            }
-
-            if (! isset($groups[$item->group])) {
-                throw new \LogicException(sprintf(
-                    'Navigation group [%s] has not been registered for panel [%s].',
-                    $item->group,
-                    $this->id ?? 'unknown',
-                ));
-            }
-
-            $groups[$item->group]->addItem($item);
-        }
-
-        usort(
-            $items,
-            fn (NavigationItem $first, NavigationItem $second): int => $first->sort <=> $second->sort,
-        );
-
-        $groups = array_values(array_filter(
-            $groups,
-            fn (NavigationGroup $group): bool => $group->items !== [],
-        ));
-
-        foreach ($groups as $group) {
-            $group->sortItems();
-        }
-
-        usort(
-            $groups,
-            fn (NavigationGroup $first, NavigationGroup $second): int => $first->sort <=> $second->sort,
-        );
-
-        return new NavigationContract($items, $groups);
+        return app(NavigationBuilder::class)->build($this);
     }
 
     /**
@@ -317,82 +271,6 @@ final class Panel
     public function navigationItems(): array
     {
         return $this->navigationContract()->allItems();
-    }
-
-    /**
-     * @return array<int, NavigationItem>
-     */
-    private function resolvedNavigationItems(): array
-    {
-        $items = $this->navigation;
-
-        array_push($items, ...$this->resolvedPageNavigationItems($this->pages));
-
-        usort(
-            $items,
-            fn (NavigationItem $first, NavigationItem $second): int => $first->sort <=> $second->sort,
-        );
-
-        return $items;
-    }
-
-    /**
-     * @param  array<int, Page|PageGroup>  $pages
-     * @return array<int, NavigationItem>
-     */
-    private function resolvedPageNavigationItems(array $pages, string $pathPrefix = ''): array
-    {
-        $items = [];
-
-        foreach ($pages as $page) {
-            if ($page instanceof PageGroup) {
-                array_push(
-                    $items,
-                    ...$this->resolvedPageNavigationItems(
-                        $page->pages,
-                        $this->joinPaths($pathPrefix, $page->path),
-                    ),
-                );
-
-                continue;
-            }
-
-            if ($page->navigation === null) {
-                continue;
-            }
-
-            $item = clone $page->navigation;
-
-            if ($item->url === null) {
-                $item->url($this->pageUrl($page, $pathPrefix));
-            }
-
-            $items[] = $item;
-        }
-
-        return $items;
-    }
-
-    private function pageUrl(Page $page, string $pathPrefix = ''): string
-    {
-        return $this->joinPaths($this->path, $pathPrefix, $page->path);
-    }
-
-    private function joinPaths(string ...$paths): string
-    {
-        $segments = [];
-
-        foreach ($paths as $path) {
-            $path = trim($path, '/');
-
-            if ($path !== '') {
-                $segments[] = $path;
-            }
-        }
-
-        $path = implode('/', $segments);
-
-        return $path === '' ? '/' : "/{$path}";
     }
 
     public function default(bool $condition = true): self

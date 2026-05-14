@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
+use Zdearo\LivewirePanels\Enums\NavigationMode;
 use Zdearo\LivewirePanels\Navigation\NavigationContract;
 use Zdearo\LivewirePanels\Navigation\NavigationGroup;
 use Zdearo\LivewirePanels\Navigation\NavigationItem;
-use Zdearo\LivewirePanels\Navigation\NavigationMode;
-use Zdearo\LivewirePanels\Panel\Page;
+use Zdearo\LivewirePanels\Page\Page;
 use Zdearo\LivewirePanels\Panel\Panel;
 use Zdearo\LivewirePanels\Panel\PanelProvider;
 use Zdearo\LivewirePanels\Panel\PanelRegistry;

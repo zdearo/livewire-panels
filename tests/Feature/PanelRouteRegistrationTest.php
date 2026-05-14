@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
 use Zdearo\LivewirePanels\Middleware\SetCurrentPanel;
-use Zdearo\LivewirePanels\Panel\Page;
+use Zdearo\LivewirePanels\Page\Page;
 use Zdearo\LivewirePanels\Panel\Panel;
 use Zdearo\LivewirePanels\Panel\PanelProvider;
 

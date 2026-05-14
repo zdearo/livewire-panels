@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Mechanisms\HandleRouting\LivewirePageController;
 use Zdearo\LivewirePanels\Middleware\AuthenticatePanel;
 use Zdearo\LivewirePanels\Middleware\SetCurrentPanel;
-use Zdearo\LivewirePanels\Panel\Page;
-use Zdearo\LivewirePanels\Panel\PageGroup;
+use Zdearo\LivewirePanels\Page\Page;
+use Zdearo\LivewirePanels\Page\PageGroup;
 use Zdearo\LivewirePanels\Panel\Panel;
 
 final class PanelRouter

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Zdearo\LivewirePanels\Navigation;
+namespace Zdearo\LivewirePanels\Enums;
 
 enum NavigationMode: string
 {

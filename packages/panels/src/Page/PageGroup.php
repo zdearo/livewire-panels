@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Zdearo\LivewirePanels\Panel;
+namespace Zdearo\LivewirePanels\Page;
 
 final class PageGroup
 {

@@ -75,8 +75,8 @@ Panels are defined in PHP providers:
 namespace App\Providers;
 
 use Zdearo\LivewirePanels\Navigation\NavigationGroup;
-use Zdearo\LivewirePanels\Navigation\NavigationMode;
-use Zdearo\LivewirePanels\Panel\Page;
+use Zdearo\LivewirePanels\Enums\NavigationMode;
+use Zdearo\LivewirePanels\Page\Page;
 use Zdearo\LivewirePanels\Panel\Panel;
 use Zdearo\LivewirePanels\Panel\PanelProvider;
 
@@ -171,7 +171,7 @@ If an item references an undeclared group, the panel throws a `LogicException`.
 Three Flux navigation modes are available:
 
 ```php
-use Zdearo\LivewirePanels\Navigation\NavigationMode;
+use Zdearo\LivewirePanels\Enums\NavigationMode;
 
 $panel->navigationMode(NavigationMode::Sidebar);
 $panel->navigationMode(NavigationMode::Topbar);

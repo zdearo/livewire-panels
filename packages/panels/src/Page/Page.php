@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Zdearo\LivewirePanels\Panel;
+namespace Zdearo\LivewirePanels\Page;
 
 use Zdearo\LivewirePanels\Navigation\NavigationItem;
 
@@ -16,7 +16,7 @@ final class Page
 
     public private(set) ?NavigationItem $navigation = null;
 
-    public static function make(string $path, string $component): self
+    public static function make(string $path, string $component): static
     {
         $page = new self;
         $page->path = $path;
@@ -30,7 +30,7 @@ final class Page
         return PageGroup::make($path);
     }
 
-    public function name(string $name): self
+    public function name(string $name): static
     {
         $this->name = $name;
 
@@ -42,7 +42,7 @@ final class Page
         ?string $icon = null,
         ?string $group = null,
         int $sort = 0,
-    ): self {
+    ): static {
         $this->navigation = NavigationItem::make($label)
             ->icon($icon)
             ->group($group)
