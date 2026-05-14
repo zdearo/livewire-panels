@@ -13,7 +13,7 @@
 
         <flux:sidebar.nav>
             @foreach($this->navigationContract()?->items() ?? [] as $navigationItem)
-                <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->badge" :href="$navigationItem->url ?? '#'" :current="$navigationItem->isCurrent()">
+                <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$navigationItem->isCurrent()">
                     {{ $navigationItem->displayLabel() }}
                 </flux:sidebar.item>
             @endforeach
@@ -21,7 +21,7 @@
             @foreach($this->navigationContract()?->groups() ?? [] as $navigationGroup)
                 <flux:sidebar.group expandable :icon="$navigationGroup->icon" heading="{{ $navigationGroup->displayLabel() }}" class="grid">
                     @foreach($navigationGroup->items as $navigationItem)
-                        <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->badge" :href="$navigationItem->url ?? '#'" :current="$navigationItem->isCurrent()">
+                        <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$navigationItem->isCurrent()">
                             {{ $navigationItem->displayLabel() }}
                         </flux:sidebar.item>
                     @endforeach

@@ -1,5 +1,5 @@
 <flux:brand
     href="{{ $brandUrl }}"
-    name="{{ $panel->name }}"
+    name="{{ $panel->displayName() }}"
     class="max-lg:hidden"
 />

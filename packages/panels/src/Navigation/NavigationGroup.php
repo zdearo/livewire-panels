@@ -6,9 +6,13 @@ namespace Zdearo\LivewirePanels\Navigation;
 
 use Closure;
 use Illuminate\Support\Str;
+use UnexpectedValueException;
+use Zdearo\LivewirePanels\Support\Concerns\EvaluatesClosures;
 
 final class NavigationGroup
 {
+    use EvaluatesClosures;
+
     public private(set) string $id;
 
     /**
@@ -19,6 +23,16 @@ final class NavigationGroup
     public private(set) ?string $icon = null;
 
     public private(set) int $sort = 0;
+
+    /**
+     * @var bool|Closure(): bool
+     */
+    public private(set) bool|Closure $isVisible = true;
+
+    /**
+     * @var bool|Closure(): bool
+     */
+    public private(set) bool|Closure $isHidden = false;
 
     /**
      * @var array<int, NavigationItem>
@@ -46,9 +60,11 @@ final class NavigationGroup
 
     public function displayLabel(): string
     {
-        $label = $this->label instanceof Closure
-            ? ($this->label)()
-            : $this->label;
+        $label = $this->evaluate($this->label);
+
+        if (! is_string($label)) {
+            throw new UnexpectedValueException('Navigation group labels must resolve to strings.');
+        }
 
         $translation = __($label);
 
@@ -67,6 +83,32 @@ final class NavigationGroup
         $this->sort = $sort;
 
         return $this;
+    }
+
+    /**
+     * @param  bool|Closure(): bool  $condition
+     */
+    public function visible(bool|Closure $condition = true): self
+    {
+        $this->isVisible = $condition;
+
+        return $this;
+    }
+
+    /**
+     * @param  bool|Closure(): bool  $condition
+     */
+    public function hidden(bool|Closure $condition = true): self
+    {
+        $this->isHidden = $condition;
+
+        return $this;
+    }
+
+    public function isVisible(): bool
+    {
+        return (bool) $this->evaluate($this->isVisible)
+            && ! (bool) $this->evaluate($this->isHidden);
     }
 
     public function addItem(NavigationItem $item): self

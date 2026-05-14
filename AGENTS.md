@@ -338,6 +338,17 @@ NavigationGroup::make('main')
     ->label(fn (): string => __('Main'));
 ```
 
+The package resolves lazy values through `Zdearo\LivewirePanels\Support\Concerns\EvaluatesClosures`. Keep this for display-time/customization values, not structural routing/config values.
+
+Good lazy candidates currently supported:
+
+- `Panel::name()`, resolved through `displayName()`.
+- `NavigationItem::make()`, `url()`, `badge()`, `visible()`, and `hidden()`.
+- `NavigationGroup::label()`, `visible()`, and `hidden()`.
+- Panel shell slot overrides: `sidebarBrand()`, `topbarBrand()`, `mobileSidebarBrand()`, `sidebarFooter()`, `topbarEnd()`, and `mobileHeaderEnd()`.
+
+Do not make `path`, `subdomain`, middleware, layouts, Vite entries, auth guards, login route names, tenant route parameters, or sort values lazy unless the routing/config lifecycle is discussed again.
+
 Navigation item groups must be declared explicitly on the panel before any item references them. Group references use the group ID, not the visible label:
 
 ```php
@@ -403,6 +414,8 @@ $panel->shell(AdminPanelShell::class);
 ```
 
 Shell classes extend `Zdearo\LivewirePanels\Shell\PanelShell` and may override focused render hooks such as `sidebarBrand()`, `topbarBrand()`, `mobileSidebarBrand()`, `sidebarFooter()`, `topbarEnd()`, and `mobileHeaderEnd()`. Hooks may return a Blade view, an `Htmlable`, a string, or `null`.
+
+Panels may also override those same shell slots directly for focused customization. Direct slot values may be lazy closures that receive the current `Panel`. A configured slot takes precedence over the shell class for that slot.
 
 The default shell uses Flux patterns and the panel name for the brand. When a panel has `authenticatables()` configured and a user is authenticated, the default shell renders a Flux user dropdown in the sidebar/topbar header locations.
 

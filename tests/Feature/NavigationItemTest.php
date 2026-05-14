@@ -28,10 +28,37 @@ it('resolves navigation item labels lazily', function (): void {
     expect($item->displayLabel())->toBe('Inbox');
 });
 
+it('resolves navigation item urls and badges lazily', function (): void {
+    $item = NavigationItem::make('Inbox')
+        ->url(fn (): string => '/admin/inbox')
+        ->badge(fn (): int => 12);
+
+    expect($item)
+        ->displayUrl()->toBe('/admin/inbox')
+        ->displayBadge()->toBe('12');
+});
+
+it('fails when lazy navigation item values resolve to unsupported types', function (): void {
+    expect(fn () => NavigationItem::make(fn (): array => [])->displayLabel())
+        ->toThrow(UnexpectedValueException::class, 'Navigation item labels must resolve to strings.')
+        ->and(fn () => NavigationItem::make('Inbox')->url(fn (): array => [])->displayUrl())
+        ->toThrow(UnexpectedValueException::class, 'Navigation item URLs must resolve to strings or null.')
+        ->and(fn () => NavigationItem::make('Inbox')->badge(fn (): array => [])->displayBadge())
+        ->toThrow(UnexpectedValueException::class, 'Navigation item badges must resolve to strings, integers, or null.');
+});
+
 it('allows clearing a navigation item badge', function (): void {
     $item = NavigationItem::make('Inbox')->badge(null);
 
-    expect($item->badge)->toBeNull();
+    expect($item->badge)
+        ->toBeNull()
+        ->and($item->displayBadge())->toBeNull();
+});
+
+it('resolves navigation item visibility lazily', function (): void {
+    expect(NavigationItem::make('Inbox')->visible(fn (): bool => false)->isVisible())->toBeFalse()
+        ->and(NavigationItem::make('Inbox')->hidden(fn (): bool => true)->isVisible())->toBeFalse()
+        ->and(NavigationItem::make('Inbox')->visible(fn (): bool => true)->hidden(fn (): bool => false)->isVisible())->toBeTrue();
 });
 
 it('does not mark navigation items without a usable path as current', function (): void {

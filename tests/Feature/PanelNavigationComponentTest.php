@@ -41,6 +41,37 @@ it('renders a custom panel shell', function (): void {
         ->assertSeeHtml('data-custom-sidebar-footer');
 });
 
+it('renders configured sidebar shell slots lazily', function (): void {
+    app(PanelManager::class)->setCurrentPanel(
+        navigationTestingPanel()
+            ->name(fn (): string => __('Admin'))
+            ->sidebarBrand(fn (Panel $panel): string => '<div data-configured-sidebar-brand>'.$panel->displayName().'</div>')
+            ->sidebarFooter(fn (): string => '<div data-configured-sidebar-footer>Sidebar footer</div>')
+            ->mobileHeaderEnd(fn (): string => '<div data-configured-mobile-header-end>Mobile header</div>'),
+    );
+
+    Livewire::test('livewire-panels::panel-navigation')
+        ->assertSeeHtml('data-configured-sidebar-brand')
+        ->assertSee('Admin')
+        ->assertSeeHtml('data-configured-sidebar-footer')
+        ->assertSeeHtml('data-configured-mobile-header-end');
+});
+
+it('renders configured topbar shell slots lazily', function (): void {
+    app(PanelManager::class)->setCurrentPanel(
+        navigationTestingPanel()
+            ->navigationMode(NavigationMode::Topbar)
+            ->topbarBrand(fn (): string => '<div data-configured-topbar-brand>Topbar brand</div>')
+            ->topbarEnd(fn (): string => '<div data-configured-topbar-end>Topbar end</div>')
+            ->mobileSidebarBrand(fn (): string => '<div data-configured-mobile-sidebar-brand>Mobile brand</div>'),
+    );
+
+    Livewire::test('livewire-panels::panel-navigation')
+        ->assertSeeHtml('data-configured-topbar-brand')
+        ->assertSeeHtml('data-configured-topbar-end')
+        ->assertSeeHtml('data-configured-mobile-sidebar-brand');
+});
+
 it('renders the default authenticated user menu in the sidebar shell', function (): void {
     $this->be((new PanelNavigationUser)->forceFill(['name' => 'Olivia Martin']));
 

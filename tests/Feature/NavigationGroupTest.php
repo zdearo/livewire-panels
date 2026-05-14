@@ -32,6 +32,17 @@ it('resolves navigation group labels lazily', function (): void {
     expect($group->displayLabel())->toBe('Management');
 });
 
+it('fails when lazy navigation group labels resolve to unsupported types', function (): void {
+    expect(fn () => NavigationGroup::make('management')->label(fn (): array => [])->displayLabel())
+        ->toThrow(UnexpectedValueException::class, 'Navigation group labels must resolve to strings.');
+});
+
+it('resolves navigation group visibility lazily', function (): void {
+    expect(NavigationGroup::make('management')->visible(fn (): bool => false)->isVisible())->toBeFalse()
+        ->and(NavigationGroup::make('management')->hidden(fn (): bool => true)->isVisible())->toBeFalse()
+        ->and(NavigationGroup::make('management')->visible(fn (): bool => true)->hidden(fn (): bool => false)->isVisible())->toBeTrue();
+});
+
 it('can receive navigation items in sorted order', function (): void {
     $group = NavigationGroup::make('management')
         ->addItem(NavigationItem::make('Users')->sort(20))

@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Zdearo\LivewirePanels\Panel;
 
 use Closure;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Arr;
+use UnexpectedValueException;
 use Zdearo\LivewirePanels\Enums\NavigationMode;
 use Zdearo\LivewirePanels\Navigation\NavigationBuilder;
 use Zdearo\LivewirePanels\Navigation\NavigationContract;
@@ -16,11 +19,13 @@ use Zdearo\LivewirePanels\Page\PageGroup;
 use Zdearo\LivewirePanels\Shell\DefaultPanelShell;
 use Zdearo\LivewirePanels\Shell\PanelShell;
 use Zdearo\LivewirePanels\Support\Concerns\ConfiguresPropertiesOnce;
+use Zdearo\LivewirePanels\Support\Concerns\EvaluatesClosures;
 use Zdearo\LivewirePanels\Tenant\Tenant;
 
 final class Panel
 {
     use ConfiguresPropertiesOnce;
+    use EvaluatesClosures;
 
     public private(set) string $id;
 
@@ -28,7 +33,10 @@ final class Panel
 
     public private(set) ?string $subdomain = null;
 
-    public private(set) string $name;
+    /**
+     * @var string|Closure(): string
+     */
+    public private(set) string|Closure $name;
 
     public private(set) string $appLayout = 'livewire-panels::layouts.app';
 
@@ -50,6 +58,36 @@ final class Panel
     public private(set) ?Tenant $tenant = null;
 
     public private(set) bool $requiresTenant = false;
+
+    /**
+     * @var View|Htmlable|string|Closure(self): (View|Htmlable|string|null)|null
+     */
+    public private(set) View|Htmlable|string|Closure|null $sidebarBrand = null;
+
+    /**
+     * @var View|Htmlable|string|Closure(self): (View|Htmlable|string|null)|null
+     */
+    public private(set) View|Htmlable|string|Closure|null $topbarBrand = null;
+
+    /**
+     * @var View|Htmlable|string|Closure(self): (View|Htmlable|string|null)|null
+     */
+    public private(set) View|Htmlable|string|Closure|null $mobileSidebarBrand = null;
+
+    /**
+     * @var View|Htmlable|string|Closure(self): (View|Htmlable|string|null)|null
+     */
+    public private(set) View|Htmlable|string|Closure|null $sidebarFooter = null;
+
+    /**
+     * @var View|Htmlable|string|Closure(self): (View|Htmlable|string|null)|null
+     */
+    public private(set) View|Htmlable|string|Closure|null $topbarEnd = null;
+
+    /**
+     * @var View|Htmlable|string|Closure(self): (View|Htmlable|string|null)|null
+     */
+    public private(set) View|Htmlable|string|Closure|null $mobileHeaderEnd = null;
 
     /**
      * @var array<int, class-string>
@@ -124,11 +162,27 @@ final class Panel
         return $this;
     }
 
-    public function name(string $name): self
+    /**
+     * @param  string|Closure(): string  $name
+     */
+    public function name(string|Closure $name): self
     {
         $this->name = $name;
 
         return $this;
+    }
+
+    public function displayName(): string
+    {
+        $name = $this->evaluate($this->name);
+
+        if (! is_string($name)) {
+            throw new UnexpectedValueException('Panel names must resolve to strings.');
+        }
+
+        $translation = __($name);
+
+        return is_string($translation) ? $translation : $name;
     }
 
     public function layout(string $layout): self
@@ -208,6 +262,66 @@ final class Panel
     public function hasTenancy(): bool
     {
         return $this->tenant !== null;
+    }
+
+    /**
+     * @param  View|Htmlable|string|Closure(self): (View|Htmlable|string|null)|null  $content
+     */
+    public function sidebarBrand(View|Htmlable|string|Closure|null $content): self
+    {
+        $this->sidebarBrand = $content;
+
+        return $this;
+    }
+
+    /**
+     * @param  View|Htmlable|string|Closure(self): (View|Htmlable|string|null)|null  $content
+     */
+    public function topbarBrand(View|Htmlable|string|Closure|null $content): self
+    {
+        $this->topbarBrand = $content;
+
+        return $this;
+    }
+
+    /**
+     * @param  View|Htmlable|string|Closure(self): (View|Htmlable|string|null)|null  $content
+     */
+    public function mobileSidebarBrand(View|Htmlable|string|Closure|null $content): self
+    {
+        $this->mobileSidebarBrand = $content;
+
+        return $this;
+    }
+
+    /**
+     * @param  View|Htmlable|string|Closure(self): (View|Htmlable|string|null)|null  $content
+     */
+    public function sidebarFooter(View|Htmlable|string|Closure|null $content): self
+    {
+        $this->sidebarFooter = $content;
+
+        return $this;
+    }
+
+    /**
+     * @param  View|Htmlable|string|Closure(self): (View|Htmlable|string|null)|null  $content
+     */
+    public function topbarEnd(View|Htmlable|string|Closure|null $content): self
+    {
+        $this->topbarEnd = $content;
+
+        return $this;
+    }
+
+    /**
+     * @param  View|Htmlable|string|Closure(self): (View|Htmlable|string|null)|null  $content
+     */
+    public function mobileHeaderEnd(View|Htmlable|string|Closure|null $content): self
+    {
+        $this->mobileHeaderEnd = $content;
+
+        return $this;
     }
 
     /**

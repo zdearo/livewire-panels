@@ -6,24 +6,44 @@ namespace Zdearo\LivewirePanels\Navigation;
 
 use Closure;
 use Illuminate\Http\Request;
+use UnexpectedValueException;
+use Zdearo\LivewirePanels\Support\Concerns\EvaluatesClosures;
 use Zdearo\LivewirePanels\Support\Http\CurrentRequestResolver;
 
 final class NavigationItem
 {
+    use EvaluatesClosures;
+
     /**
      * @var string|Closure(): string
      */
     public private(set) string|Closure $label;
 
-    public private(set) ?string $url = null;
+    /**
+     * @var string|Closure(): string|null
+     */
+    public private(set) string|Closure|null $url = null;
 
     public private(set) ?string $icon = null;
 
-    public private(set) ?string $badge = null;
+    /**
+     * @var string|Closure(): (int|string|null)|null
+     */
+    public private(set) string|Closure|null $badge = null;
 
     public private(set) ?string $group = null;
 
     public private(set) int $sort = 0;
+
+    /**
+     * @var bool|Closure(): bool
+     */
+    public private(set) bool|Closure $isVisible = true;
+
+    /**
+     * @var bool|Closure(): bool
+     */
+    public private(set) bool|Closure $isHidden = false;
 
     /**
      * @param  string|Closure(): string  $label
@@ -38,20 +58,36 @@ final class NavigationItem
 
     public function displayLabel(): string
     {
-        $label = $this->label instanceof Closure
-            ? ($this->label)()
-            : $this->label;
+        $label = $this->evaluate($this->label);
+
+        if (! is_string($label)) {
+            throw new UnexpectedValueException('Navigation item labels must resolve to strings.');
+        }
 
         $translation = __($label);
 
         return is_string($translation) ? $translation : $label;
     }
 
-    public function url(string $url): self
+    /**
+     * @param  string|Closure(): string|null  $url
+     */
+    public function url(string|Closure|null $url): self
     {
         $this->url = $url;
 
         return $this;
+    }
+
+    public function displayUrl(): ?string
+    {
+        $url = $this->evaluate($this->url);
+
+        if ($url === null || is_string($url)) {
+            return $url;
+        }
+
+        throw new UnexpectedValueException('Navigation item URLs must resolve to strings or null.');
     }
 
     public function icon(?string $icon): self
@@ -61,11 +97,29 @@ final class NavigationItem
         return $this;
     }
 
-    public function badge(int|string|null $badge): self
+    /**
+     * @param  int|string|Closure(): (int|string|null)|null  $badge
+     */
+    public function badge(int|string|Closure|null $badge): self
     {
-        $this->badge = $badge === null ? null : (string) $badge;
+        $this->badge = $badge instanceof Closure || $badge === null ? $badge : (string) $badge;
 
         return $this;
+    }
+
+    public function displayBadge(): ?string
+    {
+        $badge = $this->evaluate($this->badge);
+
+        if ($badge === null) {
+            return null;
+        }
+
+        if (is_int($badge) || is_string($badge)) {
+            return (string) $badge;
+        }
+
+        throw new UnexpectedValueException('Navigation item badges must resolve to strings, integers, or null.');
     }
 
     public function group(?string $group): self
@@ -82,13 +136,41 @@ final class NavigationItem
         return $this;
     }
 
+    /**
+     * @param  bool|Closure(): bool  $condition
+     */
+    public function visible(bool|Closure $condition = true): self
+    {
+        $this->isVisible = $condition;
+
+        return $this;
+    }
+
+    /**
+     * @param  bool|Closure(): bool  $condition
+     */
+    public function hidden(bool|Closure $condition = true): self
+    {
+        $this->isHidden = $condition;
+
+        return $this;
+    }
+
+    public function isVisible(): bool
+    {
+        return (bool) $this->evaluate($this->isVisible)
+            && ! (bool) $this->evaluate($this->isHidden);
+    }
+
     public function isCurrent(): bool
     {
-        if ($this->url === null) {
+        $url = $this->displayUrl();
+
+        if ($url === null) {
             return false;
         }
 
-        $path = parse_url($this->url, PHP_URL_PATH);
+        $path = parse_url($url, PHP_URL_PATH);
 
         if (! is_string($path) || $path === '') {
             return false;

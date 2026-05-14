@@ -13,9 +13,12 @@ use Zdearo\LivewirePanels\Navigation\NavigationItem;
 use Zdearo\LivewirePanels\Panel\Panel;
 use Zdearo\LivewirePanels\Shell\DefaultPanelShell;
 use Zdearo\LivewirePanels\Shell\PanelShell;
+use Zdearo\LivewirePanels\Support\Concerns\EvaluatesClosures;
 
 return new class extends Component
 {
+    use EvaluatesClosures;
+
     public function currentPanel(): ?Panel
     {
         return Panels::currentPanel();
@@ -107,7 +110,7 @@ return new class extends Component
 
     public function groupUrl(NavigationGroup $group): string
     {
-        return $group->items[0]->url ?? '#';
+        return $group->items[0]->displayUrl() ?? '#';
     }
 
     private function renderShellPart(string $part): string
@@ -118,20 +121,32 @@ return new class extends Component
             return '';
         }
 
-        $content = match ($part) {
-            'sidebarBrand' => $this->shell()->sidebarBrand($panel),
-            'topbarBrand' => $this->shell()->topbarBrand($panel),
-            'mobileSidebarBrand' => $this->shell()->mobileSidebarBrand($panel),
-            'sidebarFooter' => $this->shell()->sidebarFooter($panel),
-            'topbarEnd' => $this->shell()->topbarEnd($panel),
-            'mobileHeaderEnd' => $this->shell()->mobileHeaderEnd($panel),
+        $configuredContent = match ($part) {
+            'sidebarBrand' => $panel->sidebarBrand,
+            'topbarBrand' => $panel->topbarBrand,
+            'mobileSidebarBrand' => $panel->mobileSidebarBrand,
+            'sidebarFooter' => $panel->sidebarFooter,
+            'topbarEnd' => $panel->topbarEnd,
+            'mobileHeaderEnd' => $panel->mobileHeaderEnd,
             default => null,
         };
+
+        $content = $configuredContent === null
+            ? match ($part) {
+                'sidebarBrand' => $this->shell()->sidebarBrand($panel),
+                'topbarBrand' => $this->shell()->topbarBrand($panel),
+                'mobileSidebarBrand' => $this->shell()->mobileSidebarBrand($panel),
+                'sidebarFooter' => $this->shell()->sidebarFooter($panel),
+                'topbarEnd' => $this->shell()->topbarEnd($panel),
+                'mobileHeaderEnd' => $this->shell()->mobileHeaderEnd($panel),
+                default => null,
+            }
+        : $this->evaluate($configuredContent, [$panel]);
 
         return $this->renderContent($content);
     }
 
-    private function renderContent(View|Htmlable|string|null $content): string
+    private function renderContent(mixed $content): string
     {
         if ($content instanceof View) {
             return $content->render();
@@ -141,6 +156,10 @@ return new class extends Component
             return $content->toHtml();
         }
 
-        return $content ?? '';
+        if ($content === null || is_string($content)) {
+            return $content ?? '';
+        }
+
+        throw new UnexpectedValueException('Panel shell slots must resolve to views, HTMLable objects, strings, or null.');
     }
 };

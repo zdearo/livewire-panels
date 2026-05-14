@@ -79,15 +79,19 @@ final class DefaultPanelShell extends PanelShell
         $navigation = $panel->navigationContract();
 
         foreach ($navigation->items() as $item) {
-            if ($item->url !== null) {
-                return $item->url;
+            $url = $item->displayUrl();
+
+            if ($url !== null) {
+                return $url;
             }
         }
 
         foreach ($navigation->groups() as $group) {
             foreach ($group->items as $item) {
-                if ($item->url !== null) {
-                    return $item->url;
+                $url = $item->displayUrl();
+
+                if ($url !== null) {
+                    return $url;
                 }
             }
         }

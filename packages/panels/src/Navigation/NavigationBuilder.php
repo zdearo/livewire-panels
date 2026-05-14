@@ -56,7 +56,7 @@ final readonly class NavigationBuilder
 
         $groups = array_values(array_filter(
             $groups,
-            fn (NavigationGroup $group): bool => $group->items !== [],
+            fn (NavigationGroup $group): bool => $group->items !== [] && $group->isVisible(),
         ));
 
         foreach ($groups as $group) {
@@ -85,7 +85,10 @@ final readonly class NavigationBuilder
             fn (NavigationItem $first, NavigationItem $second): int => $first->sort <=> $second->sort,
         );
 
-        return $items;
+        return array_values(array_filter(
+            $items,
+            fn (NavigationItem $item): bool => $item->isVisible(),
+        ));
     }
 
     /**

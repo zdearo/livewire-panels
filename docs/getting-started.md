@@ -177,6 +177,26 @@ NavigationGroup::make('main')
     ->label(fn (): string => __('Main'));
 ```
 
+The same lazy pattern is available for display-time values:
+
+```php
+$panel
+    ->name(fn (): string => __('Admin'))
+    ->navigation([
+        NavigationItem::make(fn (): string => __('Billing'))
+            ->url(fn (): string => route('billing.index', absolute: false))
+            ->badge(fn (): int => 12)
+            ->visible(fn (): bool => auth()->check()),
+    ])
+    ->navigationGroups([
+        NavigationGroup::make('management')
+            ->label(fn (): string => __('Management'))
+            ->hidden(fn (): bool => false),
+    ]);
+```
+
+Do not use lazy values for structural settings such as `path`, `subdomain`, middleware, layouts, Vite entries, guards, or tenant route parameters.
+
 ## Navigation Modes
 
 Three Flux navigation modes are available:
@@ -187,6 +207,22 @@ use Zdearo\LivewirePanels\Enums\NavigationMode;
 $panel->navigationMode(NavigationMode::Sidebar);
 $panel->navigationMode(NavigationMode::Topbar);
 $panel->navigationMode(NavigationMode::TopbarWithSidebar);
+```
+
+## Shell Customization
+
+For full control, point the panel to a shell class:
+
+```php
+$panel->shell(AdminPanelShell::class);
+```
+
+For focused customization, the panel can override individual shell slots. These values may be strings, views, `Htmlable` objects, `null`, or lazy closures that receive the current panel:
+
+```php
+$panel
+    ->sidebarBrand(fn (Panel $panel): string => '<strong>'.$panel->displayName().'</strong>')
+    ->topbarEnd(view('panels.admin.topbar-actions'));
 ```
 
 String values are accepted too:

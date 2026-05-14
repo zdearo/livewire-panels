@@ -64,6 +64,21 @@ it('can configure the panel subdomain', function (): void {
     expect($panel->subdomain)->toBe('{company}');
 });
 
+it('resolves panel names lazily', function (): void {
+    $panel = Panel::make()
+        ->name(fn (): string => __('Admin'));
+
+    expect($panel->displayName())->toBe('Admin');
+});
+
+it('fails when lazy panel names resolve to unsupported types', function (): void {
+    $panel = Panel::make()
+        ->name(fn (): array => []);
+
+    expect(fn () => $panel->displayName())
+        ->toThrow(UnexpectedValueException::class, 'Panel names must resolve to strings.');
+});
+
 it('uses sidebar navigation mode by default', function (): void {
     $panel = Panel::make();
 
@@ -207,6 +222,40 @@ it('builds a navigation contract from declared groups, opted-in pages, and manua
         )
         ->and($navigation->allItems())
         ->toHaveCount(4);
+});
+
+it('excludes hidden navigation items and groups from the navigation contract', function (): void {
+    $panel = Panel::make()
+        ->id('admin')
+        ->path('admin')
+        ->name('Admin')
+        ->navigationGroups([
+            NavigationGroup::make('visible-group'),
+            NavigationGroup::make('hidden-group')->hidden(fn (): bool => true),
+        ])
+        ->navigation([
+            NavigationItem::make('Visible')->url('/admin')->visible(fn (): bool => true),
+            NavigationItem::make('Invisible')->url('/admin/invisible')->visible(fn (): bool => false),
+            NavigationItem::make('Hidden')->url('/admin/hidden')->hidden(fn (): bool => true),
+            NavigationItem::make('Grouped visible')->url('/admin/grouped')->group('visible-group'),
+            NavigationItem::make('Grouped hidden')->url('/admin/grouped-hidden')->group('hidden-group'),
+        ]);
+
+    $navigation = $panel->navigationContract();
+
+    expect($navigation->items())
+        ->toHaveCount(1)
+        ->sequence(fn ($item) => $item->label->toBe('Visible'))
+        ->and($navigation->groups())
+        ->toHaveCount(1)
+        ->sequence(
+            fn ($group) => $group
+                ->id->toBe('visible-group')
+                ->items->toHaveCount(1)
+                ->items->sequence(fn ($item) => $item->label->toBe('Grouped visible')),
+        )
+        ->and($navigation->allItems())
+        ->toHaveCount(2);
 });
 
 it('fails when a navigation item references an undeclared group', function (): void {
