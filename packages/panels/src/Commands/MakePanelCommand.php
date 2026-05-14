@@ -18,6 +18,7 @@ final class MakePanelCommand extends Command
         {--name= : The panel display name}
         {--middleware=* : The panel route middleware}
         {--default : Mark the panel as the default panel}
+        {--shell : Create a custom panel shell class}
         {--force : Overwrite the panel provider if it already exists}';
 
     protected $description = 'Create a new Livewire panel provider';
@@ -29,6 +30,9 @@ final class MakePanelCommand extends Command
         $providerPath = $this->laravel->basePath("app/Providers/{$providerClass}.php");
         $stylesheetPath = $this->stylesheetPath($panelId);
         $vite = $this->vite($panelId);
+        $shouldCreateShell = $this->shouldCreateShell();
+        $shellClass = $this->shellClass($panelId);
+        $shellPath = $this->shellPath($panelId);
 
         if ($files->exists($providerPath) && ! $this->option('force')) {
             $this->error("Panel provider [{$providerClass}] already exists.");
@@ -42,8 +46,18 @@ final class MakePanelCommand extends Command
             return self::FAILURE;
         }
 
+        if ($shouldCreateShell && $files->exists($shellPath) && ! $this->option('force')) {
+            $this->error("Panel shell [{$shellClass}] already exists.");
+
+            return self::FAILURE;
+        }
+
         $files->ensureDirectoryExists(dirname($providerPath));
         $files->ensureDirectoryExists(dirname($stylesheetPath));
+
+        if ($shouldCreateShell) {
+            $files->ensureDirectoryExists(dirname($shellPath));
+        }
 
         $files->put(
             $providerPath,
@@ -56,8 +70,21 @@ final class MakePanelCommand extends Command
                 vite: $vite,
                 middleware: $this->middleware(),
                 isDefault: $this->isDefaultPanel($providerClass),
+                shellClass: $shellClass,
+                shouldCreateShell: $shouldCreateShell,
             ),
         );
+
+        if ($shouldCreateShell) {
+            $files->put(
+                $shellPath,
+                $this->shellContents(
+                    stub: $files->get($this->shellStubPath()),
+                    panelId: $panelId,
+                    shellClass: $shellClass,
+                ),
+            );
+        }
 
         $files->put($stylesheetPath, $files->get($this->stylesheetStubPath()));
         $this->addViteInput($files, $vite);
@@ -86,6 +113,16 @@ final class MakePanelCommand extends Command
         return Str::studly($panelId).'PanelProvider';
     }
 
+    private function shellClass(string $panelId): string
+    {
+        return Str::studly($panelId).'PanelShell';
+    }
+
+    private function shellPath(string $panelId): string
+    {
+        return $this->laravel->basePath('app/Panels/'.$this->panelStudly($panelId).'/'.$this->shellClass($panelId).'.php');
+    }
+
     private function stylesheetPath(string $panelId): string
     {
         return $this->laravel->resourcePath("css/panels/{$panelId}.css");
@@ -94,6 +131,19 @@ final class MakePanelCommand extends Command
     private function vite(string $panelId): string
     {
         return "resources/css/panels/{$panelId}.css";
+    }
+
+    private function shouldCreateShell(): bool
+    {
+        if ($this->option('shell')) {
+            return true;
+        }
+
+        if ($this->argument('id') === null) {
+            return $this->confirm('Create a custom panel shell class?', false);
+        }
+
+        return false;
     }
 
     private function panelPath(string $panelId): string
@@ -165,24 +215,43 @@ final class MakePanelCommand extends Command
         string $vite,
         array $middleware,
         bool $isDefault,
+        string $shellClass,
+        bool $shouldCreateShell,
     ): string {
         $defaultCall = $isDefault ? "\n            ->default()" : '';
+        $shellCall = $shouldCreateShell ? "\n            ->shell({$shellClass}::class)" : '';
+        $shellImport = $shouldCreateShell ? 'use '.$this->shellNamespace($panelId).'\\'.$shellClass.";\n" : '';
 
         return strtr($stub, [
             '{{ namespace }}' => $this->providerNamespace(),
+            '{{ shell_import }}' => $shellImport,
             '{{ class }}' => $providerClass,
             '{{ id }}' => $this->quote($panelId),
             '{{ path }}' => $this->quote($path),
             '{{ name }}' => $this->quote($name),
             '{{ vite }}' => $this->quote($vite),
             '{{ middleware }}' => $this->array($middleware),
+            '{{ shell }}' => $shellCall,
             '{{ default }}' => $defaultCall,
+        ]);
+    }
+
+    private function shellContents(string $stub, string $panelId, string $shellClass): string
+    {
+        return strtr($stub, [
+            '{{ namespace }}' => $this->shellNamespace($panelId),
+            '{{ class }}' => $shellClass,
         ]);
     }
 
     private function stubPath(): string
     {
         return __DIR__.'/../../stubs/panel-provider.stub';
+    }
+
+    private function shellStubPath(): string
+    {
+        return __DIR__.'/../../stubs/panel-shell.stub';
     }
 
     private function stylesheetStubPath(): string
@@ -285,6 +354,16 @@ final class MakePanelCommand extends Command
     private function providerNamespace(): string
     {
         return rtrim($this->laravel->getNamespace(), '\\').'\\Providers';
+    }
+
+    private function shellNamespace(string $panelId): string
+    {
+        return rtrim($this->laravel->getNamespace(), '\\').'\\Panels\\'.$this->panelStudly($panelId);
+    }
+
+    private function panelStudly(string $panelId): string
+    {
+        return Str::studly($panelId);
     }
 
     private function quote(string $value): string

@@ -93,6 +93,7 @@ it('can ask for the panel id when it is not provided', function (): void {
     $this
         ->artisan('make:panel')
         ->expectsQuestion('What is the panel id?', 'support')
+        ->expectsConfirmation('Create a custom panel shell class?', 'no')
         ->assertSuccessful();
 
     $providerPath = app_path('Providers/SupportPanelProvider.php');
@@ -110,6 +111,58 @@ it('can ask for the panel id when it is not provided', function (): void {
 
     expect(File::get(base_path('vite.config.js')))
         ->toContain("'resources/css/panels/support.css'");
+});
+
+it('can create a custom panel shell class', function (): void {
+    $this
+        ->artisan('make:panel', [
+            'id' => 'admin',
+            '--shell' => true,
+        ])
+        ->assertSuccessful();
+
+    $providerPath = app_path('Providers/AdminPanelProvider.php');
+    $shellPath = app_path('Panels/Admin/AdminPanelShell.php');
+
+    expect($providerPath)
+        ->toBeFile()
+        ->and(File::get($providerPath))
+        ->toContain('use App\Panels\Admin\AdminPanelShell;')
+        ->toContain('->shell(AdminPanelShell::class)')
+        ->and($shellPath)
+        ->toBeFile()
+        ->and(File::get($shellPath))
+        ->toContain('namespace App\Panels\Admin;')
+        ->toContain('final class AdminPanelShell extends DefaultPanelShell')
+        ->toContain('public function sidebarBrand(Panel $panel): View|Htmlable|string|null');
+});
+
+it('can ask whether to create a custom panel shell class', function (): void {
+    $this
+        ->artisan('make:panel')
+        ->expectsQuestion('What is the panel id?', 'admin')
+        ->expectsConfirmation('Create a custom panel shell class?', 'yes')
+        ->assertSuccessful();
+
+    expect(app_path('Panels/Admin/AdminPanelShell.php'))->toBeFile()
+        ->and(File::get(app_path('Providers/AdminPanelProvider.php')))
+        ->toContain('->shell(AdminPanelShell::class)');
+});
+
+it('does not overwrite an existing panel shell without force', function (): void {
+    $shellPath = app_path('Panels/Admin/AdminPanelShell.php');
+
+    File::ensureDirectoryExists(dirname($shellPath));
+    File::put($shellPath, '<?php // existing');
+
+    $this
+        ->artisan('make:panel', [
+            'id' => 'admin',
+            '--shell' => true,
+        ])
+        ->assertFailed();
+
+    expect(File::get($shellPath))->toBe('<?php // existing');
 });
 
 it('creates a custom panel provider without default when another panel exists', function (): void {

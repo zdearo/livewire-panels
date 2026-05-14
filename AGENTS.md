@@ -418,6 +418,24 @@ php artisan make:panel customer-app \
 
 The command should only scaffold the panel provider and its panel CSS entrypoint. It must not create app pages, auth, CRUD resources, Flux layouts beyond the package defaults, or final starter-kit structure.
 
+The command may optionally scaffold a panel shell class:
+
+```bash
+php artisan make:panel admin --shell
+```
+
+When `id` is omitted, the command asks whether to create the shell class interactively. Shell classes are created at:
+
+```txt
+app/Panels/Admin/AdminPanelShell.php
+```
+
+When a shell is generated, the panel provider must import it and call:
+
+```php
+->shell(AdminPanelShell::class)
+```
+
 Generator output should use package stubs. The panel provider template lives at:
 
 ```txt
@@ -428,6 +446,12 @@ The panel CSS template lives at:
 
 ```txt
 packages/panels/stubs/panel.css.stub
+```
+
+The panel shell template lives at:
+
+```txt
+packages/panels/stubs/panel-shell.stub
 ```
 
 The package must not expose a page generator command. Developers should create Livewire page components with Livewire's own generator and register them in panel providers with `Page::make(...)`.
