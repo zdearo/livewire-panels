@@ -25,7 +25,7 @@ abstract class PanelProvider extends ServiceProvider
 
         $manager = $this->app->make(PanelManager::class);
 
-        if ($manager->getCurrentPanel() === null || $panel->isDefault) {
+        if ($manager->currentPanel() === null || $panel->isDefault) {
             $manager->setCurrentPanel($panel);
         }
     }

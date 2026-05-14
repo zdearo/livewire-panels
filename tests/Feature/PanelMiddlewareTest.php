@@ -25,6 +25,6 @@ it('sets the current panel and Livewire page layout for panel requests', functio
     );
 
     expect($response->getContent())->toBe('ok')
-        ->and(app(PanelManager::class)->getCurrentPanel())->toBe($panel)
+        ->and(app(PanelManager::class)->currentPanel())->toBe($panel)
         ->and(config('livewire.component_layout'))->toBe('custom-panel-layout');
 });

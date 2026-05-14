@@ -11,7 +11,7 @@ return new class extends Component
 {
     public function currentPanel(): ?Panel
     {
-        return app(PanelManager::class)->getCurrentPanel();
+        return app(PanelManager::class)->currentPanel();
     }
 
     public function navigationContract(): ?NavigationContract
