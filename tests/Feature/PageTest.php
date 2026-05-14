@@ -32,6 +32,13 @@ it('can configure a panel page navigation item', function (): void {
         ->sort->toBe(20);
 });
 
+it('can configure a panel page navigation item with a lazy label', function (): void {
+    $page = Page::make('/users', 'pages::admin.users')
+        ->navigation(fn (): string => __('Users'));
+
+    expect($page->navigation?->displayLabel())->toBe('Users');
+});
+
 it('can create a page group from the page descriptor API', function (): void {
     $group = Page::group('/settings')
         ->name('settings')

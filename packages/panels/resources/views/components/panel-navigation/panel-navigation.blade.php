@@ -17,15 +17,15 @@
             <flux:sidebar.nav>
                 @foreach($navigationItems as $navigationItem)
                     <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->badge" :href="$navigationItem->url ?? '#'" :current="$navigationItem->isCurrent()">
-                        {{ $navigationItem->label }}
+                        {{ $navigationItem->displayLabel() }}
                     </flux:sidebar.item>
                 @endforeach
 
                 @foreach($navigationGroups as $navigationGroup)
-                    <flux:sidebar.group expandable :icon="$navigationGroup->icon" heading="{{ $navigationGroup->label }}" class="grid">
+                    <flux:sidebar.group expandable :icon="$navigationGroup->icon" heading="{{ $navigationGroup->displayLabel() }}" class="grid">
                         @foreach($navigationGroup->items as $navigationItem)
                             <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->badge" :href="$navigationItem->url ?? '#'" :current="$navigationItem->isCurrent()">
-                                {{ $navigationItem->label }}
+                                {{ $navigationItem->displayLabel() }}
                             </flux:sidebar.item>
                         @endforeach
                     </flux:sidebar.group>
@@ -57,7 +57,7 @@
             <flux:navbar class="-mb-px max-lg:hidden">
                 @foreach($navigationItems as $navigationItem)
                     <flux:navbar.item :icon="$navigationItem->icon" :badge="$navigationItem->badge" :href="$navigationItem->url ?? '#'" :current="$navigationItem->isCurrent()">
-                        {{ $navigationItem->label }}
+                        {{ $navigationItem->displayLabel() }}
                     </flux:navbar.item>
                 @endforeach
 
@@ -69,13 +69,13 @@
                     @if($mode->value === 'topbar')
                         <flux:dropdown hover class="max-lg:hidden" data-livewire-panels-navigation-dropdown>
                             <flux:navbar.item :icon="$navigationGroup->icon" icon:trailing="chevron-down">
-                                {{ $navigationGroup->label }}
+                                {{ $navigationGroup->displayLabel() }}
                             </flux:navbar.item>
 
                             <flux:navmenu>
                                 @foreach($navigationGroup->items as $navigationItem)
                                     <flux:navmenu.item :href="$navigationItem->url ?? '#'" :current="$navigationItem->isCurrent()">
-                                        {{ $navigationItem->label }}
+                                        {{ $navigationItem->displayLabel() }}
                                     </flux:navmenu.item>
                                 @endforeach
                             </flux:navmenu>
@@ -86,7 +86,7 @@
                             :href="$this->groupUrl($navigationGroup)"
                             :current="$activeGroup?->id === $navigationGroup->id"
                         >
-                            {{ $navigationGroup->label }}
+                            {{ $navigationGroup->displayLabel() }}
                         </flux:navbar.item>
                     @endif
                 @endforeach
@@ -107,15 +107,15 @@
             <flux:sidebar.nav>
                 @foreach($navigationItems as $navigationItem)
                     <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->badge" :href="$navigationItem->url ?? '#'" :current="$navigationItem->isCurrent()">
-                        {{ $navigationItem->label }}
+                        {{ $navigationItem->displayLabel() }}
                     </flux:sidebar.item>
                 @endforeach
 
                 @foreach($navigationGroups as $navigationGroup)
-                    <flux:sidebar.group expandable :icon="$navigationGroup->icon" heading="{{ $navigationGroup->label }}" class="grid">
+                    <flux:sidebar.group expandable :icon="$navigationGroup->icon" heading="{{ $navigationGroup->displayLabel() }}" class="grid">
                         @foreach($navigationGroup->items as $navigationItem)
                             <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->badge" :href="$navigationItem->url ?? '#'" :current="$navigationItem->isCurrent()">
-                                {{ $navigationItem->label }}
+                                {{ $navigationItem->displayLabel() }}
                             </flux:sidebar.item>
                         @endforeach
                     </flux:sidebar.group>
@@ -133,7 +133,7 @@
                             <flux:navlist>
                                 @foreach($activeGroup->items as $navigationItem)
                                     <flux:navlist.item :href="$navigationItem->url ?? '#'" :badge="$navigationItem->badge" :current="$navigationItem->isCurrent()">
-                                        {{ $navigationItem->label }}
+                                        {{ $navigationItem->displayLabel() }}
                                     </flux:navlist.item>
                                 @endforeach
                             </flux:navlist>

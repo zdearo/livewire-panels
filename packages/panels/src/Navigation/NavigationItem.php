@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Zdearo\LivewirePanels\Navigation;
 
+use Closure;
 use Illuminate\Http\Request;
 use Zdearo\LivewirePanels\Support\Http\CurrentRequestResolver;
 
 final class NavigationItem
 {
-    public private(set) string $label;
+    /**
+     * @var string|Closure(): string
+     */
+    public private(set) string|Closure $label;
 
     public private(set) ?string $url = null;
 
@@ -21,12 +25,26 @@ final class NavigationItem
 
     public private(set) int $sort = 0;
 
-    public static function make(string $label): self
+    /**
+     * @param  string|Closure(): string  $label
+     */
+    public static function make(string|Closure $label): self
     {
         $item = new self;
         $item->label = $label;
 
         return $item;
+    }
+
+    public function displayLabel(): string
+    {
+        $label = $this->label instanceof Closure
+            ? ($this->label)()
+            : $this->label;
+
+        $translation = __($label);
+
+        return is_string($translation) ? $translation : $label;
     }
 
     public function url(string $url): self

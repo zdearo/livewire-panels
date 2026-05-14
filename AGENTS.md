@@ -328,6 +328,16 @@ Page::make('/users', 'pages::admin.users')
     ->navigation('Users', icon: 'users', group: 'management', sort: 20);
 ```
 
+Panel providers run during Laravel provider registration, so application services such as the translator may not be available yet. Do not call `__()` directly in panel definitions. Navigation labels are translated by the package when rendered, and labels may be lazy closures when dynamic translation is needed:
+
+```php
+Page::make('/', 'pages::admin.dashboard')
+    ->navigation('Home');
+
+NavigationGroup::make('main')
+    ->label(fn (): string => __('Main'));
+```
+
 Navigation item groups must be declared explicitly on the panel before any item references them. Group references use the group ID, not the visible label:
 
 ```php

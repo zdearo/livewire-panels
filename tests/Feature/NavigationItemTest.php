@@ -22,6 +22,12 @@ it('configures a navigation item descriptor', function (): void {
         ->sort->toBe(20);
 });
 
+it('resolves navigation item labels lazily', function (): void {
+    $item = NavigationItem::make(fn (): string => __('Inbox'));
+
+    expect($item->displayLabel())->toBe('Inbox');
+});
+
 it('allows clearing a navigation item badge', function (): void {
     $item = NavigationItem::make('Inbox')->badge(null);
 

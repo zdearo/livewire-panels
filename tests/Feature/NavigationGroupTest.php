@@ -25,6 +25,13 @@ it('uses a headline label by default', function (): void {
     expect($group->label)->toBe('Support Tools');
 });
 
+it('resolves navigation group labels lazily', function (): void {
+    $group = NavigationGroup::make('management')
+        ->label(fn (): string => __('Management'));
+
+    expect($group->displayLabel())->toBe('Management');
+});
+
 it('can receive navigation items in sorted order', function (): void {
     $group = NavigationGroup::make('management')
         ->addItem(NavigationItem::make('Users')->sort(20))

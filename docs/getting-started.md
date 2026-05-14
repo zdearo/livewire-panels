@@ -166,6 +166,17 @@ $panel->navigationGroups([
 
 If an item references an undeclared group, the panel throws a `LogicException`.
 
+Panel providers run during Laravel provider registration, before every service is safe to resolve. Do not call `__()` directly while configuring the panel. Navigation labels are translated when rendered, and may also be defined lazily:
+
+```php
+Page::make('/', 'pages::admin.dashboard')
+    ->name('dashboard')
+    ->navigation('Home');
+
+NavigationGroup::make('main')
+    ->label(fn (): string => __('Main'));
+```
+
 ## Navigation Modes
 
 Three Flux navigation modes are available:

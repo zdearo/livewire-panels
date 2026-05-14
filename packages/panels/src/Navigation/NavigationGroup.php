@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace Zdearo\LivewirePanels\Navigation;
 
+use Closure;
 use Illuminate\Support\Str;
 
 final class NavigationGroup
 {
     public private(set) string $id;
 
-    public private(set) string $label;
+    /**
+     * @var string|Closure(): string
+     */
+    public private(set) string|Closure $label;
 
     public private(set) ?string $icon = null;
 
@@ -30,11 +34,25 @@ final class NavigationGroup
         return $group;
     }
 
-    public function label(string $label): self
+    /**
+     * @param  string|Closure(): string  $label
+     */
+    public function label(string|Closure $label): self
     {
         $this->label = $label;
 
         return $this;
+    }
+
+    public function displayLabel(): string
+    {
+        $label = $this->label instanceof Closure
+            ? ($this->label)()
+            : $this->label;
+
+        $translation = __($label);
+
+        return is_string($translation) ? $translation : $label;
     }
 
     public function icon(?string $icon): self

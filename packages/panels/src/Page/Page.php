@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Zdearo\LivewirePanels\Page;
 
+use Closure;
 use Zdearo\LivewirePanels\Navigation\NavigationItem;
 
 final class Page
@@ -38,7 +39,7 @@ final class Page
     }
 
     public function navigation(
-        string $label,
+        string|Closure $label,
         ?string $icon = null,
         ?string $group = null,
         int $sort = 0,
