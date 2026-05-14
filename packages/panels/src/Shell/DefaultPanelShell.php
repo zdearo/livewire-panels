@@ -10,7 +10,7 @@ use Illuminate\Contracts\View\View;
 use Stringable;
 use Zdearo\LivewirePanels\Panel\Panel;
 
-final class DefaultPanelShell extends PanelShell
+abstract class DefaultPanelShell extends PanelShell
 {
     #[\Override]
     public function sidebarBrand(Panel $panel): View

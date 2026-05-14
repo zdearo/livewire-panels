@@ -8,7 +8,14 @@ use Zdearo\LivewirePanels\Navigation\NavigationGroup;
 use Zdearo\LivewirePanels\Navigation\NavigationItem;
 use Zdearo\LivewirePanels\Panel\Panel;
 use Zdearo\LivewirePanels\Shell\DefaultPanelShell;
+use Zdearo\LivewirePanels\Shell\FluxPanelShell;
 use Zdearo\LivewirePanels\Shell\PanelShell;
+
+it('allows the default panel shell to be extended by applications', function (): void {
+    expect(new ReflectionClass(DefaultPanelShell::class)->isFinal())->toBeFalse()
+        ->and(new ReflectionClass(DefaultPanelShell::class)->isAbstract())->toBeTrue()
+        ->and(app(DefaultPanelShell::class))->toBeInstanceOf(FluxPanelShell::class);
+});
 
 it('returns null from the base panel shell hooks', function (): void {
     $shell = new class extends PanelShell {};
