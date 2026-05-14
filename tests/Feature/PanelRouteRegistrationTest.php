@@ -36,6 +36,17 @@ it('automatically registers panel pages as Livewire page routes', function (): v
         ->and($route?->getAction('livewire_component'))->toBe('pages::admin.dashboard');
 });
 
+it('always registers panel routes inside the web middleware group', function (): void {
+    app()->register(PanelWithoutMiddlewareTestingPanelProvider::class);
+    app()->boot();
+
+    $route = Route::getRoutes()->getByName('admin.dashboard');
+
+    expect($route)
+        ->not->toBeNull()
+        ->gatherMiddleware()->toContain('web', SetCurrentPanel::class.':admin');
+});
+
 it('automatically registers grouped panel pages with path and name prefixes', function (): void {
     app()->register(GroupedPageRouteTestingPanelProvider::class);
     app()->boot();
@@ -78,6 +89,18 @@ final class PageRouteTestingPanelProvider extends PanelProvider
             ->path('admin')
             ->name('Admin')
             ->middleware(['web'])
+            ->page(Page::make('/', 'pages::admin.dashboard')->name('dashboard'));
+    }
+}
+
+final class PanelWithoutMiddlewareTestingPanelProvider extends PanelProvider
+{
+    public function panel(Panel $panel): Panel
+    {
+        return $panel
+            ->id('admin')
+            ->path('admin')
+            ->name('Admin')
             ->page(Page::make('/', 'pages::admin.dashboard')->name('dashboard'));
     }
 }

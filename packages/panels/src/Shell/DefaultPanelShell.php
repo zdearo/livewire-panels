@@ -16,6 +16,7 @@ final class DefaultPanelShell extends PanelShell
     public function sidebarBrand(Panel $panel): View
     {
         return view('livewire-panels::components.panel-navigation.shell.sidebar-brand', [
+            'brandUrl' => $this->brandUrl($panel),
             'panel' => $panel,
         ]);
     }
@@ -24,6 +25,7 @@ final class DefaultPanelShell extends PanelShell
     public function topbarBrand(Panel $panel): View
     {
         return view('livewire-panels::components.panel-navigation.shell.topbar-brand', [
+            'brandUrl' => $this->brandUrl($panel),
             'panel' => $panel,
         ]);
     }
@@ -70,6 +72,27 @@ final class DefaultPanelShell extends PanelShell
             'userName' => $this->userName($user),
             'variant' => $variant,
         ]);
+    }
+
+    private function brandUrl(Panel $panel): string
+    {
+        $navigation = $panel->navigationContract();
+
+        foreach ($navigation->items() as $item) {
+            if ($item->url !== null) {
+                return $item->url;
+            }
+        }
+
+        foreach ($navigation->groups() as $group) {
+            foreach ($group->items as $item) {
+                if ($item->url !== null) {
+                    return $item->url;
+                }
+            }
+        }
+
+        return url($panel->path);
     }
 
     private function userName(Authenticatable $user): string

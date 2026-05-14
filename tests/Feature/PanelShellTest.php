@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Zdearo\LivewirePanels\Navigation\NavigationGroup;
+use Zdearo\LivewirePanels\Navigation\NavigationItem;
 use Zdearo\LivewirePanels\Panel\Panel;
 use Zdearo\LivewirePanels\Shell\DefaultPanelShell;
 use Zdearo\LivewirePanels\Shell\PanelShell;
@@ -43,6 +45,25 @@ it('falls back to the user class basename when the auth identifier is not string
     $menu = app(DefaultPanelShell::class)->sidebarFooter($panel);
 
     expect($menu?->render())->toContain('PanelShellObjectIdentifierUser');
+});
+
+it('uses the first navigation url as the default brand url', function (): void {
+    $panel = shellTestingPanel()
+        ->navigation(NavigationItem::make('Dashboard')->url('/admin/tenants/acme'));
+
+    $brand = app(DefaultPanelShell::class)->sidebarBrand($panel);
+
+    expect($brand->render())->toContain('href="/admin/tenants/acme"');
+});
+
+it('uses the first grouped navigation url as the default brand url', function (): void {
+    $panel = shellTestingPanel()
+        ->navigationGroups(NavigationGroup::make('management'))
+        ->navigation(NavigationItem::make('Users')->url('/admin/tenants/acme/users')->group('management'));
+
+    $brand = app(DefaultPanelShell::class)->sidebarBrand($panel);
+
+    expect($brand->render())->toContain('href="/admin/tenants/acme/users"');
 });
 
 function shellTestingPanel(): Panel

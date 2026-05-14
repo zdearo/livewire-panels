@@ -1,4 +1,4 @@
 <flux:sidebar.brand
-    href="{{ url($panel->path) }}"
+    href="{{ $brandUrl }}"
     name="{{ $panel->name }}"
 />

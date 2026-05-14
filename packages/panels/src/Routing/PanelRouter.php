@@ -19,11 +19,12 @@ final class PanelRouter
 {
     public function register(Panel $panel): void
     {
-        $middleware = [
+        $middleware = array_values(array_unique([
+            'web',
             ...$panel->middleware,
             SetCurrentPanel::class.':'.$panel->id,
             SetCurrentTenant::class.':'.$panel->id,
-        ];
+        ]));
 
         if ($panel->hasAuthentication()) {
             $middleware[] = AuthenticatePanel::class.':'.$panel->id;
