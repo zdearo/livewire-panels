@@ -6,17 +6,22 @@ namespace Zdearo\LivewirePanels\Tenant;
 
 use Illuminate\Http\Request;
 use Zdearo\LivewirePanels\Panel\Panel;
+use Zdearo\LivewirePanels\Support\Http\CurrentRequestResolver;
 use Zdearo\LivewirePanels\Tenant\Contracts\ResolvesPanelTenant;
 
-final class TenantResolver implements ResolvesPanelTenant
+final readonly class TenantResolver implements ResolvesPanelTenant
 {
+    public function __construct(
+        private CurrentRequestResolver $requests,
+    ) {}
+
     public function resolve(Panel $panel, Tenant $tenant, Request $request): ?object
     {
         if ($tenant->routeParameter === null) {
             return null;
         }
 
-        $request = $this->originalRequest($request);
+        $request = $this->requests->resolve($request);
         $value = $request->route($tenant->routeParameter);
 
         if ($value instanceof $tenant->model) {
@@ -36,16 +41,5 @@ final class TenantResolver implements ResolvesPanelTenant
         $resolved = $model->resolveRouteBinding($value);
 
         return $resolved instanceof $tenant->model ? $resolved : null;
-    }
-
-    private function originalRequest(Request $request): Request
-    {
-        if (! $request->is('livewire/*') || ! app()->bound('originalRequest')) {
-            return $request;
-        }
-
-        $originalRequest = app('originalRequest');
-
-        return $originalRequest instanceof Request ? $originalRequest : $request;
     }
 }

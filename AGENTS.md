@@ -132,6 +132,8 @@ The first implementation layer is intentionally small:
 - `Middleware\SetCurrentTenant`: resolves and stores the current panel tenant for each panel request.
 - `Routing\PanelRouter`: converts panel pages and panel route callbacks into Laravel routes.
 - `Routing\PanelUrlGenerator`: generates panel route URLs with current tenant parameters.
+- `Support\Http\CurrentRequestResolver`: resolves the effective page request, using `originalRequest` only during Livewire update requests.
+- `Support\Routing\RouteSegments`: joins route path and route name prefixes consistently across page registration and navigation building.
 - `LivewirePanelsServiceProvider`: the only root-level package provider in `packages/panels/src`.
 
 Keep `packages/panels/src` organized by domain. The root of `src` should only contain package-level entry points that genuinely sit above a single domain, such as `LivewirePanelsServiceProvider`.
@@ -307,7 +309,7 @@ Panel page routes are registered as Livewire page routes and include package mid
 
 The package binds `originalRequest` as a scoped container entry. Outside Livewire update requests it returns the current request. During Livewire update requests it uses `Support\Http\OriginalRequestResolver`, backed by Livewire's `PersistentMiddleware` internals, to rebuild the original page request and resolve its route.
 
-Code that needs to know the active page URL during Livewire updates should use `originalRequest` instead of `request()`. Navigation current-state detection uses this binding so active items and active groups still match the page route while the browser is posting to Livewire's update endpoint.
+Code that needs to know the active page URL during Livewire updates should use `Support\Http\CurrentRequestResolver` instead of reading `request()` or `originalRequest` directly. Navigation current-state detection and tenant resolution use this resolver so active items, active groups, and tenant route parameters still match the page route while the browser is posting to Livewire's update endpoint.
 
 Panel pages do not appear in sidebar navigation by default. A page must opt in with `navigation()`:
 
@@ -586,7 +588,7 @@ packages/panels/src
 packages/support/src
 ```
 
-Composer autoload maps the public panel API from `Zdearo\LivewirePanels\` to `packages/panels/src`, and reserves `Zdearo\LivewirePanels\Support\` for shared support classes in `packages/support/src`.
+Composer autoload maps the public panel API from `Zdearo\LivewirePanels\` to `packages/panels/src`, and reserves `Zdearo\LivewirePanels\Support\` for shared support classes in `packages/support/src`. Code in `packages/panels/src` should prefer support utilities for cross-domain concerns such as effective request resolution and route segment joining.
 
 ## Dependency Notes
 

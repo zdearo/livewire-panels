@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Zdearo\LivewirePanels\Navigation;
 
 use Illuminate\Http\Request;
+use Zdearo\LivewirePanels\Support\Http\CurrentRequestResolver;
 
 final class NavigationItem
 {
@@ -80,8 +81,6 @@ final class NavigationItem
 
     private function currentRequest(): Request
     {
-        $request = app()->bound('originalRequest') ? app('originalRequest') : request();
-
-        return $request instanceof Request ? $request : request();
+        return app(CurrentRequestResolver::class)->resolve(request());
     }
 }

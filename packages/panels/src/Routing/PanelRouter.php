@@ -13,6 +13,7 @@ use Zdearo\LivewirePanels\Middleware\SetCurrentTenant;
 use Zdearo\LivewirePanels\Page\Page;
 use Zdearo\LivewirePanels\Page\PageGroup;
 use Zdearo\LivewirePanels\Panel\Panel;
+use Zdearo\LivewirePanels\Support\Routing\RouteSegments;
 
 final class PanelRouter
 {
@@ -56,17 +57,17 @@ final class PanelRouter
             if ($page instanceof PageGroup) {
                 $this->registerPages(
                     $page->pages,
-                    $this->joinPaths($pathPrefix, $page->path),
-                    $this->joinNames($namePrefix, $page->name),
+                    RouteSegments::path($pathPrefix, $page->path),
+                    RouteSegments::name($namePrefix, $page->name),
                 );
 
                 continue;
             }
 
-            $route = $this->livewireRoute($page, $this->joinPaths($pathPrefix, $page->path));
+            $route = $this->livewireRoute($page, RouteSegments::path($pathPrefix, $page->path));
 
             if ($page->name !== null) {
-                $route->name($this->joinNames($namePrefix, $page->name));
+                $route->name(RouteSegments::name($namePrefix, $page->name));
             }
         }
     }
@@ -77,35 +78,5 @@ final class PanelRouter
         $route->action['livewire_component'] = $page->component;
 
         return $route;
-    }
-
-    private function joinPaths(string ...$paths): string
-    {
-        $segments = [];
-
-        foreach ($paths as $path) {
-            $path = trim($path, '/');
-
-            if ($path !== '') {
-                $segments[] = $path;
-            }
-        }
-
-        $path = implode('/', $segments);
-
-        return $path === '' ? '/' : "/{$path}";
-    }
-
-    private function joinNames(?string ...$names): string
-    {
-        $segments = [];
-
-        foreach ($names as $name) {
-            if ($name !== null && $name !== '') {
-                $segments[] = $name;
-            }
-        }
-
-        return implode('.', $segments);
     }
 }

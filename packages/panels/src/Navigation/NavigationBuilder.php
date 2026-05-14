@@ -10,6 +10,7 @@ use Zdearo\LivewirePanels\Page\Page;
 use Zdearo\LivewirePanels\Page\PageGroup;
 use Zdearo\LivewirePanels\Panel\Panel;
 use Zdearo\LivewirePanels\Routing\PanelUrlGenerator;
+use Zdearo\LivewirePanels\Support\Routing\RouteSegments;
 
 final readonly class NavigationBuilder
 {
@@ -106,8 +107,8 @@ final readonly class NavigationBuilder
                     ...$this->resolvedPageNavigationItems(
                         $panel,
                         $page->pages,
-                        $this->joinPaths($pathPrefix, $page->path),
-                        $this->joinNames($namePrefix, $page->name),
+                        RouteSegments::path($pathPrefix, $page->path),
+                        RouteSegments::name($namePrefix, $page->name),
                     ),
                 );
 
@@ -132,42 +133,12 @@ final readonly class NavigationBuilder
 
     private function pageUrl(Panel $panel, Page $page, string $pathPrefix = '', string $namePrefix = ''): string
     {
-        $routeName = $this->joinNames($namePrefix, $page->name);
+        $routeName = RouteSegments::name($namePrefix, $page->name);
 
         if ($routeName !== '' && $this->router->has($panel->id.'.'.$routeName)) {
             return $this->urls->route($panel, $routeName, absolute: false);
         }
 
-        return $this->joinPaths($panel->path, $pathPrefix, $page->path);
-    }
-
-    private function joinPaths(string ...$paths): string
-    {
-        $segments = [];
-
-        foreach ($paths as $path) {
-            $path = trim($path, '/');
-
-            if ($path !== '') {
-                $segments[] = $path;
-            }
-        }
-
-        $path = implode('/', $segments);
-
-        return $path === '' ? '/' : "/{$path}";
-    }
-
-    private function joinNames(?string ...$names): string
-    {
-        $segments = [];
-
-        foreach ($names as $name) {
-            if ($name !== null && $name !== '') {
-                $segments[] = $name;
-            }
-        }
-
-        return implode('.', $segments);
+        return RouteSegments::path($panel->path, $pathPrefix, $page->path);
     }
 }
