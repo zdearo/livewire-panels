@@ -67,8 +67,10 @@ abstract class DefaultPanelShell extends PanelShell
         }
 
         return view('livewire-panels::components.panel-navigation.shell.user-menu', [
+            'logoutUrl' => $panel->logoutRoute === null ? null : route($panel->logoutRoute),
             'panel' => $panel,
             'user' => $user,
+            'userEmail' => $this->userEmail($user),
             'userName' => $this->userName($user),
             'variant' => $variant,
         ]);
@@ -114,5 +116,12 @@ abstract class DefaultPanelShell extends PanelShell
         }
 
         return class_basename($user);
+    }
+
+    private function userEmail(Authenticatable $user): ?string
+    {
+        $email = data_get($user, 'email');
+
+        return is_string($email) && $email !== '' ? $email : null;
     }
 }

@@ -331,6 +331,16 @@ $panel
 
 The package does not ship a login page. The starter kit or consuming app should provide the login UI and route.
 
+The default Flux shell can also render a logout action in the user dropdown. Configure the route name on the panel:
+
+```php
+$panel
+    ->logoutRoute('admin.logout')
+    ->authenticatables([App\Models\Admin::class]);
+```
+
+If `logoutRoute()` is omitted, the default user menu only shows the authenticated user's name and email.
+
 ## Tenancy
 
 Panel tenancy is opt-in. The package resolves and exposes the current tenant, but it does not create tenant models, migrations, global scopes, or database-per-tenant infrastructure.

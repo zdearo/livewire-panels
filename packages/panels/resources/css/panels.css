@@ -27,6 +27,12 @@
     background: #fafafa;
 }
 
+[data-livewire-panels-primary-sidebar][data-flux-sidebar-collapsed-desktop],
+[data-livewire-panels-primary-sidebar][data-flux-sidebar-collapsed-desktop] [data-flux-sidebar-collapse],
+[data-livewire-panels-primary-sidebar][data-flux-sidebar-collapsed-desktop] [data-flux-sidebar-collapse] button {
+    cursor: default;
+}
+
 [data-livewire-panels-content] {
     min-width: 0;
 }

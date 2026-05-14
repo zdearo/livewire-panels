@@ -7,7 +7,13 @@
 
 <section data-livewire-panels-navigation data-livewire-panels-navigation-mode="{{ $mode->value }}">
     @if($mode->value === 'sidebar')
-        <flux:sidebar sticky collapsible class="bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700" data-livewire-panels-primary-sidebar>
+        <flux:sidebar
+            sticky
+            collapsible
+            class="bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700"
+            x-on:click.capture="if ($event.target === $el && $el.hasAttribute('data-flux-sidebar-collapsed-desktop')) $event.stopImmediatePropagation()"
+            data-livewire-panels-primary-sidebar
+        >
             <flux:sidebar.header>
                 {!! $this->sidebarBrand() !!}
 

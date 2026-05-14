@@ -151,6 +151,16 @@ it('redirects unauthenticated panel requests to a configured login route', funct
     $this->fail('Expected an authentication exception.');
 });
 
+it('can configure a panel logout route', function (): void {
+    $panel = Panel::make()
+        ->id('admin')
+        ->path('admin')
+        ->name('Admin')
+        ->logoutRoute('admin.logout');
+
+    expect($panel->logoutRoute)->toBe('admin.logout');
+});
+
 it('fails clearly when an authenticated panel login route is missing', function (): void {
     $panel = Panel::make()
         ->id('admin')

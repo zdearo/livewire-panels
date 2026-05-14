@@ -68,7 +68,9 @@ it('provides a panel stylesheet source for the consuming app build', function ()
         ->and(File::get($sourcePath))
         ->not->toContain("@import 'tailwindcss'")
         ->not->toContain('vendor/livewire/flux')
-        ->toContain('[data-livewire-panels-layout="panel"]');
+        ->toContain('[data-livewire-panels-layout="panel"]')
+        ->toContain('[data-livewire-panels-primary-sidebar][data-flux-sidebar-collapsed-desktop]')
+        ->toContain('cursor: default;');
 });
 
 it('wraps the panel layout with the package app layout', function (): void {

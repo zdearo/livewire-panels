@@ -55,6 +55,8 @@ final class Panel
 
     public private(set) ?string $loginRoute = null;
 
+    public private(set) ?string $logoutRoute = null;
+
     public private(set) ?Tenant $tenant = null;
 
     public private(set) bool $requiresTenant = false;
@@ -226,6 +228,13 @@ final class Panel
     public function loginRoute(?string $route): self
     {
         $this->loginRoute = $route;
+
+        return $this;
+    }
+
+    public function logoutRoute(?string $route): self
+    {
+        $this->logoutRoute = $route;
 
         return $this;
     }

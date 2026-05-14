@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Livewire\Livewire;
 use Zdearo\LivewirePanels\Enums\NavigationMode;
 use Zdearo\LivewirePanels\Navigation\NavigationGroup;
@@ -23,6 +24,9 @@ it('renders the sidebar navigation mode by default', function (): void {
     Livewire::test('livewire-panels::panel-navigation')
         ->assertSeeHtml('data-livewire-panels-navigation-mode="sidebar"')
         ->assertSeeHtml('data-livewire-panels-primary-sidebar')
+        ->assertSeeHtml('x-on:click.capture')
+        ->assertSeeHtml('data-flux-sidebar-collapsed-desktop')
+        ->assertSeeHtml('stopImmediatePropagation')
         ->assertSee('Dashboard')
         ->assertSee('Management')
         ->assertSee('Users')
@@ -73,7 +77,10 @@ it('renders configured topbar shell slots lazily', function (): void {
 });
 
 it('renders the default authenticated user menu in the sidebar shell', function (): void {
-    $this->be((new PanelNavigationUser)->forceFill(['name' => 'Olivia Martin']));
+    $this->be((new PanelNavigationUser)->forceFill([
+        'email' => 'olivia@example.com',
+        'name' => 'Olivia Martin',
+    ]));
 
     app(PanelManager::class)->setCurrentPanel(
         navigationTestingPanel()
@@ -82,11 +89,41 @@ it('renders the default authenticated user menu in the sidebar shell', function 
 
     Livewire::test('livewire-panels::panel-navigation')
         ->assertSeeHtml('data-livewire-panels-user-menu')
-        ->assertSee('Olivia Martin');
+        ->assertSeeHtml('data-livewire-panels-user-menu-identity')
+        ->assertSee('Olivia Martin')
+        ->assertSee('olivia@example.com')
+        ->assertDontSee('Truly Delta')
+        ->assertDontSee('Logout');
+});
+
+it('renders the configured logout action in the authenticated user menu', function (): void {
+    Route::post('/admin/logout', fn (): string => 'Logout')->name('admin.logout');
+
+    $this->be((new PanelNavigationUser)->forceFill([
+        'email' => 'olivia@example.com',
+        'name' => 'Olivia Martin',
+    ]));
+
+    app(PanelManager::class)->setCurrentPanel(
+        navigationTestingPanel()
+            ->authenticatables(PanelNavigationUser::class)
+            ->logoutRoute('admin.logout'),
+    );
+
+    Livewire::test('livewire-panels::panel-navigation')
+        ->assertSee('Olivia Martin')
+        ->assertSee('olivia@example.com')
+        ->assertSee('Logout')
+        ->assertSeeHtml('method="POST"')
+        ->assertSeeHtml('action="http://localhost/admin/logout"')
+        ->assertSeeHtml('name="_token"');
 });
 
 it('renders the default authenticated user menu in the topbar shell', function (): void {
-    $this->be((new PanelNavigationUser)->forceFill(['name' => 'Olivia Martin']));
+    $this->be((new PanelNavigationUser)->forceFill([
+        'email' => 'olivia@example.com',
+        'name' => 'Olivia Martin',
+    ]));
 
     app(PanelManager::class)->setCurrentPanel(
         navigationTestingPanel()
@@ -96,7 +133,8 @@ it('renders the default authenticated user menu in the topbar shell', function (
 
     Livewire::test('livewire-panels::panel-navigation')
         ->assertSeeHtml('data-livewire-panels-user-menu')
-        ->assertSee('Olivia Martin');
+        ->assertSee('Olivia Martin')
+        ->assertSee('olivia@example.com');
 });
 
 it('renders grouped navigation in the topbar mode', function (): void {

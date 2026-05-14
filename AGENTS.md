@@ -228,6 +228,16 @@ $panel
 
 If the selected route does not exist, the package must throw a clear `LogicException` naming the panel and missing route. The package should not provide a default login page; that belongs to the starter kit or consuming app.
 
+Authenticated panels may configure a logout route for the default Flux user menu. If `logoutRoute()` is omitted, the default user menu only renders the authenticated user's name and email:
+
+```php
+$panel
+    ->logoutRoute('admin.logout')
+    ->authenticatables([
+        App\Models\Admin::class,
+    ]);
+```
+
 Allowed models may implement `Zdearo\LivewirePanels\Auth\Contracts\CanAccessPanel` for panel-specific rules:
 
 ```php

@@ -121,6 +121,7 @@ Panel authentication is opt-in. Calling `authenticatables()` adds package authen
 $panel
     ->authGuard('admin')
     ->loginRoute('admin.login')
+    ->logoutRoute('admin.logout')
     ->authenticatables([
         App\Models\Admin::class,
     ]);
@@ -129,7 +130,7 @@ $panel
 
 If `loginRoute()` is omitted, the fallback route is `{panelId}.login`, such as `admin.login`.
 
-The package does not provide login pages. Generate or implement login UI in the starter kit or consuming app.
+The package does not provide login pages. Generate or implement login UI in the starter kit or consuming app. The default Flux user menu renders a logout action only when `logoutRoute()` is configured.
 
 Allowed models may implement `Zdearo\LivewirePanels\Auth\Contracts\CanAccessPanel` for panel-specific access rules.
 
