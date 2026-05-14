@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Mechanisms\HandleRouting\LivewirePageController;
 use Zdearo\LivewirePanels\Middleware\AuthenticatePanel;
 use Zdearo\LivewirePanels\Middleware\SetCurrentPanel;
+use Zdearo\LivewirePanels\Middleware\SetCurrentTenant;
 use Zdearo\LivewirePanels\Page\Page;
 use Zdearo\LivewirePanels\Page\PageGroup;
 use Zdearo\LivewirePanels\Panel\Panel;
@@ -20,6 +21,7 @@ final class PanelRouter
         $middleware = [
             ...$panel->middleware,
             SetCurrentPanel::class.':'.$panel->id,
+            SetCurrentTenant::class.':'.$panel->id,
         ];
 
         if ($panel->hasAuthentication()) {

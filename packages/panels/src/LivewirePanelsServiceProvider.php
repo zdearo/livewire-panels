@@ -12,7 +12,9 @@ use Zdearo\LivewirePanels\Commands\MakePanelCommand;
 use Zdearo\LivewirePanels\Panel\PanelManager;
 use Zdearo\LivewirePanels\Panel\PanelRegistry;
 use Zdearo\LivewirePanels\Routing\PanelRouter;
+use Zdearo\LivewirePanels\Routing\PanelUrlGenerator;
 use Zdearo\LivewirePanels\Support\Http\OriginalRequestResolver;
+use Zdearo\LivewirePanels\Tenant\TenantManager;
 
 final class LivewirePanelsServiceProvider extends ServiceProvider
 {
@@ -22,6 +24,8 @@ final class LivewirePanelsServiceProvider extends ServiceProvider
         $this->app->singleton(PanelRegistry::class);
         $this->app->singleton(PanelManager::class);
         $this->app->singleton(PanelRouter::class);
+        $this->app->singleton(PanelUrlGenerator::class);
+        $this->app->singleton(TenantManager::class);
         $this->app->scoped('originalRequest', fn (): Request => $this->app
             ->make(OriginalRequestResolver::class)
             ->resolve());

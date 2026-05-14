@@ -284,6 +284,86 @@ $panel
 
 The package does not ship a login page. The starter kit or consuming app should provide the login UI and route.
 
+## Tenancy
+
+Panel tenancy is opt-in. The package resolves and exposes the current tenant, but it does not create tenant models, migrations, global scopes, subdomain routing, or database-per-tenant infrastructure.
+
+Configure a tenant model and route parameter on the panel:
+
+```php
+use App\Models\Company;
+use Zdearo\LivewirePanels\Tenant\Tenant;
+
+$panel
+    ->path('admin/{company}')
+    ->tenant(
+        Tenant::make(Company::class)
+            ->routeParameter('company')
+    );
+```
+
+Use `requiresTenant()` when the panel should not run without a resolved tenant:
+
+```php
+$panel
+    ->path('admin/{company}')
+    ->tenant(Tenant::make(Company::class)->routeParameter('company'))
+    ->requiresTenant();
+```
+
+Custom tenant resolution is supported with a resolver class:
+
+```php
+use Illuminate\Http\Request;
+use Zdearo\LivewirePanels\Panel\Panel;
+use Zdearo\LivewirePanels\Tenant\Contracts\ResolvesPanelTenant;
+use Zdearo\LivewirePanels\Tenant\Tenant;
+
+final class CompanyTenantResolver implements ResolvesPanelTenant
+{
+    public function resolve(Panel $panel, Tenant $tenant, Request $request): ?object
+    {
+        return $request->user()?->companies()->whereSlug($request->route('company'))->first();
+    }
+}
+
+$panel->tenant(
+    Tenant::make(Company::class)
+        ->resolver(CompanyTenantResolver::class)
+);
+```
+
+Authenticated users may implement `HasPanelTenants` to authorize tenant access:
+
+```php
+use Zdearo\LivewirePanels\Panel\Panel;
+use Zdearo\LivewirePanels\Tenant\Contracts\HasPanelTenants;
+
+final class User extends Authenticatable implements HasPanelTenants
+{
+    public function panelTenants(Panel $panel): iterable
+    {
+        return $this->companies;
+    }
+
+    public function canAccessPanelTenant(Panel $panel, object $tenant): bool
+    {
+        return $this->companies()->whereKey($tenant->getKey())->exists();
+    }
+}
+```
+
+Pages can use the facade instead of manually passing tenant route parameters:
+
+```php
+$tenant = LivewirePanels::currentTenant();
+
+$url = LivewirePanels::route('users');
+$editUrl = LivewirePanels::route('users.edit', ['user' => $user]);
+```
+
+When a page has `name()`, generated navigation URLs prefer named routes and automatically include current tenant route parameters.
+
 ## Facade
 
 Use the facade when application code needs to read panel state:
@@ -301,6 +381,10 @@ LivewirePanels::panel('admin');
 LivewirePanels::defaultPanel();
 LivewirePanels::panels();
 LivewirePanels::setCurrentPanel($panel);
+LivewirePanels::currentTenant();
+LivewirePanels::setCurrentTenant($tenant);
+LivewirePanels::tenantRouteParameters();
+LivewirePanels::route('users');
 ```
 
 ## CSS And Vite

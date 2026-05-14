@@ -124,7 +124,14 @@ The first implementation layer is intentionally small:
 - `Navigation\NavigationBuilder`: builds the normalized navigation contract from panel navigation items and page descriptors.
 - `Navigation\NavigationItem`, `Navigation\NavigationGroup`, and `Navigation\NavigationContract`: normalized panel navigation primitives.
 - `Enums\NavigationMode`: Flux navigation layout mode.
+- `Tenant\Tenant`: fluent tenant configuration object for panels.
+- `Tenant\TenantManager`: tracks the current resolved tenant and tenant route parameters.
+- `Tenant\TenantResolver`: default route-parameter tenant resolver.
+- `Tenant\Contracts\HasPanelTenants`: optional authenticated model contract for tenant access checks.
+- `Tenant\Contracts\ResolvesPanelTenant`: custom tenant resolver contract.
+- `Middleware\SetCurrentTenant`: resolves and stores the current panel tenant for each panel request.
 - `Routing\PanelRouter`: converts panel pages and panel route callbacks into Laravel routes.
+- `Routing\PanelUrlGenerator`: generates panel route URLs with current tenant parameters.
 - `LivewirePanelsServiceProvider`: the only root-level package provider in `packages/panels/src`.
 
 Keep `packages/panels/src` organized by domain. The root of `src` should only contain package-level entry points that genuinely sit above a single domain, such as `LivewirePanelsServiceProvider`.
@@ -226,6 +233,49 @@ public function canAccessPanel(Panel $panel): bool
     return $panel->id === 'admin' && $this->is_admin;
 }
 ```
+
+Panel tenancy is opt-in. Calling `tenant()` configures how the panel resolves a tenant; it must not imply authentication. Authentication remains controlled by `authenticatables()`:
+
+```php
+use Zdearo\LivewirePanels\Tenant\Tenant;
+
+$panel
+    ->path('admin/{company}')
+    ->tenant(Tenant::make(App\Models\Company::class)->routeParameter('company'));
+```
+
+Calling `requiresTenant()` makes a missing tenant a request error:
+
+```php
+$panel
+    ->tenant(Tenant::make(App\Models\Company::class)->routeParameter('company'))
+    ->requiresTenant();
+```
+
+Tenancy must stay model-agnostic. The package resolves and exposes the current tenant, but it must not create tenant migrations, model base classes, global scopes, subdomain tenancy, database-per-tenant behavior, or a tenant switcher UI unless those APIs are discussed first.
+
+Authenticated models may implement `Zdearo\LivewirePanels\Tenant\Contracts\HasPanelTenants` to validate access to the resolved tenant:
+
+```php
+public function panelTenants(Panel $panel): iterable
+{
+    return $this->companies;
+}
+
+public function canAccessPanelTenant(Panel $panel, object $tenant): bool
+{
+    return $this->companies()->whereKey($tenant->getKey())->exists();
+}
+```
+
+Application code may read the current tenant through the existing facade:
+
+```php
+$tenant = LivewirePanels::currentTenant();
+$url = LivewirePanels::route('users');
+```
+
+`LivewirePanels::route()` prefixes route names with the current panel ID and merges current tenant route parameters before explicit parameters. Explicit parameters should win when they use the same key.
 
 Panel pages use a descriptor object rather than forcing application components to extend a package base class:
 

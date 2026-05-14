@@ -4,13 +4,20 @@ declare(strict_types=1);
 
 namespace Zdearo\LivewirePanels\Navigation;
 
+use Illuminate\Routing\Router;
 use LogicException;
 use Zdearo\LivewirePanels\Page\Page;
 use Zdearo\LivewirePanels\Page\PageGroup;
 use Zdearo\LivewirePanels\Panel\Panel;
+use Zdearo\LivewirePanels\Routing\PanelUrlGenerator;
 
 final readonly class NavigationBuilder
 {
+    public function __construct(
+        private PanelUrlGenerator $urls,
+        private Router $router,
+    ) {}
+
     public function build(Panel $panel): NavigationContract
     {
         $items = [];
@@ -84,8 +91,12 @@ final readonly class NavigationBuilder
      * @param  array<int, Page|PageGroup>  $pages
      * @return array<int, NavigationItem>
      */
-    private function resolvedPageNavigationItems(Panel $panel, array $pages, string $pathPrefix = ''): array
-    {
+    private function resolvedPageNavigationItems(
+        Panel $panel,
+        array $pages,
+        string $pathPrefix = '',
+        string $namePrefix = '',
+    ): array {
         $items = [];
 
         foreach ($pages as $page) {
@@ -96,6 +107,7 @@ final readonly class NavigationBuilder
                         $panel,
                         $page->pages,
                         $this->joinPaths($pathPrefix, $page->path),
+                        $this->joinNames($namePrefix, $page->name),
                     ),
                 );
 
@@ -109,7 +121,7 @@ final readonly class NavigationBuilder
             $item = clone $page->navigation;
 
             if ($item->url === null) {
-                $item->url($this->pageUrl($panel, $page, $pathPrefix));
+                $item->url($this->pageUrl($panel, $page, $pathPrefix, $namePrefix));
             }
 
             $items[] = $item;
@@ -118,8 +130,14 @@ final readonly class NavigationBuilder
         return $items;
     }
 
-    private function pageUrl(Panel $panel, Page $page, string $pathPrefix = ''): string
+    private function pageUrl(Panel $panel, Page $page, string $pathPrefix = '', string $namePrefix = ''): string
     {
+        $routeName = $this->joinNames($namePrefix, $page->name);
+
+        if ($routeName !== '' && $this->router->has($panel->id.'.'.$routeName)) {
+            return $this->urls->route($panel, $routeName, absolute: false);
+        }
+
         return $this->joinPaths($panel->path, $pathPrefix, $page->path);
     }
 
@@ -138,5 +156,18 @@ final readonly class NavigationBuilder
         $path = implode('/', $segments);
 
         return $path === '' ? '/' : "/{$path}";
+    }
+
+    private function joinNames(?string ...$names): string
+    {
+        $segments = [];
+
+        foreach ($names as $name) {
+            if ($name !== null && $name !== '') {
+                $segments[] = $name;
+            }
+        }
+
+        return implode('.', $segments);
     }
 }

@@ -16,6 +16,7 @@ use Zdearo\LivewirePanels\Page\PageGroup;
 use Zdearo\LivewirePanels\Shell\DefaultPanelShell;
 use Zdearo\LivewirePanels\Shell\PanelShell;
 use Zdearo\LivewirePanels\Support\Concerns\ConfiguresPropertiesOnce;
+use Zdearo\LivewirePanels\Tenant\Tenant;
 
 final class Panel
 {
@@ -43,6 +44,10 @@ final class Panel
     public private(set) ?string $authGuard = null;
 
     public private(set) ?string $loginRoute = null;
+
+    public private(set) ?Tenant $tenant = null;
+
+    public private(set) bool $requiresTenant = false;
 
     /**
      * @var array<int, class-string>
@@ -175,6 +180,25 @@ final class Panel
     public function hasAuthentication(): bool
     {
         return $this->authenticatables !== [];
+    }
+
+    public function tenant(Tenant $tenant): self
+    {
+        $this->tenant = $tenant;
+
+        return $this;
+    }
+
+    public function requiresTenant(bool $condition = true): self
+    {
+        $this->requiresTenant = $condition;
+
+        return $this;
+    }
+
+    public function hasTenancy(): bool
+    {
+        return $this->tenant !== null;
     }
 
     /**
