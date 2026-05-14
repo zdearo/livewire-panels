@@ -246,6 +246,15 @@ $panel
     ->tenant(Tenant::make(App\Models\Company::class)->routeParameter('company'));
 ```
 
+Tenant route parameters may also come from a configured panel subdomain. `subdomain()` prefixes the host from Laravel's `app.url` config:
+
+```php
+$panel
+    ->subdomain('{company}')
+    ->path('admin')
+    ->tenant(Tenant::make(App\Models\Company::class)->routeParameter('company'));
+```
+
 Calling `requiresTenant()` makes a missing tenant a request error:
 
 ```php
@@ -254,7 +263,7 @@ $panel
     ->requiresTenant();
 ```
 
-Tenancy must stay model-agnostic. The package resolves and exposes the current tenant, but it must not create tenant migrations, model base classes, global scopes, subdomain tenancy, database-per-tenant behavior, or a tenant switcher UI unless those APIs are discussed first.
+Tenancy must stay model-agnostic. The package resolves and exposes the current tenant, but it must not create tenant migrations, model base classes, global scopes, database-per-tenant behavior, or a tenant switcher UI unless those APIs are discussed first.
 
 Authenticated models may implement `Zdearo\LivewirePanels\Tenant\Contracts\HasPanelTenants` to validate access to the resolved tenant:
 

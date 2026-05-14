@@ -26,6 +26,8 @@ final class Panel
 
     public private(set) string $path;
 
+    public private(set) ?string $subdomain = null;
+
     public private(set) string $name;
 
     public private(set) string $appLayout = 'livewire-panels::layouts.app';
@@ -111,6 +113,13 @@ final class Panel
     public function path(string $path): self
     {
         $this->path = $path;
+
+        return $this;
+    }
+
+    public function subdomain(?string $subdomain): self
+    {
+        $this->subdomain = $subdomain;
 
         return $this;
     }

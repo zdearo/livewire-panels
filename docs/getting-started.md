@@ -286,7 +286,7 @@ The package does not ship a login page. The starter kit or consuming app should 
 
 ## Tenancy
 
-Panel tenancy is opt-in. The package resolves and exposes the current tenant, but it does not create tenant models, migrations, global scopes, subdomain routing, or database-per-tenant infrastructure.
+Panel tenancy is opt-in. The package resolves and exposes the current tenant, but it does not create tenant models, migrations, global scopes, or database-per-tenant infrastructure.
 
 Configure a tenant model and route parameter on the panel:
 
@@ -300,6 +300,15 @@ $panel
         Tenant::make(Company::class)
             ->routeParameter('company')
     );
+```
+
+The route parameter may live in the path or in a panel subdomain. `subdomain()` uses the host from Laravel's `app.url` config by default:
+
+```php
+$panel
+    ->subdomain('{company}')
+    ->path('admin')
+    ->tenant(Tenant::make(Company::class)->routeParameter('company'));
 ```
 
 Use `requiresTenant()` when the panel should not run without a resolved tenant:

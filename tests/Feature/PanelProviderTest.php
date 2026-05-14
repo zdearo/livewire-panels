@@ -57,6 +57,13 @@ it('does not assume app Vite entrypoints by default', function (): void {
     expect($panel->vite)->toBe([]);
 });
 
+it('can configure the panel subdomain', function (): void {
+    $panel = Panel::make()
+        ->subdomain('{company}');
+
+    expect($panel->subdomain)->toBe('{company}');
+});
+
 it('uses sidebar navigation mode by default', function (): void {
     $panel = Panel::make();
 
