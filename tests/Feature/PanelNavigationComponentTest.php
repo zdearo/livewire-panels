@@ -154,6 +154,16 @@ it('renders grouped navigation in the topbar mode', function (): void {
         ->assertDontSeeHtml('data-livewire-panels-secondary-navigation');
 });
 
+it('renders a lazy navigation mode', function (): void {
+    app(PanelManager::class)->setCurrentPanel(
+        navigationTestingPanel()->navigationMode(fn (): string => 'topbar'),
+    );
+
+    Livewire::test('livewire-panels::panel-navigation')
+        ->assertSeeHtml('data-livewire-panels-navigation-mode="topbar"')
+        ->assertSeeHtml('data-livewire-panels-topbar');
+});
+
 it('renders current page group items in the secondary sidebar for topbar with sidebar mode', function (): void {
     app(PanelManager::class)->setCurrentPanel(
         navigationTestingPanel()->navigationMode(NavigationMode::TopbarWithSidebar),

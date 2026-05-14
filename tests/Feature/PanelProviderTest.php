@@ -99,6 +99,21 @@ it('can configure the panel navigation mode from a string', function (): void {
     expect($panel->navigationMode)->toBe(NavigationMode::Topbar);
 });
 
+it('can configure the panel navigation mode lazily', function (): void {
+    $panel = Panel::make()
+        ->navigationMode(fn (): string => 'topbar-sidebar');
+
+    expect($panel->displayNavigationMode())->toBe(NavigationMode::TopbarWithSidebar);
+});
+
+it('fails when lazy navigation modes resolve to unsupported types', function (): void {
+    $panel = Panel::make()
+        ->navigationMode(fn (): array => []);
+
+    expect(fn () => $panel->displayNavigationMode())
+        ->toThrow(UnexpectedValueException::class, 'Panel navigation modes must resolve to NavigationMode instances or strings.');
+});
+
 it('does not allow panel properties to be changed externally', function (): void {
     app()->register(TestingPanelProvider::class);
 

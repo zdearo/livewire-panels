@@ -354,6 +354,7 @@ The package resolves lazy values through `Zdearo\LivewirePanels\Support\Concerns
 Good lazy candidates currently supported:
 
 - `Panel::name()`, resolved through `displayName()`.
+- `Panel::navigationMode()`, resolved through `displayNavigationMode()` during navigation rendering.
 - `NavigationItem::make()`, `url()`, `badge()`, `visible()`, and `hidden()`.
 - `NavigationGroup::label()`, `visible()`, and `hidden()`.
 - Panel shell slot overrides: `sidebarBrand()`, `topbarBrand()`, `mobileSidebarBrand()`, `sidebarFooter()`, `topbarEnd()`, and `mobileHeaderEnd()`.
@@ -406,6 +407,14 @@ String values are also accepted:
 $panel->navigationMode('sidebar');
 $panel->navigationMode('topbar');
 $panel->navigationMode('topbar-sidebar');
+```
+
+Lazy values are accepted for request/user/tenant-specific presentation decisions:
+
+```php
+$panel->navigationMode(fn (): NavigationMode => auth()->user()?->prefers_topbar
+    ? NavigationMode::Topbar
+    : NavigationMode::Sidebar);
 ```
 
 `Sidebar` is the default mode and preserves the original sidebar shell.

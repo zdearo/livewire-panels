@@ -44,7 +44,10 @@ final class Panel
 
     public private(set) bool $isDefault = false;
 
-    public private(set) NavigationMode $navigationMode = NavigationMode::Sidebar;
+    /**
+     * @var NavigationMode|Closure(): (NavigationMode|string)
+     */
+    public private(set) NavigationMode|Closure $navigationMode = NavigationMode::Sidebar;
 
     /**
      * @var class-string<PanelShell>
@@ -201,11 +204,29 @@ final class Panel
         return $this;
     }
 
-    public function navigationMode(NavigationMode|string $mode): self
+    /**
+     * @param  NavigationMode|string|Closure(): (NavigationMode|string)  $mode
+     */
+    public function navigationMode(NavigationMode|string|Closure $mode): self
     {
         $this->navigationMode = is_string($mode) ? NavigationMode::from($mode) : $mode;
 
         return $this;
+    }
+
+    public function displayNavigationMode(): NavigationMode
+    {
+        $mode = $this->evaluate($this->navigationMode);
+
+        if (is_string($mode)) {
+            return NavigationMode::from($mode);
+        }
+
+        if (! $mode instanceof NavigationMode) {
+            throw new UnexpectedValueException('Panel navigation modes must resolve to NavigationMode instances or strings.');
+        }
+
+        return $mode;
     }
 
     /**

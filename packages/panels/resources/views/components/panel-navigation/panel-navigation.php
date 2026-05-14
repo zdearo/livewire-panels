@@ -32,7 +32,7 @@ return new class extends Component
             return NavigationMode::Sidebar;
         }
 
-        return $panel->navigationMode;
+        return $panel->displayNavigationMode();
     }
 
     public function navigationContract(): ?NavigationContract

@@ -233,6 +233,14 @@ $panel->navigationMode('topbar');
 $panel->navigationMode('topbar-sidebar');
 ```
 
+Lazy values are accepted when the presentation mode depends on the current request, tenant, or authenticated user:
+
+```php
+$panel->navigationMode(fn (): NavigationMode => auth()->user()?->prefers_topbar
+    ? NavigationMode::Topbar
+    : NavigationMode::Sidebar);
+```
+
 `Sidebar` renders the primary Flux sidebar. `Topbar` renders flat items and hover dropdown groups in the topbar. `TopbarWithSidebar` renders groups in the topbar and shows a secondary sidebar for the current page group.
 
 Navigation state is resolved from the original page request during Livewire updates, so active items and groups remain stable while the browser is posting to Livewire's update endpoint.

@@ -75,8 +75,14 @@ Available navigation modes are:
 $panel->navigationMode('sidebar');
 $panel->navigationMode('topbar');
 $panel->navigationMode('topbar-sidebar');
+
+$panel->navigationMode(fn (): NavigationMode => auth()->user()?->prefers_topbar
+    ? NavigationMode::Topbar
+    : NavigationMode::Sidebar);
 </code-snippet>
 @endverbatim
+
+Lazy navigation modes are allowed because they affect rendering only. Do not make route structure, middleware, guards, tenant route parameters, or Vite entrypoints lazy.
 
 Do not implement hover-driven Livewire state for navigation. The `topbar` mode may use Flux hover dropdowns locally, but navigation should only happen when a page/item link is clicked.
 
