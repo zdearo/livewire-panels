@@ -18,6 +18,10 @@ it('registers the panel navigation as a Livewire component', function (): void {
     expect(app('livewire')->exists('livewire-panels::panel-navigation'))->toBeTrue();
 });
 
+it('registers the panel secondary navigation as a Livewire component', function (): void {
+    expect(app('livewire')->exists('livewire-panels::panel-secondary-navigation'))->toBeTrue();
+});
+
 it('renders the sidebar navigation mode by default', function (): void {
     app(PanelManager::class)->setCurrentPanel(navigationTestingPanel());
 
@@ -188,15 +192,75 @@ it('refreshes lazy navigation mode at runtime through the public refresh event',
         ->assertSeeHtml('data-livewire-panels-topbar');
 });
 
+it('refreshes the primary navigation active group at runtime', function (): void {
+    $mode = 'topbar';
+
+    requestPath('/admin/users');
+    app()->instance('originalRequest', Request::create('/admin/users'));
+
+    app(PanelManager::class)->setCurrentPanel(
+        navigationTestingPanel()->navigationMode(function () use (&$mode): string {
+            return $mode;
+        }),
+    );
+
+    $component = Livewire::test('livewire-panels::panel-navigation')
+        ->assertSeeHtml('data-livewire-panels-navigation-mode="topbar"')
+        ->assertSeeHtml('data-livewire-panels-active-group="management"')
+        ->assertSee('Management')
+        ->assertSee('Users');
+
+    $mode = 'topbar-sidebar';
+
+    $component
+        ->dispatch('livewire-panels::refresh-navigation')
+        ->assertSeeHtml('data-livewire-panels-navigation-mode="topbar-sidebar"')
+        ->assertSeeHtml('data-livewire-panels-active-group="management"')
+        ->assertSee('Management');
+});
+
 it('renders current page group items in the secondary sidebar for topbar with sidebar mode', function (): void {
+    requestPath('/admin/users');
+    app()->instance('originalRequest', Request::create('/admin/users'));
+
     app(PanelManager::class)->setCurrentPanel(
         navigationTestingPanel()->navigationMode(NavigationMode::TopbarWithSidebar),
     );
 
-    Livewire::test('livewire-panels::panel-navigation')
+    Livewire::test('livewire-panels::panel-secondary-navigation')
         ->assertSeeHtml('data-livewire-panels-navigation-mode="topbar-sidebar"')
+        ->assertSeeHtml('data-livewire-panels-secondary-navigation')
+        ->assertSeeHtml('data-livewire-panels-active-group="management"')
+        ->assertSee('Users')
         ->assertDontSeeHtml('wire:click')
         ->assertDontSeeHtml('wire:mouseenter');
+});
+
+it('refreshes secondary navigation at runtime through the public refresh event', function (): void {
+    $mode = 'topbar';
+
+    requestPath('/admin/users');
+    app()->instance('originalRequest', Request::create('/admin/users'));
+
+    app(PanelManager::class)->setCurrentPanel(
+        navigationTestingPanel()->navigationMode(function () use (&$mode): string {
+            return $mode;
+        }),
+    );
+
+    $component = Livewire::test('livewire-panels::panel-secondary-navigation')
+        ->assertSeeHtml('data-livewire-panels-navigation-mode="topbar"')
+        ->assertDontSeeHtml('data-livewire-panels-active-group')
+        ->assertSeeHtml('livewire-panels::refresh-navigation');
+
+    $mode = 'topbar-sidebar';
+
+    $component
+        ->dispatch('livewire-panels::refresh-navigation')
+        ->assertSeeHtml('data-livewire-panels-navigation-mode="topbar-sidebar"')
+        ->assertSeeHtml('data-livewire-panels-secondary-navigation')
+        ->assertSeeHtml('data-livewire-panels-active-group="management"')
+        ->assertSee('Users');
 });
 
 it('resolves a group URL from the first item in that group', function (): void {

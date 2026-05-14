@@ -18,7 +18,16 @@
 }
 
 [data-livewire-panels-navigation] {
-    min-height: 100vh;
+    display: contents;
+}
+
+[data-livewire-panels-secondary-navigation-shell] {
+    display: contents;
+}
+
+[data-livewire-panels-layout="panel"]:has([data-livewire-panels-primary-sidebar]) [data-livewire-panels-content] {
+    max-width: none;
+    margin-inline: 0;
 }
 
 [data-livewire-panels-primary-sidebar] {
@@ -45,5 +54,11 @@
 @media (max-width: 1024px) {
     [data-livewire-panels-primary-sidebar] {
         min-height: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    [data-livewire-panels-content]:has([data-livewire-panels-secondary-navigation]) [data-livewire-panels-page-content] {
+        padding-top: 1.5rem;
     }
 }

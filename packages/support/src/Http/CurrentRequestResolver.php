@@ -10,7 +10,7 @@ final class CurrentRequestResolver
 {
     public function resolve(Request $fallback): Request
     {
-        if (! $fallback->is('livewire/*') || ! app()->bound('originalRequest')) {
+        if (! ($fallback->is('livewire/*') || $fallback->is('livewire-unit-test-endpoint/*')) || ! app()->bound('originalRequest')) {
             return $fallback;
         }
 

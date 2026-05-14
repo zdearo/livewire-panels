@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\Request;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Zdearo\LivewirePanels\Enums\NavigationMode;
@@ -15,10 +16,22 @@ use Zdearo\LivewirePanels\Panel\Panel;
 use Zdearo\LivewirePanels\Shell\DefaultPanelShell;
 use Zdearo\LivewirePanels\Shell\PanelShell;
 use Zdearo\LivewirePanels\Support\Concerns\EvaluatesClosures;
+use Zdearo\LivewirePanels\Support\Http\CurrentRequestResolver;
 
 return new class extends Component
 {
     use EvaluatesClosures;
+
+    public string $currentPath = '';
+
+    public function mount(): void
+    {
+        if ($this->currentPath === '') {
+            $this->currentPath = app(CurrentRequestResolver::class)
+                ->resolve(request())
+                ->path();
+        }
+    }
 
     public function currentPanel(): ?Panel
     {
@@ -107,12 +120,29 @@ return new class extends Component
     public function activeGroup(): ?NavigationGroup
     {
         foreach ($this->navigationGroups() as $group) {
-            if (array_any($group->items, fn (NavigationItem $item): bool => $item->isCurrent())) {
+            if (array_any($group->items, fn (NavigationItem $item): bool => $this->navigationItemIsCurrent($item))) {
                 return $group;
             }
         }
 
         return null;
+    }
+
+    public function navigationItemIsCurrent(NavigationItem $item): bool
+    {
+        $url = $item->displayUrl();
+
+        if ($url === null) {
+            return false;
+        }
+
+        $path = parse_url($url, PHP_URL_PATH);
+
+        if (! is_string($path) || $path === '') {
+            return false;
+        }
+
+        return $this->currentRequest()->is(ltrim($path, '/'));
     }
 
     public function groupUrl(NavigationGroup $group): string
@@ -168,5 +198,14 @@ return new class extends Component
         }
 
         throw new UnexpectedValueException('Panel shell slots must resolve to views, HTMLable objects, strings, or null.');
+    }
+
+    private function currentRequest(): Request
+    {
+        if ($this->currentPath === '') {
+            return app(CurrentRequestResolver::class)->resolve(request());
+        }
+
+        return Request::create('/'.ltrim($this->currentPath, '/'));
     }
 };

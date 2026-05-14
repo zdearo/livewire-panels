@@ -69,6 +69,10 @@ it('provides a panel stylesheet source for the consuming app build', function ()
         ->not->toContain("@import 'tailwindcss'")
         ->not->toContain('vendor/livewire/flux')
         ->toContain('[data-livewire-panels-layout="panel"]')
+        ->toContain('[data-livewire-panels-navigation]')
+        ->toContain('[data-livewire-panels-secondary-navigation-shell]')
+        ->toContain('display: contents;')
+        ->toContain('[data-livewire-panels-layout="panel"]:has([data-livewire-panels-primary-sidebar]) [data-livewire-panels-content]')
         ->toContain('[data-livewire-panels-primary-sidebar][data-flux-sidebar-collapsed-desktop]')
         ->toContain('cursor: default;');
 });
@@ -84,6 +88,21 @@ it('wraps the panel layout with the package app layout', function (): void {
         ->toContain('class="min-h-screen bg-white dark:bg-zinc-800 antialiased"')
         ->toContain('data-livewire-panels-layout="panel"')
         ->toContain('Panel body');
+});
+
+it('keeps the panel body outside the Livewire navigation component', function (): void {
+    $panel = Panel::make()
+        ->id('admin')
+        ->path('admin')
+        ->name('Admin');
+
+    app(PanelManager::class)->setCurrentPanel($panel);
+
+    $html = Blade::render('<x-livewire-panels::layouts.panel>Panel body</x-livewire-panels::layouts.panel>');
+
+    expect($html)
+        ->toContain('wire:snapshot')
+        ->and(strpos($html, 'Panel body'))->toBeGreaterThan(strpos($html, '</section>'));
 });
 
 it('renders the configured panel navigation mode in the panel layout', function (): void {

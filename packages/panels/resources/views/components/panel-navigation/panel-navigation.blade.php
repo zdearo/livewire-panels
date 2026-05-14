@@ -8,6 +8,7 @@
 <section
     data-livewire-panels-navigation
     data-livewire-panels-navigation-mode="{{ $mode->value }}"
+    @if($activeGroup !== null) data-livewire-panels-active-group="{{ $activeGroup->id }}" @endif
 >
     @if($mode->value === 'sidebar')
         <flux:sidebar
@@ -25,7 +26,7 @@
 
             <flux:sidebar.nav>
                 @foreach($navigationItems as $navigationItem)
-                    <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$navigationItem->isCurrent()">
+                    <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$this->navigationItemIsCurrent($navigationItem)">
                         {{ $navigationItem->displayLabel() }}
                     </flux:sidebar.item>
                 @endforeach
@@ -33,7 +34,7 @@
                 @foreach($navigationGroups as $navigationGroup)
                     <flux:sidebar.group expandable :icon="$navigationGroup->icon" heading="{{ $navigationGroup->displayLabel() }}" class="grid">
                         @foreach($navigationGroup->items as $navigationItem)
-                            <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$navigationItem->isCurrent()">
+                            <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$this->navigationItemIsCurrent($navigationItem)">
                                 {{ $navigationItem->displayLabel() }}
                             </flux:sidebar.item>
                         @endforeach
@@ -53,10 +54,6 @@
 
             {!! $this->mobileHeaderEnd() !!}
         </flux:header>
-
-        <flux:main data-livewire-panels-content>
-            {{ $slot }}
-        </flux:main>
     @else
         <flux:header container class="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700" data-livewire-panels-topbar>
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" />
@@ -65,7 +62,7 @@
 
             <flux:navbar class="-mb-px max-lg:hidden">
                 @foreach($navigationItems as $navigationItem)
-                    <flux:navbar.item :icon="$navigationItem->icon" :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$navigationItem->isCurrent()">
+                    <flux:navbar.item :icon="$navigationItem->icon" :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$this->navigationItemIsCurrent($navigationItem)">
                         {{ $navigationItem->displayLabel() }}
                     </flux:navbar.item>
                 @endforeach
@@ -83,7 +80,7 @@
 
                             <flux:navmenu>
                                 @foreach($navigationGroup->items as $navigationItem)
-                                    <flux:navmenu.item :href="$navigationItem->displayUrl() ?? '#'" :current="$navigationItem->isCurrent()">
+                                    <flux:navmenu.item :href="$navigationItem->displayUrl() ?? '#'" :current="$this->navigationItemIsCurrent($navigationItem)">
                                         {{ $navigationItem->displayLabel() }}
                                     </flux:navmenu.item>
                                 @endforeach
@@ -115,7 +112,7 @@
 
             <flux:sidebar.nav>
                 @foreach($navigationItems as $navigationItem)
-                    <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$navigationItem->isCurrent()">
+                    <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$this->navigationItemIsCurrent($navigationItem)">
                         {{ $navigationItem->displayLabel() }}
                     </flux:sidebar.item>
                 @endforeach
@@ -123,7 +120,7 @@
                 @foreach($navigationGroups as $navigationGroup)
                     <flux:sidebar.group expandable :icon="$navigationGroup->icon" heading="{{ $navigationGroup->displayLabel() }}" class="grid">
                         @foreach($navigationGroup->items as $navigationItem)
-                            <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$navigationItem->isCurrent()">
+                            <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$this->navigationItemIsCurrent($navigationItem)">
                                 {{ $navigationItem->displayLabel() }}
                             </flux:sidebar.item>
                         @endforeach
@@ -133,31 +130,5 @@
 
             <flux:sidebar.spacer />
         </flux:sidebar>
-
-        <flux:main container data-livewire-panels-content>
-            @if($mode->value === 'topbar-sidebar')
-                <div class="flex max-md:flex-col items-start">
-                    @if($activeGroup !== null)
-                        <div class="w-full md:w-[220px] pb-4 me-10" data-livewire-panels-secondary-navigation data-livewire-panels-active-group="{{ $activeGroup->id }}">
-                            <flux:navlist>
-                                @foreach($activeGroup->items as $navigationItem)
-                                    <flux:navlist.item :href="$navigationItem->displayUrl() ?? '#'" :badge="$navigationItem->displayBadge()" :current="$navigationItem->isCurrent()">
-                                        {{ $navigationItem->displayLabel() }}
-                                    </flux:navlist.item>
-                                @endforeach
-                            </flux:navlist>
-                        </div>
-
-                        <flux:separator class="md:hidden" />
-                    @endif
-
-                    <div class="flex-1 max-md:pt-6 self-stretch">
-                        {{ $slot }}
-                    </div>
-                </div>
-            @else
-                {{ $slot }}
-            @endif
-        </flux:main>
     @endif
 </section>

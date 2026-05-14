@@ -22,6 +22,15 @@ it('returns the original request during livewire updates', function (): void {
     expect(app(CurrentRequestResolver::class)->resolve($fallback))->toBe($original);
 });
 
+it('returns the original request during livewire unit test updates', function (): void {
+    $fallback = Request::create('/livewire-unit-test-endpoint/testing');
+    $original = Request::create('/admin/inbox');
+
+    app()->instance('originalRequest', $original);
+
+    expect(app(CurrentRequestResolver::class)->resolve($fallback))->toBe($original);
+});
+
 it('returns the fallback livewire request when the original request is not available', function (): void {
     $fallback = Request::create('/livewire/update');
 
