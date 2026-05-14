@@ -356,10 +356,10 @@ final class User extends Authenticatable implements HasPanelTenants
 Pages can use the facade instead of manually passing tenant route parameters:
 
 ```php
-$tenant = LivewirePanels::currentTenant();
+$tenant = Panels::currentTenant();
 
-$url = LivewirePanels::route('users');
-$editUrl = LivewirePanels::route('users.edit', ['user' => $user]);
+$url = Panels::route('users');
+$editUrl = Panels::route('users.edit', ['user' => $user]);
 ```
 
 When a page has `name()`, generated navigation URLs prefer named routes and automatically include current tenant route parameters.
@@ -369,22 +369,22 @@ When a page has `name()`, generated navigation URLs prefer named routes and auto
 Use the facade when application code needs to read panel state:
 
 ```php
-use Zdearo\LivewirePanels\Facades\LivewirePanels;
+use Zdearo\LivewirePanels\Facades\Panels;
 
-$panel = LivewirePanels::currentPanel();
+$panel = Panels::currentPanel();
 ```
 
 Other available calls proxy to the panel manager:
 
 ```php
-LivewirePanels::panel('admin');
-LivewirePanels::defaultPanel();
-LivewirePanels::panels();
-LivewirePanels::setCurrentPanel($panel);
-LivewirePanels::currentTenant();
-LivewirePanels::setCurrentTenant($tenant);
-LivewirePanels::tenantRouteParameters();
-LivewirePanels::route('users');
+Panels::panel('admin');
+Panels::defaultPanel();
+Panels::panels();
+Panels::setCurrentPanel($panel);
+Panels::currentTenant();
+Panels::setCurrentTenant($tenant);
+Panels::tenantRouteParameters();
+Panels::route('users');
 ```
 
 ## CSS And Vite

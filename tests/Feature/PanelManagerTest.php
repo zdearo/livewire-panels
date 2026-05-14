@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Zdearo\LivewirePanels\Facades\LivewirePanels;
+use Zdearo\LivewirePanels\Facades\Panels;
 use Zdearo\LivewirePanels\Panel\Panel;
 use Zdearo\LivewirePanels\Panel\PanelManager;
 use Zdearo\LivewirePanels\Panel\PanelProvider;
@@ -34,11 +34,11 @@ it('stores the current panel', function (): void {
 it('exposes the panel manager through a facade', function (): void {
     app()->register(ManagerDefaultPanelProvider::class);
 
-    $panel = LivewirePanels::panel('admin');
+    $panel = Panels::panel('admin');
 
-    LivewirePanels::setCurrentPanel($panel);
+    Panels::setCurrentPanel($panel);
 
-    expect(LivewirePanels::currentPanel())->toBe($panel)
+    expect(Panels::currentPanel())->toBe($panel)
         ->and(app(PanelManager::class)->currentPanel)->toBe($panel);
 });
 
@@ -46,10 +46,10 @@ it('exposes default and registered panels through a facade', function (): void {
     app()->register(ManagerDefaultPanelProvider::class);
     app()->register(ManagerSecondaryPanelProvider::class);
 
-    expect(LivewirePanels::defaultPanel())
+    expect(Panels::defaultPanel())
         ->toBeInstanceOf(Panel::class)
         ->id->toBe('admin')
-        ->and(LivewirePanels::panels())
+        ->and(Panels::panels())
         ->toHaveKeys(['admin', 'sales-panel']);
 });
 

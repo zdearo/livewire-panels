@@ -21,7 +21,7 @@ use Zdearo\LivewirePanels\Panel\PanelManager;
  *
  * @see PanelManager
  */
-final class LivewirePanels extends Facade
+final class Panels extends Facade
 {
     #[\Override]
     protected static function getFacadeAccessor(): string

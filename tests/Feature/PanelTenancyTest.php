@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Zdearo\LivewirePanels\Facades\LivewirePanels;
+use Zdearo\LivewirePanels\Facades\Panels;
 use Zdearo\LivewirePanels\Middleware\SetCurrentPanel;
 use Zdearo\LivewirePanels\Middleware\SetCurrentTenant;
 use Zdearo\LivewirePanels\Page\Page;
@@ -75,8 +75,8 @@ it('resolves the current tenant from the configured route parameter', function (
     );
 
     expect($response->getContent())->toBe('ok')
-        ->and(LivewirePanels::currentTenant())->toBeInstanceOf(PanelTenant::class)
-        ->and(LivewirePanels::currentTenant()?->getRouteKey())->toBe('acme');
+        ->and(Panels::currentTenant())->toBeInstanceOf(PanelTenant::class)
+        ->and(Panels::currentTenant()?->getRouteKey())->toBe('acme');
 });
 
 it('uses a custom tenant resolver when one is configured', function (): void {
@@ -94,13 +94,13 @@ it('uses a custom tenant resolver when one is configured', function (): void {
         'admin',
     );
 
-    expect(LivewirePanels::currentTenant())
+    expect(Panels::currentTenant())
         ->toBeInstanceOf(PanelTenant::class)
         ->getRouteKey()->toBe('resolved');
 });
 
 it('clears the current tenant when the panel has no tenancy configured', function (): void {
-    LivewirePanels::setCurrentTenant(new PanelTenant('old'));
+    Panels::setCurrentTenant(new PanelTenant('old'));
 
     $panel = Panel::make()
         ->id('public')
@@ -115,7 +115,7 @@ it('clears the current tenant when the panel has no tenancy configured', functio
         'public',
     );
 
-    expect(LivewirePanels::currentTenant())->toBeNull();
+    expect(Panels::currentTenant())->toBeNull();
 });
 
 it('fails when a required tenant cannot be resolved', function (): void {
@@ -151,7 +151,7 @@ it('allows missing tenants when tenancy is optional', function (): void {
     );
 
     expect($response->getContent())->toBe('ok')
-        ->and(LivewirePanels::currentTenant())->toBeNull();
+        ->and(Panels::currentTenant())->toBeNull();
 });
 
 it('denies authenticated users that cannot access the resolved tenant', function (): void {
@@ -176,19 +176,19 @@ it('generates panel routes with current tenant parameters', function (): void {
     app()->register(TenantTestingPanelProvider::class);
     app()->boot();
 
-    LivewirePanels::setCurrentTenant(new PanelTenant('acme'));
+    Panels::setCurrentTenant(new PanelTenant('acme'));
 
-    expect(LivewirePanels::tenantRouteParameters())->toBe(['company' => 'acme'])
-        ->and(LivewirePanels::route('users'))->toBe('http://localhost/admin/acme/users')
-        ->and(LivewirePanels::route('users.show', ['user' => 10]))->toBe('http://localhost/admin/acme/users/10');
+    expect(Panels::tenantRouteParameters())->toBe(['company' => 'acme'])
+        ->and(Panels::route('users'))->toBe('http://localhost/admin/acme/users')
+        ->and(Panels::route('users.show', ['user' => 10]))->toBe('http://localhost/admin/acme/users/10');
 });
 
 it('generates tenant-aware urls outside the panel manager', function (): void {
     app()->register(TenantTestingPanelProvider::class);
     app()->boot();
 
-    $panel = LivewirePanels::panel('admin');
-    LivewirePanels::setCurrentTenant(new PanelTenant('acme'));
+    $panel = Panels::panel('admin');
+    Panels::setCurrentTenant(new PanelTenant('acme'));
 
     expect(app(PanelUrlGenerator::class)->tenantRouteParameters($panel))->toBe(['company' => 'acme'])
         ->and(app(PanelUrlGenerator::class)->route($panel, 'users'))->toBe('http://localhost/admin/acme/users')
@@ -269,9 +269,9 @@ it('builds page navigation urls from named routes with current tenant parameters
     app()->register(TenantTestingPanelProvider::class);
     app()->boot();
 
-    LivewirePanels::setCurrentTenant(new PanelTenant('acme'));
+    Panels::setCurrentTenant(new PanelTenant('acme'));
 
-    $navigation = LivewirePanels::panel('admin')->navigationContract();
+    $navigation = Panels::panel('admin')->navigationContract();
 
     expect($navigation->items())
         ->toHaveCount(2)

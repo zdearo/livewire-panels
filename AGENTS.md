@@ -77,15 +77,15 @@ Do not require each panel provider to manually resolve or call the registry.
 Application code may use the facade instead of resolving `PanelManager` manually:
 
 ```php
-use Zdearo\LivewirePanels\Facades\LivewirePanels;
+use Zdearo\LivewirePanels\Facades\Panels;
 
-$panel = LivewirePanels::currentPanel();
-$admin = LivewirePanels::panel('admin');
-$default = LivewirePanels::defaultPanel();
-$panels = LivewirePanels::panels();
+$panel = Panels::currentPanel();
+$admin = Panels::panel('admin');
+$default = Panels::defaultPanel();
+$panels = Panels::panels();
 ```
 
-The package also registers the Laravel alias `LivewirePanels`, but explicit imports are still preferred in package docs and tests.
+The package also registers the Laravel alias `Panels`, but explicit imports are still preferred in package docs and tests.
 
 ## PHP Version And Properties
 
@@ -119,7 +119,7 @@ The first implementation layer is intentionally small:
 - `Panel\PanelManager`: tracks the current panel.
 - `Page\Page`: route descriptor for Livewire page routes.
 - `Page\PageGroup`: structural page group for sharing route path and route name prefixes.
-- `Facades\LivewirePanels`: Laravel facade for resolving panels, listing panels, and reading or setting the current panel through `PanelManager`.
+- `Facades\Panels`: Laravel facade for resolving panels, listing panels, and reading or setting the current panel through `PanelManager`.
 - `Auth\Contracts\CanAccessPanel`: optional model contract for panel-specific access checks.
 - `Navigation\NavigationBuilder`: builds the normalized navigation contract from panel navigation items and page descriptors.
 - `Navigation\NavigationItem`, `Navigation\NavigationGroup`, and `Navigation\NavigationContract`: normalized panel navigation primitives.
@@ -271,11 +271,11 @@ public function canAccessPanelTenant(Panel $panel, object $tenant): bool
 Application code may read the current tenant through the existing facade:
 
 ```php
-$tenant = LivewirePanels::currentTenant();
-$url = LivewirePanels::route('users');
+$tenant = Panels::currentTenant();
+$url = Panels::route('users');
 ```
 
-`LivewirePanels::route()` prefixes route names with the current panel ID and merges current tenant route parameters before explicit parameters. Explicit parameters should win when they use the same key.
+`Panels::route()` prefixes route names with the current panel ID and merges current tenant route parameters before explicit parameters. Explicit parameters should win when they use the same key.
 
 Panel pages use a descriptor object rather than forcing application components to extend a package base class:
 

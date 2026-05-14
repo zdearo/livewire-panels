@@ -1,5 +1,5 @@
 @php
-    $currentPanel = \Zdearo\LivewirePanels\Facades\LivewirePanels::currentPanel();
+    $currentPanel = \Zdearo\LivewirePanels\Facades\Panels::currentPanel();
     $vite = $currentPanel?->vite ?? [];
 @endphp
 

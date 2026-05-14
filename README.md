@@ -36,7 +36,7 @@ It covers:
 - navigation groups and navigation modes;
 - panel shell customization;
 - authentication and login routes;
-- the `LivewirePanels` facade;
+- the `Panels` facade;
 - CSS and Vite setup;
 - Laravel Boost guidelines.
 

@@ -43,7 +43,7 @@
                 "Zdearo\\LivewirePanels\\LivewirePanelsServiceProvider"
             ],
             "aliases": {
-                "LivewirePanels": "Zdearo\\LivewirePanels\\Facades\\LivewirePanels"
+                "Panels": "Zdearo\\LivewirePanels\\Facades\\Panels"
             }
         }
     },
