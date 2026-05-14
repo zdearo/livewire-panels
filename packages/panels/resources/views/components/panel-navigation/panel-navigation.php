@@ -6,11 +6,11 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
 use Zdearo\LivewirePanels\Enums\NavigationMode;
+use Zdearo\LivewirePanels\Facades\LivewirePanels;
 use Zdearo\LivewirePanels\Navigation\NavigationContract;
 use Zdearo\LivewirePanels\Navigation\NavigationGroup;
 use Zdearo\LivewirePanels\Navigation\NavigationItem;
 use Zdearo\LivewirePanels\Panel\Panel;
-use Zdearo\LivewirePanels\Panel\PanelManager;
 use Zdearo\LivewirePanels\Shell\DefaultPanelShell;
 use Zdearo\LivewirePanels\Shell\PanelShell;
 
@@ -18,7 +18,7 @@ return new class extends Component
 {
     public function currentPanel(): ?Panel
     {
-        return app(PanelManager::class)->currentPanel();
+        return LivewirePanels::currentPanel();
     }
 
     public function navigationMode(): NavigationMode

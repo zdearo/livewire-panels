@@ -80,6 +80,9 @@ Application code may use the facade instead of resolving `PanelManager` manually
 use Zdearo\LivewirePanels\Facades\LivewirePanels;
 
 $panel = LivewirePanels::currentPanel();
+$admin = LivewirePanels::panel('admin');
+$default = LivewirePanels::defaultPanel();
+$panels = LivewirePanels::panels();
 ```
 
 The package also registers the Laravel alias `LivewirePanels`, but explicit imports are still preferred in package docs and tests.
@@ -116,7 +119,7 @@ The first implementation layer is intentionally small:
 - `Panel\PanelManager`: tracks the current panel.
 - `Page\Page`: route descriptor for Livewire page routes.
 - `Page\PageGroup`: structural page group for sharing route path and route name prefixes.
-- `Facades\LivewirePanels`: Laravel facade for resolving panels and reading or setting the current panel through `PanelManager`.
+- `Facades\LivewirePanels`: Laravel facade for resolving panels, listing panels, and reading or setting the current panel through `PanelManager`.
 - `Auth\Contracts\CanAccessPanel`: optional model contract for panel-specific access checks.
 - `Navigation\NavigationBuilder`: builds the normalized navigation contract from panel navigation items and page descriptors.
 - `Navigation\NavigationItem`, `Navigation\NavigationGroup`, and `Navigation\NavigationContract`: normalized panel navigation primitives.

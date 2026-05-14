@@ -12,6 +12,8 @@ use Zdearo\LivewirePanels\Panel\PanelManager;
  * @method static void setCurrentPanel(Panel $panel)
  * @method static Panel|null currentPanel()
  * @method static Panel panel(?string $id = null, bool $isStrict = true)
+ * @method static Panel defaultPanel()
+ * @method static array<string, Panel> panels()
  *
  * @see PanelManager
  */

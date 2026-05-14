@@ -26,4 +26,17 @@ final class PanelManager
     {
         return $this->registry->get($id, $isStrict);
     }
+
+    public function defaultPanel(): Panel
+    {
+        return $this->registry->getDefault();
+    }
+
+    /**
+     * @return array<string, Panel>
+     */
+    public function panels(): array
+    {
+        return $this->registry->all();
+    }
 }

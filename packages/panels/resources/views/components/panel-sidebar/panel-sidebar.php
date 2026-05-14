@@ -3,15 +3,15 @@
 declare(strict_types=1);
 
 use Livewire\Component;
+use Zdearo\LivewirePanels\Facades\LivewirePanels;
 use Zdearo\LivewirePanels\Navigation\NavigationContract;
 use Zdearo\LivewirePanels\Panel\Panel;
-use Zdearo\LivewirePanels\Panel\PanelManager;
 
 return new class extends Component
 {
     public function currentPanel(): ?Panel
     {
-        return app(PanelManager::class)->currentPanel();
+        return LivewirePanels::currentPanel();
     }
 
     public function navigationContract(): ?NavigationContract

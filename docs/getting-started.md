@@ -298,6 +298,8 @@ Other available calls proxy to the panel manager:
 
 ```php
 LivewirePanels::panel('admin');
+LivewirePanels::defaultPanel();
+LivewirePanels::panels();
 LivewirePanels::setCurrentPanel($panel);
 ```
 

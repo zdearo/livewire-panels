@@ -42,6 +42,25 @@ it('exposes the panel manager through a facade', function (): void {
         ->and(app(PanelManager::class)->currentPanel)->toBe($panel);
 });
 
+it('exposes default and registered panels through a facade', function (): void {
+    app()->register(ManagerDefaultPanelProvider::class);
+    app()->register(ManagerSecondaryPanelProvider::class);
+
+    expect(LivewirePanels::defaultPanel())
+        ->toBeInstanceOf(Panel::class)
+        ->id->toBe('admin')
+        ->and(LivewirePanels::panels())
+        ->toHaveKeys(['admin', 'sales-panel']);
+});
+
+it('creates panel instances without resolving them from the container', function (): void {
+    $boundPanel = new Panel;
+
+    app()->instance(Panel::class, $boundPanel);
+
+    expect(Panel::make())->not->toBe($boundPanel);
+});
+
 it('uses the default registered panel as the current panel', function (): void {
     app()->register(ManagerSecondaryPanelProvider::class);
     app()->register(ManagerDefaultPanelProvider::class);

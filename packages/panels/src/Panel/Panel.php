@@ -86,7 +86,7 @@ final class Panel
 
     public static function make(): self
     {
-        return app(self::class);
+        return new self;
     }
 
     public function id(string $id): self
