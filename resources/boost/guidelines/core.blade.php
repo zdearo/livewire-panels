@@ -84,6 +84,8 @@ $panel->navigationMode(fn (): NavigationMode => auth()->user()?->prefers_topbar
 
 Lazy navigation modes are allowed because they affect rendering only. Do not make route structure, middleware, guards, tenant route parameters, or Vite entrypoints lazy.
 
+When state used by a lazy navigation mode changes during an active Livewire session, dispatch `livewire-panels::refresh-navigation` after persisting the state. Do not send the target mode as event payload; the package must resolve the panel closure again.
+
 Do not implement hover-driven Livewire state for navigation. The `topbar` mode may use Flux hover dropdowns locally, but navigation should only happen when a page/item link is clicked.
 
 Navigation active state should resolve from the package's original request handling, not from the Livewire update endpoint.

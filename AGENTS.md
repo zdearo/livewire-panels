@@ -417,6 +417,12 @@ $panel->navigationMode(fn (): NavigationMode => auth()->user()?->prefers_topbar
     : NavigationMode::Sidebar);
 ```
 
+When a lazy navigation mode depends on state changed during an active Livewire session, the app may dispatch `livewire-panels::refresh-navigation`. The event must not carry the target mode. It only asks the package navigation component to re-render and resolve `Panel::displayNavigationMode()` again:
+
+```php
+$this->dispatch('livewire-panels::refresh-navigation');
+```
+
 `Sidebar` is the default mode and preserves the original sidebar shell.
 
 `Topbar` renders flat navigation items in the topbar. Navigation groups render as hover dropdowns in the topbar.

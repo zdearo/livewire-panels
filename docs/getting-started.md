@@ -241,6 +241,19 @@ $panel->navigationMode(fn (): NavigationMode => auth()->user()?->prefers_topbar
     : NavigationMode::Sidebar);
 ```
 
+If that state changes during an active Livewire session, dispatch the package refresh event after persisting the new state:
+
+```php
+public function setNavigationMode(string $mode): void
+{
+    auth()->user()->update(['navigation_mode' => $mode]);
+
+    $this->dispatch('livewire-panels::refresh-navigation');
+}
+```
+
+The event does not receive the target mode. It only re-renders the package navigation component so the panel can resolve `navigationMode()` again.
+
 `Sidebar` renders the primary Flux sidebar. `Topbar` renders flat items and hover dropdown groups in the topbar. `TopbarWithSidebar` renders groups in the topbar and shows a secondary sidebar for the current page group.
 
 Navigation state is resolved from the original page request during Livewire updates, so active items and groups remain stable while the browser is posting to Livewire's update endpoint.

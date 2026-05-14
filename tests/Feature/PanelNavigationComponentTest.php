@@ -151,6 +151,8 @@ it('renders grouped navigation in the topbar mode', function (): void {
         ->assertSee('Users')
         ->assertSee('Settings')
         ->assertDontSeeHtml('wire:mouseenter')
+        ->assertDontSeeHtml('livewire-panels::navigation-mode-updated')
+        ->assertDontSeeHtml('data-livewire-panels-secondary-navigation-shell')
         ->assertDontSeeHtml('data-livewire-panels-secondary-navigation');
 });
 
@@ -160,6 +162,28 @@ it('renders a lazy navigation mode', function (): void {
     );
 
     Livewire::test('livewire-panels::panel-navigation')
+        ->assertSeeHtml('data-livewire-panels-navigation-mode="topbar"')
+        ->assertSeeHtml('data-livewire-panels-topbar');
+});
+
+it('refreshes lazy navigation mode at runtime through the public refresh event', function (): void {
+    $mode = 'sidebar';
+
+    app(PanelManager::class)->setCurrentPanel(
+        navigationTestingPanel()->navigationMode(function () use (&$mode): string {
+            return $mode;
+        }),
+    );
+
+    $component = Livewire::test('livewire-panels::panel-navigation')
+        ->assertSeeHtml('data-livewire-panels-navigation-mode="sidebar"')
+        ->assertSeeHtml('livewire-panels::refresh-navigation')
+        ->assertDontSeeHtml('livewire-panels::navigation-mode-updated');
+
+    $mode = 'topbar';
+
+    $component
+        ->dispatch('livewire-panels::refresh-navigation')
         ->assertSeeHtml('data-livewire-panels-navigation-mode="topbar"')
         ->assertSeeHtml('data-livewire-panels-topbar');
 });

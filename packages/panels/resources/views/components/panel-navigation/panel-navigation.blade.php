@@ -5,7 +5,10 @@
     $activeGroup = $this->activeGroup();
 @endphp
 
-<section data-livewire-panels-navigation data-livewire-panels-navigation-mode="{{ $mode->value }}">
+<section
+    data-livewire-panels-navigation
+    data-livewire-panels-navigation-mode="{{ $mode->value }}"
+>
     @if($mode->value === 'sidebar')
         <flux:sidebar
             sticky

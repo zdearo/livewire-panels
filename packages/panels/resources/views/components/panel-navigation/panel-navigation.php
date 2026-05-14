@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Contracts\View\View;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Zdearo\LivewirePanels\Enums\NavigationMode;
 use Zdearo\LivewirePanels\Facades\Panels;
@@ -38,6 +39,12 @@ return new class extends Component
     public function navigationContract(): ?NavigationContract
     {
         return $this->currentPanel()?->navigationContract();
+    }
+
+    #[On('livewire-panels::refresh-navigation')]
+    public function refreshNavigation(): void
+    {
+        //
     }
 
     public function shell(): PanelShell
