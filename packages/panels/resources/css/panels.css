@@ -1,5 +1,3 @@
-@import '../../../../vendor/livewire/flux/dist/flux.css';
-
 [data-livewire-panels-body] {
     min-height: 100vh;
     margin: 0;

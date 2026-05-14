@@ -81,6 +81,7 @@ it('creates the first panel provider and registers it as default', function (): 
         ->toBeFile()
         ->and(File::get(resource_path('css/panels/admin.css')))
         ->toContain("@import 'tailwindcss';")
+        ->toContain("@import '../../../vendor/livewire/flux/dist/flux.css';")
         ->toContain("@import '../../../vendor/zdearo/livewire-panels/packages/panels/resources/css/panels.css';")
         ->toContain("@source '../../../vendor/zdearo/livewire-panels/packages/panels/resources/views/**/*.blade.php';");
 

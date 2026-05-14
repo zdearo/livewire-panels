@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import '../../../vendor/livewire/flux/dist/flux.css';
 @import '../../../vendor/zdearo/livewire-panels/packages/panels/resources/css/panels.css';
 
 @source '../../../vendor/zdearo/livewire-panels/packages/panels/resources/views/**/*.blade.php';

@@ -67,7 +67,7 @@ it('provides a panel stylesheet source for the consuming app build', function ()
         ->toBeFile()
         ->and(File::get($sourcePath))
         ->not->toContain("@import 'tailwindcss'")
-        ->toContain("@import '../../../../vendor/livewire/flux/dist/flux.css';")
+        ->not->toContain('vendor/livewire/flux')
         ->toContain('[data-livewire-panels-layout="panel"]');
 });
 

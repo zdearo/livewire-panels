@@ -156,10 +156,11 @@ $panel->vite(['resources/css/app.css', 'resources/js/app.js']);
 The package ships a panel stylesheet source that should be imported by the consuming app's chosen CSS entrypoint:
 
 ```css
+@import '../../vendor/livewire/flux/dist/flux.css';
 @import '../../vendor/zdearo/livewire-panels/packages/panels/resources/css/panels.css';
 ```
 
-Because this package depends on Flux, the package stylesheet imports Flux's CSS itself. The consuming app should not need to import Flux separately for panel styling.
+The package stylesheet must not import Flux's CSS with a package-relative path. When the package is installed in an application, `vendor/livewire/flux` belongs to the consuming application's vendor directory. The generated app stylesheet should import Flux before the package panel stylesheet.
 
 The consuming app's Tailwind source list must include the package Blade views so Tailwind sees classes used by the default Flux panel shell:
 
@@ -485,7 +486,7 @@ The generated provider must reference that entrypoint with:
 ->vite('resources/css/panels/admin.css')
 ```
 
-The generated CSS file imports Tailwind and the package panel stylesheet, which itself imports Flux CSS.
+The generated CSS file imports Tailwind, Flux CSS from the consuming application's `vendor`, and then the package panel stylesheet.
 
 The command should also add that CSS entrypoint to `vite.config.js` when it can safely find a Laravel Vite `input: [...]` array. If the file is missing or the input shape is not recognized, the command should warn the developer to add the entrypoint manually instead of failing.
 

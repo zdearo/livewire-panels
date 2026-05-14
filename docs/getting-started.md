@@ -445,10 +445,11 @@ Panels::route('users');
 
 ## CSS And Vite
 
-The generated panel CSS imports Tailwind and the package panel stylesheet:
+The generated panel CSS imports Tailwind, Flux, and the package panel stylesheet:
 
 ```css
 @import 'tailwindcss';
+@import '../../../vendor/livewire/flux/dist/flux.css';
 @import '../../../vendor/zdearo/livewire-panels/packages/panels/resources/css/panels.css';
 
 @source '../../../vendor/zdearo/livewire-panels/packages/panels/resources/views/**/*.blade.php';
@@ -458,7 +459,7 @@ The generated panel CSS imports Tailwind and the package panel stylesheet:
 @custom-variant dark (&:where(.dark, .dark *));
 ```
 
-The package stylesheet imports Flux CSS, so the consuming app does not need a separate Flux CSS import for panel styling.
+Keep the Flux import in the consuming app stylesheet. The package stylesheet does not import Flux with a relative path because the Flux package lives in the application `vendor` directory when installed through Composer.
 
 ## Laravel Boost
 
