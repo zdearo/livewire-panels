@@ -17,7 +17,11 @@
                 <form method="POST" action="{{ $logoutUrl }}">
                     @csrf
 
-                    <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle">
+                    <flux:menu.item as="button" type="submit">
+                        <x-slot name="icon">
+                            <x-icon name="arrow-right-start-on-rectangle" class="me-2" data-flux-menu-item-icon />
+                        </x-slot>
+
                         {{ __('Logout') }}
                     </flux:menu.item>
                 </form>
@@ -43,7 +47,11 @@
                 <form method="POST" action="{{ $logoutUrl }}">
                     @csrf
 
-                    <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle">
+                    <flux:menu.item as="button" type="submit">
+                        <x-slot name="icon">
+                            <x-icon name="arrow-right-start-on-rectangle" class="me-2" data-flux-menu-item-icon />
+                        </x-slot>
+
                         {{ __('Logout') }}
                     </flux:menu.item>
                 </form>

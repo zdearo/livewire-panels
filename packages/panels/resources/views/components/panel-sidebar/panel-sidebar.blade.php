@@ -13,15 +13,42 @@
 
         <flux:sidebar.nav>
             @foreach($this->navigationContract()?->items() ?? [] as $navigationItem)
-                <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$navigationItem->isCurrent()">
+                <flux:sidebar.item :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$navigationItem->isCurrent()">
+                    @if($navigationItem->icon !== null && $navigationItem->icon !== '')
+                        <x-slot name="icon">
+                            <x-icon
+                                :name="$navigationItem->icon"
+                                class="size-4 in-data-flux-sidebar-group-dropdown:text-zinc-400! dark:in-data-flux-sidebar-group-dropdown:text-white/80! [[data-flux-sidebar-item]:hover_&]:text-current!"
+                            />
+                        </x-slot>
+                    @endif
+
                     {{ $navigationItem->displayLabel() }}
                 </flux:sidebar.item>
             @endforeach
 
             @foreach($this->navigationContract()?->groups() ?? [] as $navigationGroup)
-                <flux:sidebar.group expandable :icon="$navigationGroup->icon" heading="{{ $navigationGroup->displayLabel() }}" class="grid">
+                <flux:sidebar.group expandable heading="{{ $navigationGroup->displayLabel() }}" class="grid">
+                    @if($navigationGroup->icon !== null && $navigationGroup->icon !== '')
+                        <x-slot name="icon">
+                            <x-icon
+                                :name="$navigationGroup->icon"
+                                class="size-4 in-data-flux-menu:text-zinc-400 in-data-flux-menu:dark:text-white/80 in-data-flux-menu:[[data-flux-sidebar-group-dropdown]>button:hover_&]:text-current"
+                            />
+                        </x-slot>
+                    @endif
+
                     @foreach($navigationGroup->items as $navigationItem)
-                        <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$navigationItem->isCurrent()">
+                        <flux:sidebar.item :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$navigationItem->isCurrent()">
+                            @if($navigationItem->icon !== null && $navigationItem->icon !== '')
+                                <x-slot name="icon">
+                                    <x-icon
+                                        :name="$navigationItem->icon"
+                                        class="size-4 in-data-flux-sidebar-group-dropdown:text-zinc-400! dark:in-data-flux-sidebar-group-dropdown:text-white/80! [[data-flux-sidebar-item]:hover_&]:text-current!"
+                                    />
+                                </x-slot>
+                            @endif
+
                             {{ $navigationItem->displayLabel() }}
                         </flux:sidebar.item>
                     @endforeach

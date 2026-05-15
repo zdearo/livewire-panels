@@ -42,6 +42,8 @@ it('renders the current panel navigation contract', function (): void {
     Livewire::test('livewire-panels::panel-sidebar')
         ->assertSeeHtml('<section')
         ->assertSeeHtml('data-livewire-panels-navigation')
+        ->assertSeeHtml('data-blade-icon="home"')
+        ->assertSeeHtml('data-blade-icon="briefcase"')
         ->assertSee('Acme Inc.')
         ->assertSee('Dashboard')
         ->assertSee('Management')

@@ -62,8 +62,8 @@ it('uses the first navigation url as the default brand url', function (): void {
 
     expect($brand->render())
         ->toContain('href="/admin/tenants/acme"')
-        ->toContain('<flux:avatar')
-        ->toContain(':name="$panel->displayName()"');
+        ->toContain('data-flux-avatar')
+        ->toContain('Admin');
 });
 
 it('uses the first grouped navigation url as the default brand url', function (): void {

@@ -16,6 +16,7 @@
     },
     "require": {
         "php": "^8.4",
+        "blade-ui-kit/blade-icons": "^1.10",
         "illuminate/auth": "^13.0",
         "illuminate/contracts": "^13.0",
         "illuminate/routing": "^13.0",

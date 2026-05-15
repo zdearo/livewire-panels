@@ -160,6 +160,28 @@ it('renders grouped navigation in the topbar mode', function (): void {
         ->assertDontSeeHtml('data-livewire-panels-secondary-navigation');
 });
 
+it('renders panel navigation icons through Blade Icons component slots', function (): void {
+    Route::post('/admin/logout', fn (): string => 'Logout')->name('admin.logout');
+
+    $this->be((new PanelNavigationUser)->forceFill([
+        'email' => 'olivia@example.com',
+        'name' => 'Olivia Martin',
+    ]));
+
+    app(PanelManager::class)->setCurrentPanel(
+        navigationTestingPanel()
+            ->authenticatables(PanelNavigationUser::class)
+            ->logoutRoute('admin.logout')
+            ->navigationMode(NavigationMode::Topbar),
+    );
+
+    Livewire::test('livewire-panels::panel-navigation')
+        ->assertSeeHtml('data-blade-icon="home"')
+        ->assertSeeHtml('data-blade-icon="briefcase"')
+        ->assertSeeHtml('data-blade-icon="chevron-down"')
+        ->assertSeeHtml('data-blade-icon="arrow-right-start-on-rectangle"');
+});
+
 it('renders a lazy navigation mode', function (): void {
     app(PanelManager::class)->setCurrentPanel(
         navigationTestingPanel()->navigationMode(fn (): string => 'topbar'),

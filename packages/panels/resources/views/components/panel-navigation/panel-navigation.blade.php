@@ -26,15 +26,42 @@
 
             <flux:sidebar.nav>
                 @foreach($navigationItems as $navigationItem)
-                    <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$this->navigationItemIsCurrent($navigationItem)">
+                    <flux:sidebar.item :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$this->navigationItemIsCurrent($navigationItem)">
+                        @if($navigationItem->icon !== null && $navigationItem->icon !== '')
+                            <x-slot name="icon">
+                                <x-icon
+                                    :name="$navigationItem->icon"
+                                    class="size-4 in-data-flux-sidebar-group-dropdown:text-zinc-400! dark:in-data-flux-sidebar-group-dropdown:text-white/80! [[data-flux-sidebar-item]:hover_&]:text-current!"
+                                />
+                            </x-slot>
+                        @endif
+
                         {{ $navigationItem->displayLabel() }}
                     </flux:sidebar.item>
                 @endforeach
 
                 @foreach($navigationGroups as $navigationGroup)
-                    <flux:sidebar.group expandable :icon="$navigationGroup->icon" heading="{{ $navigationGroup->displayLabel() }}" class="grid">
+                    <flux:sidebar.group expandable heading="{{ $navigationGroup->displayLabel() }}" class="grid">
+                        @if($navigationGroup->icon !== null && $navigationGroup->icon !== '')
+                            <x-slot name="icon">
+                                <x-icon
+                                    :name="$navigationGroup->icon"
+                                    class="size-4 in-data-flux-menu:text-zinc-400 in-data-flux-menu:dark:text-white/80 in-data-flux-menu:[[data-flux-sidebar-group-dropdown]>button:hover_&]:text-current"
+                                />
+                            </x-slot>
+                        @endif
+
                         @foreach($navigationGroup->items as $navigationItem)
-                            <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$this->navigationItemIsCurrent($navigationItem)">
+                            <flux:sidebar.item :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$this->navigationItemIsCurrent($navigationItem)">
+                                @if($navigationItem->icon !== null && $navigationItem->icon !== '')
+                                    <x-slot name="icon">
+                                        <x-icon
+                                            :name="$navigationItem->icon"
+                                            class="size-4 in-data-flux-sidebar-group-dropdown:text-zinc-400! dark:in-data-flux-sidebar-group-dropdown:text-white/80! [[data-flux-sidebar-item]:hover_&]:text-current!"
+                                        />
+                                    </x-slot>
+                                @endif
+
                                 {{ $navigationItem->displayLabel() }}
                             </flux:sidebar.item>
                         @endforeach
@@ -48,7 +75,20 @@
         </flux:sidebar>
 
         <flux:header class="lg:hidden">
-            <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
+            <flux:button
+                class="lg:hidden shrink-0"
+                variant="subtle"
+                square
+                x-data
+                x-on:click="$dispatch('flux-sidebar-toggle')"
+                aria-label="{{ __('Toggle sidebar') }}"
+                data-flux-sidebar-toggle
+                inset="left"
+            >
+                <x-slot name="icon">
+                    <x-icon name="bars-2" class="size-5" />
+                </x-slot>
+            </flux:button>
 
             <flux:spacer />
 
@@ -56,13 +96,31 @@
         </flux:header>
     @else
         <flux:header container class="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700" data-livewire-panels-topbar>
-            <flux:sidebar.toggle class="lg:hidden" icon="bars-2" />
+            <flux:button
+                class="lg:hidden shrink-0"
+                variant="subtle"
+                square
+                x-data
+                x-on:click="$dispatch('flux-sidebar-toggle')"
+                aria-label="{{ __('Toggle sidebar') }}"
+                data-flux-sidebar-toggle
+            >
+                <x-slot name="icon">
+                    <x-icon name="bars-2" class="size-5" />
+                </x-slot>
+            </flux:button>
 
             {!! $this->topbarBrand() !!}
 
             <flux:navbar class="-mb-px max-lg:hidden">
                 @foreach($navigationItems as $navigationItem)
-                    <flux:navbar.item :icon="$navigationItem->icon" :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$this->navigationItemIsCurrent($navigationItem)">
+                    <flux:navbar.item :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$this->navigationItemIsCurrent($navigationItem)">
+                        @if($navigationItem->icon !== null && $navigationItem->icon !== '')
+                            <x-slot name="icon">
+                                <x-icon :name="$navigationItem->icon" class="size-5" />
+                            </x-slot>
+                        @endif
+
                         {{ $navigationItem->displayLabel() }}
                     </flux:navbar.item>
                 @endforeach
@@ -74,7 +132,17 @@
                 @foreach($navigationGroups as $navigationGroup)
                     @if($mode->value === 'topbar')
                         <flux:dropdown hover class="max-lg:hidden" data-livewire-panels-navigation-dropdown>
-                            <flux:navbar.item :icon="$navigationGroup->icon" icon:trailing="chevron-down">
+                            <flux:navbar.item>
+                                @if($navigationGroup->icon !== null && $navigationGroup->icon !== '')
+                                    <x-slot name="icon">
+                                        <x-icon :name="$navigationGroup->icon" class="size-5" />
+                                    </x-slot>
+                                @endif
+
+                                <x-slot name="iconTrailing">
+                                    <x-icon name="chevron-down" class="size-4 ms-1" />
+                                </x-slot>
+
                                 {{ $navigationGroup->displayLabel() }}
                             </flux:navbar.item>
 
@@ -88,10 +156,15 @@
                         </flux:dropdown>
                     @else
                         <flux:navbar.item
-                            :icon="$navigationGroup->icon"
                             :href="$this->groupUrl($navigationGroup)"
                             :current="$activeGroup?->id === $navigationGroup->id"
                         >
+                            @if($navigationGroup->icon !== null && $navigationGroup->icon !== '')
+                                <x-slot name="icon">
+                                    <x-icon :name="$navigationGroup->icon" class="size-5" />
+                                </x-slot>
+                            @endif
+
                             {{ $navigationGroup->displayLabel() }}
                         </flux:navbar.item>
                     @endif
@@ -112,15 +185,42 @@
 
             <flux:sidebar.nav>
                 @foreach($navigationItems as $navigationItem)
-                    <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$this->navigationItemIsCurrent($navigationItem)">
+                    <flux:sidebar.item :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$this->navigationItemIsCurrent($navigationItem)">
+                        @if($navigationItem->icon !== null && $navigationItem->icon !== '')
+                            <x-slot name="icon">
+                                <x-icon
+                                    :name="$navigationItem->icon"
+                                    class="size-4 in-data-flux-sidebar-group-dropdown:text-zinc-400! dark:in-data-flux-sidebar-group-dropdown:text-white/80! [[data-flux-sidebar-item]:hover_&]:text-current!"
+                                />
+                            </x-slot>
+                        @endif
+
                         {{ $navigationItem->displayLabel() }}
                     </flux:sidebar.item>
                 @endforeach
 
                 @foreach($navigationGroups as $navigationGroup)
-                    <flux:sidebar.group expandable :icon="$navigationGroup->icon" heading="{{ $navigationGroup->displayLabel() }}" class="grid">
+                    <flux:sidebar.group expandable heading="{{ $navigationGroup->displayLabel() }}" class="grid">
+                        @if($navigationGroup->icon !== null && $navigationGroup->icon !== '')
+                            <x-slot name="icon">
+                                <x-icon
+                                    :name="$navigationGroup->icon"
+                                    class="size-4 in-data-flux-menu:text-zinc-400 in-data-flux-menu:dark:text-white/80 in-data-flux-menu:[[data-flux-sidebar-group-dropdown]>button:hover_&]:text-current"
+                                />
+                            </x-slot>
+                        @endif
+
                         @foreach($navigationGroup->items as $navigationItem)
-                            <flux:sidebar.item :icon="$navigationItem->icon" :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$this->navigationItemIsCurrent($navigationItem)">
+                            <flux:sidebar.item :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$this->navigationItemIsCurrent($navigationItem)">
+                                @if($navigationItem->icon !== null && $navigationItem->icon !== '')
+                                    <x-slot name="icon">
+                                        <x-icon
+                                            :name="$navigationItem->icon"
+                                            class="size-4 in-data-flux-sidebar-group-dropdown:text-zinc-400! dark:in-data-flux-sidebar-group-dropdown:text-white/80! [[data-flux-sidebar-item]:hover_&]:text-current!"
+                                        />
+                                    </x-slot>
+                                @endif
+
                                 {{ $navigationItem->displayLabel() }}
                             </flux:sidebar.item>
                         @endforeach
