@@ -90,6 +90,21 @@ Do not implement hover-driven Livewire state for navigation. The `topbar` mode m
 
 Navigation active state should resolve from the package's original request handling, not from the Livewire update endpoint.
 
+Navigation and shell icon names use Blade Icons names, such as `heroicon-o-users`. Package-owned fixed shell icons can be replaced through aliases.
+
+@verbatim
+<code-snippet name="Panel Shell Icon Aliases" lang="php">
+use Zdearo\LivewirePanels\Facades\PanelsIcon;
+use Zdearo\LivewirePanels\Icons\PanelsIconAlias;
+
+PanelsIcon::register([
+    PanelsIconAlias::SIDEBAR_TOGGLE_BUTTON => 'heroicon-o-queue-list',
+    PanelsIconAlias::TOPBAR_GROUP_DROPDOWN_BUTTON => view('icons.chevron-down'),
+    PanelsIconAlias::USER_MENU_LOGOUT_BUTTON => 'heroicon-o-arrow-left-start-on-rectangle',
+]);
+</code-snippet>
+@endverbatim
+
 ### Panel Shells
 
 Customize the Flux shell through a shell class, not by adding many visual flags to the provider.

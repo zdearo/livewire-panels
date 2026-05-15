@@ -120,6 +120,9 @@ The first implementation layer is intentionally small:
 - `Page\Page`: route descriptor for Livewire page routes.
 - `Page\PageGroup`: structural page group for sharing route path and route name prefixes.
 - `Facades\Panels`: Laravel facade for resolving panels, listing panels, and reading or setting the current panel through `PanelManager`.
+- `Icons\PanelsIconManager`: stores overridable icon aliases used by package-owned shell controls.
+- `Icons\PanelsIconAlias`: public alias constants for package-owned shell icons.
+- `Facades\PanelsIcon`: Laravel facade for registering shell icon overrides.
 - `Auth\Contracts\CanAccessPanel`: optional model contract for panel-specific access checks.
 - `Navigation\NavigationBuilder`: builds the normalized navigation contract from panel navigation items and page descriptors.
 - `Navigation\NavigationItem`, `Navigation\NavigationGroup`, and `Navigation\NavigationContract`: normalized panel navigation primitives.
@@ -444,6 +447,22 @@ Shell classes extend `Zdearo\LivewirePanels\Shell\PanelShell` and may override f
 Panels may also override those same shell slots directly for focused customization. Direct slot values may be lazy closures that receive the current `Panel`. A configured slot takes precedence over the shell class for that slot.
 
 The default shell uses Flux patterns and the panel name for the brand. When a panel has `authenticatables()` configured and a user is authenticated, the default shell renders a Flux user dropdown in the sidebar/topbar header locations.
+
+Package-owned fixed shell icons are replaceable through aliases, without replacing the whole shell:
+
+```php
+use Illuminate\Support\HtmlString;
+use Zdearo\LivewirePanels\Facades\PanelsIcon;
+use Zdearo\LivewirePanels\Icons\PanelsIconAlias;
+
+PanelsIcon::register([
+    PanelsIconAlias::SIDEBAR_TOGGLE_BUTTON => 'heroicon-o-queue-list',
+    PanelsIconAlias::TOPBAR_GROUP_DROPDOWN_BUTTON => new HtmlString('<svg data-custom-icon></svg>'),
+    PanelsIconAlias::USER_MENU_LOGOUT_BUTTON => view('icons.logout'),
+]);
+```
+
+String values are treated as Blade Icons names. `Htmlable` values, including Blade views, are rendered directly.
 
 The default panel navigation shell is a Livewire 4 multi-file component, not a class component. Keep it in:
 

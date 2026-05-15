@@ -5,8 +5,11 @@ declare(strict_types=1);
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\HtmlString;
 use Livewire\Livewire;
 use Zdearo\LivewirePanels\Enums\NavigationMode;
+use Zdearo\LivewirePanels\Facades\PanelsIcon;
+use Zdearo\LivewirePanels\Icons\PanelsIconAlias;
 use Zdearo\LivewirePanels\Navigation\NavigationGroup;
 use Zdearo\LivewirePanels\Navigation\NavigationItem;
 use Zdearo\LivewirePanels\Page\Page;
@@ -180,6 +183,36 @@ it('renders panel navigation icons through Blade Icons component slots', functio
         ->assertSeeHtml('data-blade-icon="heroicon-o-briefcase"')
         ->assertSeeHtml('data-blade-icon="heroicon-o-chevron-down"')
         ->assertSeeHtml('data-blade-icon="heroicon-o-arrow-right-start-on-rectangle"');
+});
+
+it('allows fixed panel shell icons to be replaced by aliases', function (): void {
+    Route::post('/admin/logout', fn (): string => 'Logout')->name('admin.logout');
+
+    $this->be((new PanelNavigationUser)->forceFill([
+        'email' => 'olivia@example.com',
+        'name' => 'Olivia Martin',
+    ]));
+
+    PanelsIcon::register([
+        PanelsIconAlias::SIDEBAR_TOGGLE_BUTTON => 'heroicon-o-queue-list',
+        PanelsIconAlias::TOPBAR_GROUP_DROPDOWN_BUTTON => new HtmlString('<svg data-custom-topbar-group-icon></svg>'),
+        PanelsIconAlias::USER_MENU_LOGOUT_BUTTON => new HtmlString('<svg data-custom-logout-icon></svg>'),
+    ]);
+
+    app(PanelManager::class)->setCurrentPanel(
+        navigationTestingPanel()
+            ->authenticatables(PanelNavigationUser::class)
+            ->logoutRoute('admin.logout')
+            ->navigationMode(NavigationMode::Topbar),
+    );
+
+    Livewire::test('livewire-panels::panel-navigation')
+        ->assertSeeHtml('data-blade-icon="heroicon-o-queue-list"')
+        ->assertSeeHtml('data-custom-topbar-group-icon')
+        ->assertSeeHtml('data-custom-logout-icon')
+        ->assertDontSeeHtml('data-blade-icon="heroicon-o-bars-2"')
+        ->assertDontSeeHtml('data-blade-icon="heroicon-o-chevron-down"')
+        ->assertDontSeeHtml('data-blade-icon="heroicon-o-arrow-right-start-on-rectangle"');
 });
 
 it('renders a lazy navigation mode', function (): void {

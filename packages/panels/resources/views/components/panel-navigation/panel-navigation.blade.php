@@ -86,7 +86,10 @@
                 inset="left"
             >
                 <x-slot name="icon">
-                    <x-icon name="heroicon-o-bars-2" class="size-5" />
+                    <x-livewire-panels::icon
+                        :alias="\Zdearo\LivewirePanels\Icons\PanelsIconAlias::SIDEBAR_TOGGLE_BUTTON"
+                        class="size-5"
+                    />
                 </x-slot>
             </flux:button>
 
@@ -106,7 +109,10 @@
                 data-flux-sidebar-toggle
             >
                 <x-slot name="icon">
-                    <x-icon name="heroicon-o-bars-2" class="size-5" />
+                    <x-livewire-panels::icon
+                        :alias="\Zdearo\LivewirePanels\Icons\PanelsIconAlias::SIDEBAR_TOGGLE_BUTTON"
+                        class="size-5"
+                    />
                 </x-slot>
             </flux:button>
 
@@ -140,7 +146,10 @@
                                 @endif
 
                                 <x-slot name="iconTrailing">
-                                    <x-icon name="heroicon-o-chevron-down" class="size-4 ms-1" />
+                                    <x-livewire-panels::icon
+                                        :alias="\Zdearo\LivewirePanels\Icons\PanelsIconAlias::TOPBAR_GROUP_DROPDOWN_BUTTON"
+                                        class="size-4 ms-1"
+                                    />
                                 </x-slot>
 
                                 {{ $navigationGroup->displayLabel() }}

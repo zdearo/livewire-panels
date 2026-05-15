@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Zdearo\LivewirePanels\Panel;
 
 use Illuminate\Support\ServiceProvider;
+use Zdearo\LivewirePanels\Icons\PanelsIconManager;
 use Zdearo\LivewirePanels\Routing\PanelRouter;
 use Zdearo\LivewirePanels\Routing\PanelUrlGenerator;
 use Zdearo\LivewirePanels\Tenant\TenantManager;
@@ -21,6 +22,7 @@ abstract class PanelProvider extends ServiceProvider
         $this->app->singletonIf(PanelRouter::class);
         $this->app->singletonIf(PanelUrlGenerator::class);
         $this->app->singletonIf(TenantManager::class);
+        $this->app->singletonIf(PanelsIconManager::class);
 
         $panel = $this->panel(Panel::make());
         $this->registeredPanel = $panel;

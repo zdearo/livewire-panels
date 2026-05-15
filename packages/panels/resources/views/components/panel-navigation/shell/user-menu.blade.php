@@ -19,7 +19,11 @@
 
                     <flux:menu.item as="button" type="submit">
                         <x-slot name="icon">
-                            <x-icon name="heroicon-o-arrow-right-start-on-rectangle" class="me-2" data-flux-menu-item-icon />
+                            <x-livewire-panels::icon
+                                :alias="\Zdearo\LivewirePanels\Icons\PanelsIconAlias::USER_MENU_LOGOUT_BUTTON"
+                                class="me-2"
+                                data-flux-menu-item-icon
+                            />
                         </x-slot>
 
                         {{ __('Logout') }}
@@ -49,7 +53,11 @@
 
                     <flux:menu.item as="button" type="submit">
                         <x-slot name="icon">
-                            <x-icon name="heroicon-o-arrow-right-start-on-rectangle" class="me-2" data-flux-menu-item-icon />
+                            <x-livewire-panels::icon
+                                :alias="\Zdearo\LivewirePanels\Icons\PanelsIconAlias::USER_MENU_LOGOUT_BUTTON"
+                                class="me-2"
+                                data-flux-menu-item-icon
+                            />
                         </x-slot>
 
                         {{ __('Logout') }}
