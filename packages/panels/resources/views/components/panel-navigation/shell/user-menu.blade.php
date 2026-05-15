@@ -19,7 +19,7 @@
 
                     <flux:menu.item as="button" type="submit">
                         <x-slot name="icon">
-                            <x-icon name="arrow-right-start-on-rectangle" class="me-2" data-flux-menu-item-icon />
+                            <x-icon name="heroicon-o-arrow-right-start-on-rectangle" class="me-2" data-flux-menu-item-icon />
                         </x-slot>
 
                         {{ __('Logout') }}
@@ -49,7 +49,7 @@
 
                     <flux:menu.item as="button" type="submit">
                         <x-slot name="icon">
-                            <x-icon name="arrow-right-start-on-rectangle" class="me-2" data-flux-menu-item-icon />
+                            <x-icon name="heroicon-o-arrow-right-start-on-rectangle" class="me-2" data-flux-menu-item-icon />
                         </x-slot>
 
                         {{ __('Logout') }}

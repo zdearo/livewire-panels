@@ -33,16 +33,16 @@ final class AdminPanelProvider extends PanelProvider
             ->vite('resources/css/panels/admin.css')
             ->navigationMode(NavigationMode::TopbarWithSidebar)
             ->navigationGroups([
-                NavigationGroup::make('management')->label('Management')->icon('users'),
+                NavigationGroup::make('management')->label('Management')->icon('heroicon-o-users'),
             ])
             ->pages([
                 Page::make('/', 'pages::admin.dashboard')
                     ->name('dashboard')
-                    ->navigation('Dashboard', icon: 'home'),
+                    ->navigation('Dashboard', icon: 'heroicon-o-home'),
 
                 Page::make('/users', 'pages::admin.users')
                     ->name('users')
-                    ->navigation('Users', icon: 'users', group: 'management'),
+                    ->navigation('Users', icon: 'heroicon-o-users', group: 'management'),
             ])
             ->default();
     }
@@ -58,7 +58,7 @@ Use `Page::make()` as a route descriptor. The Livewire component remains native 
 <code-snippet name="Panel Page Descriptor" lang="php">
 Page::make('/users', 'pages::admin.users')
     ->name('users')
-    ->navigation('Users', icon: 'users');
+    ->navigation('Users', icon: 'heroicon-o-users');
 </code-snippet>
 @endverbatim
 

@@ -8,7 +8,7 @@ use Zdearo\LivewirePanels\Navigation\NavigationItem;
 it('configures a navigation item descriptor', function (): void {
     $item = NavigationItem::make('Inbox')
         ->url('/admin/inbox')
-        ->icon('inbox')
+        ->icon('heroicon-o-inbox')
         ->badge(12)
         ->group('Messages')
         ->sort(20);
@@ -16,7 +16,7 @@ it('configures a navigation item descriptor', function (): void {
     expect($item)
         ->label->toBe('Inbox')
         ->url->toBe('/admin/inbox')
-        ->icon->toBe('inbox')
+        ->icon->toBe('heroicon-o-inbox')
         ->badge->toBe('12')
         ->group->toBe('Messages')
         ->sort->toBe(20);

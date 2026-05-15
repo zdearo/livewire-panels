@@ -336,7 +336,7 @@ Panel pages do not appear in sidebar navigation by default. A page must opt in w
 ```php
 Page::make('/users', 'pages::admin.users')
     ->name('users')
-    ->navigation('Users', icon: 'users', group: 'management', sort: 20);
+    ->navigation('Users', icon: 'heroicon-o-users', group: 'management', sort: 20);
 ```
 
 Panel providers run during Laravel provider registration, so application services such as the translator may not be available yet. Do not call `__()` directly in panel definitions. Navigation labels are translated by the package when rendered, and labels may be lazy closures when dynamic translation is needed:
@@ -369,7 +369,7 @@ use Zdearo\LivewirePanels\Navigation\NavigationGroup;
 $panel->navigationGroups([
     NavigationGroup::make('management')
         ->label('Management')
-        ->icon('briefcase')
+        ->icon('heroicon-o-briefcase')
         ->sort(20),
 ]);
 ```
@@ -384,7 +384,7 @@ use Zdearo\LivewirePanels\Navigation\NavigationItem;
 $panel->navigation([
     NavigationItem::make('Settings')
         ->url('/admin/settings')
-        ->icon('cog-6-tooth')
+        ->icon('heroicon-o-cog-6-tooth')
         ->sort(100),
 ]);
 ```

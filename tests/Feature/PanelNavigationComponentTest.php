@@ -176,10 +176,10 @@ it('renders panel navigation icons through Blade Icons component slots', functio
     );
 
     Livewire::test('livewire-panels::panel-navigation')
-        ->assertSeeHtml('data-blade-icon="home"')
-        ->assertSeeHtml('data-blade-icon="briefcase"')
-        ->assertSeeHtml('data-blade-icon="chevron-down"')
-        ->assertSeeHtml('data-blade-icon="arrow-right-start-on-rectangle"');
+        ->assertSeeHtml('data-blade-icon="heroicon-o-home"')
+        ->assertSeeHtml('data-blade-icon="heroicon-o-briefcase"')
+        ->assertSeeHtml('data-blade-icon="heroicon-o-chevron-down"')
+        ->assertSeeHtml('data-blade-icon="heroicon-o-arrow-right-start-on-rectangle"');
 });
 
 it('renders a lazy navigation mode', function (): void {
@@ -345,26 +345,26 @@ function navigationTestingPanel(): Panel
         ->navigationGroups([
             NavigationGroup::make('management')
                 ->label('Management')
-                ->icon('briefcase')
+                ->icon('heroicon-o-briefcase')
                 ->sort(10),
             NavigationGroup::make('content')
                 ->label('Content')
-                ->icon('document-text')
+                ->icon('heroicon-o-document-text')
                 ->sort(20),
         ])
         ->pages([
             Page::make('/hidden', 'pages::admin.hidden'),
             Page::make('/', 'pages::admin.dashboard')
-                ->navigation('Dashboard', icon: 'home', sort: 10),
+                ->navigation('Dashboard', icon: 'heroicon-o-home', sort: 10),
             Page::make('/users', 'pages::admin.users')
-                ->navigation('Users', icon: 'users', group: 'management', sort: 20),
+                ->navigation('Users', icon: 'heroicon-o-users', group: 'management', sort: 20),
             Page::make('/posts', 'pages::admin.posts')
-                ->navigation('Posts', icon: 'document-text', group: 'content', sort: 30),
+                ->navigation('Posts', icon: 'heroicon-o-document-text', group: 'content', sort: 30),
         ])
         ->navigation([
             NavigationItem::make('Settings')
                 ->url('/admin/settings')
-                ->icon('cog-6-tooth')
+                ->icon('heroicon-o-cog-6-tooth')
                 ->sort(40),
         ]);
 }

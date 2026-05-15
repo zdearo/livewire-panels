@@ -169,29 +169,29 @@ it('builds a navigation contract from declared groups, opted-in pages, and manua
         ->navigationGroups([
             NavigationGroup::make('management')
                 ->label('Management')
-                ->icon('briefcase')
+                ->icon('heroicon-o-briefcase')
                 ->sort(20),
         ])
         ->pages([
             Page::make('/hidden', 'pages::admin.hidden')->name('hidden'),
             Page::make('/', 'pages::admin.dashboard')
                 ->name('dashboard')
-                ->navigation('Dashboard', icon: 'home', sort: 10),
+                ->navigation('Dashboard', icon: 'heroicon-o-home', sort: 10),
             Page::group('/settings')
                 ->name('settings')
                 ->pages([
                     Page::make('/', 'pages::admin.settings.index')
                         ->name('index')
-                        ->navigation('Settings', icon: 'cog-6-tooth', sort: 15),
+                        ->navigation('Settings', icon: 'heroicon-o-cog-6-tooth', sort: 15),
                 ]),
             Page::make('/users', 'pages::admin.users')
                 ->name('users')
-                ->navigation('Users', icon: 'users', group: 'management', sort: 20),
+                ->navigation('Users', icon: 'heroicon-o-users', group: 'management', sort: 20),
         ])
         ->navigation([
             NavigationItem::make('Settings')
                 ->url('/admin/settings')
-                ->icon('cog-6-tooth')
+                ->icon('heroicon-o-cog-6-tooth')
                 ->sort(30),
         ]);
 
@@ -205,17 +205,17 @@ it('builds a navigation contract from declared groups, opted-in pages, and manua
             fn ($item) => $item
                 ->label->toBe('Dashboard')
                 ->url->toBe('/admin')
-                ->icon->toBe('home')
+                ->icon->toBe('heroicon-o-home')
                 ->sort->toBe(10),
             fn ($item) => $item
                 ->label->toBe('Settings')
                 ->url->toBe('/admin/settings')
-                ->icon->toBe('cog-6-tooth')
+                ->icon->toBe('heroicon-o-cog-6-tooth')
                 ->sort->toBe(15),
             fn ($item) => $item
                 ->label->toBe('Settings')
                 ->url->toBe('/admin/settings')
-                ->icon->toBe('cog-6-tooth')
+                ->icon->toBe('heroicon-o-cog-6-tooth')
                 ->sort->toBe(30),
         )
         ->and($navigation->groups())
@@ -224,7 +224,7 @@ it('builds a navigation contract from declared groups, opted-in pages, and manua
             fn ($group) => $group
                 ->id->toBe('management')
                 ->label->toBe('Management')
-                ->icon->toBe('briefcase')
+                ->icon->toBe('heroicon-o-briefcase')
                 ->sort->toBe(20)
                 ->items->toHaveCount(1)
                 ->items->sequence(

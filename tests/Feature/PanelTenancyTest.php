@@ -371,10 +371,10 @@ final class TenantTestingPanelProvider extends PanelProvider
             ->pages([
                 Page::make('/', 'pages::admin.dashboard')
                     ->name('dashboard')
-                    ->navigation('Dashboard', icon: 'home'),
+                    ->navigation('Dashboard', icon: 'heroicon-o-home'),
                 Page::make('/users', 'pages::admin.users')
                     ->name('users')
-                    ->navigation('Users', icon: 'users'),
+                    ->navigation('Users', icon: 'heroicon-o-users'),
                 Page::make('/users/{user}', 'pages::admin.users.show')
                     ->name('users.show'),
             ])

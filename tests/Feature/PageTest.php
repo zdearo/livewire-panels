@@ -23,11 +23,11 @@ it('does not add panel pages to the navigation by default', function (): void {
 
 it('can configure a panel page navigation item', function (): void {
     $page = Page::make('/users', 'pages::admin.users')
-        ->navigation('Users', icon: 'users', group: 'Management', sort: 20);
+        ->navigation('Users', icon: 'heroicon-o-users', group: 'Management', sort: 20);
 
     expect($page->navigation)
         ->label->toBe('Users')
-        ->icon->toBe('users')
+        ->icon->toBe('heroicon-o-users')
         ->group->toBe('Management')
         ->sort->toBe(20);
 });

@@ -8,13 +8,13 @@ use Zdearo\LivewirePanels\Navigation\NavigationItem;
 it('configures a navigation group descriptor', function (): void {
     $group = NavigationGroup::make('management')
         ->label('Management')
-        ->icon('briefcase')
+        ->icon('heroicon-o-briefcase')
         ->sort(20);
 
     expect($group)
         ->id->toBe('management')
         ->label->toBe('Management')
-        ->icon->toBe('briefcase')
+        ->icon->toBe('heroicon-o-briefcase')
         ->sort->toBe(20)
         ->items->toBe([]);
 });

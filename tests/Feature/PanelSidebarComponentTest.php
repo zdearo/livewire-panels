@@ -21,19 +21,19 @@ it('renders the current panel navigation contract', function (): void {
         ->navigationGroups([
             NavigationGroup::make('management')
                 ->label('Management')
-                ->icon('briefcase'),
+                ->icon('heroicon-o-briefcase'),
         ])
         ->pages([
             Page::make('/hidden', 'pages::admin.hidden'),
             Page::make('/', 'pages::admin.dashboard')
-                ->navigation('Dashboard', icon: 'home', sort: 10),
+                ->navigation('Dashboard', icon: 'heroicon-o-home', sort: 10),
             Page::make('/users', 'pages::admin.users')
-                ->navigation('Users', icon: 'users', group: 'management', sort: 20),
+                ->navigation('Users', icon: 'heroicon-o-users', group: 'management', sort: 20),
         ])
         ->navigation([
             NavigationItem::make('Settings')
                 ->url('/admin/settings')
-                ->icon('cog-6-tooth')
+                ->icon('heroicon-o-cog-6-tooth')
                 ->sort(30),
         ]);
 
@@ -42,8 +42,8 @@ it('renders the current panel navigation contract', function (): void {
     Livewire::test('livewire-panels::panel-sidebar')
         ->assertSeeHtml('<section')
         ->assertSeeHtml('data-livewire-panels-navigation')
-        ->assertSeeHtml('data-blade-icon="home"')
-        ->assertSeeHtml('data-blade-icon="briefcase"')
+        ->assertSeeHtml('data-blade-icon="heroicon-o-home"')
+        ->assertSeeHtml('data-blade-icon="heroicon-o-briefcase"')
         ->assertSee('Acme Inc.')
         ->assertSee('Dashboard')
         ->assertSee('Management')
