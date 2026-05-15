@@ -10,7 +10,7 @@ final class CurrentRequestResolver
 {
     public function resolve(Request $fallback): Request
     {
-        if (! ($fallback->is('livewire/*') || $fallback->is('livewire-unit-test-endpoint/*')) || ! app()->bound('originalRequest')) {
+        if (! $this->isLivewireUpdateRequest($fallback) || ! app()->bound('originalRequest')) {
             return $fallback;
         }
 
@@ -21,5 +21,12 @@ final class CurrentRequestResolver
         }
 
         return $originalRequest;
+    }
+
+    private function isLivewireUpdateRequest(Request $request): bool
+    {
+        return $request->is('livewire/*')
+            || $request->is('livewire-*/*')
+            || $request->is('livewire-unit-test-endpoint/*');
     }
 }

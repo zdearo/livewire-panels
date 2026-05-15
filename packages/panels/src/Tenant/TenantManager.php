@@ -5,10 +5,15 @@ declare(strict_types=1);
 namespace Zdearo\LivewirePanels\Tenant;
 
 use Zdearo\LivewirePanels\Panel\Panel;
+use Zdearo\LivewirePanels\Support\Http\CurrentRequestResolver;
 
 final class TenantManager
 {
     public private(set) ?object $currentTenant = null;
+
+    public function __construct(
+        private readonly CurrentRequestResolver $requests,
+    ) {}
 
     public function setCurrentTenant(?object $tenant): void
     {
@@ -27,18 +32,30 @@ final class TenantManager
     {
         $tenant ??= $this->currentTenant;
 
-        if ($panel->tenant === null || $panel->tenant->routeParameter === null || $tenant === null) {
+        if ($panel->tenant === null || $panel->tenant->routeParameter === null) {
+            return [];
+        }
+
+        $routeParameter = $panel->tenant->routeParameter;
+        $routeValue = $tenant ?? $this->currentRouteTenantParameter($routeParameter);
+
+        if ($routeValue === null) {
             return [];
         }
 
         return [
-            $panel->tenant->routeParameter => $this->routeKey($tenant),
+            $routeParameter => $this->routeKey($routeValue),
         ];
     }
 
-    private function routeKey(object $tenant): mixed
+    private function currentRouteTenantParameter(string $routeParameter): mixed
     {
-        if (method_exists($tenant, 'getRouteKey')) {
+        return $this->requests->resolve(request())->route($routeParameter);
+    }
+
+    private function routeKey(mixed $tenant): mixed
+    {
+        if (is_object($tenant) && method_exists($tenant, 'getRouteKey')) {
             return $tenant->getRouteKey();
         }
 

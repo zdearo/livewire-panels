@@ -205,6 +205,16 @@ it('returns no tenant route parameters when no tenant can be applied', function 
     expect(app(TenantManager::class)->routeParameters($panel))->toBe([]);
 });
 
+it('returns no tenant route parameters when the current request has no tenant parameter', function (): void {
+    $panel = Panel::make()
+        ->id('admin')
+        ->path('admin/{company}')
+        ->name('Admin')
+        ->tenant(Tenant::make(PanelTenant::class)->routeParameter('company'));
+
+    expect(app(TenantManager::class)->routeParameters($panel))->toBe([]);
+});
+
 it('can use a plain tenant object as a route parameter value', function (): void {
     $tenant = new PlainPanelTenant;
     $panel = Panel::make()
@@ -257,7 +267,7 @@ it('resolves tenants from the original request during Livewire updates', functio
     $tenant = app(TenantResolver::class)->resolve(
         Panel::make()->id('admin')->path('admin/{company}')->name('Admin'),
         Tenant::make(PanelTenant::class)->routeParameter('company'),
-        Request::create('/livewire/update'),
+        Request::create('/livewire-9aa70d50/update'),
     );
 
     expect($tenant)
@@ -270,6 +280,23 @@ it('builds page navigation urls from named routes with current tenant parameters
     app()->boot();
 
     Panels::setCurrentTenant(new PanelTenant('acme'));
+
+    $navigation = Panels::panel('admin')->navigationContract();
+
+    expect($navigation->items())
+        ->toHaveCount(2)
+        ->sequence(
+            fn ($item) => $item->label->toBe('Dashboard')->url->toBe('/admin/acme'),
+            fn ($item) => $item->label->toBe('Users')->url->toBe('/admin/acme/users'),
+        );
+});
+
+it('builds page navigation urls from the original request tenant during Livewire updates', function (): void {
+    app()->register(TenantTestingPanelProvider::class);
+    app()->boot();
+
+    app()->instance('request', Request::create('/livewire-9aa70d50/update'));
+    app()->instance('originalRequest', tenantRequest('/admin/acme/users', '/admin/{company}/users'));
 
     $navigation = Panels::panel('admin')->navigationContract();
 

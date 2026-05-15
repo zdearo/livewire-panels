@@ -14,7 +14,7 @@ it('returns the fallback request outside livewire updates', function (): void {
 });
 
 it('returns the original request during livewire updates', function (): void {
-    $fallback = Request::create('/livewire/update');
+    $fallback = Request::create('/livewire-9aa70d50/update');
     $original = Request::create('/admin/inbox');
 
     app()->instance('originalRequest', $original);
