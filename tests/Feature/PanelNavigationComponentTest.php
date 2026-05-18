@@ -343,6 +343,32 @@ it('resolves the active group from the current page', function (): void {
         ->id->toBe('management');
 });
 
+it('marks a section navigation item current on descendant page paths without activating the panel root item', function (): void {
+    requestPath('/admin/datasets/1');
+
+    app(PanelManager::class)->setCurrentPanel(
+        Panel::make()
+            ->id('admin')
+            ->path('admin')
+            ->pages([
+                Page::make('/', 'pages::admin.dashboard')
+                    ->navigation('Dashboard', icon: 'heroicon-o-home', sort: 10),
+                Page::group('/datasets')
+                    ->pages([
+                        Page::make('/', 'pages::admin.datasets.index')
+                            ->navigation('Datasets', icon: 'heroicon-o-circle-stack', sort: 20),
+                        Page::make('/{dataset}', 'pages::admin.datasets.show')
+                            ->name('datasets.show'),
+                    ]),
+            ]),
+    );
+
+    $component = panelNavigationComponent();
+
+    expect($component->navigationItemIsCurrent($component->navigationItems()[0]))->toBeFalse()
+        ->and($component->navigationItemIsCurrent($component->navigationItems()[1]))->toBeTrue();
+});
+
 it('resolves the active group from the original request during Livewire updates', function (): void {
     app()->instance('request', Request::create('/livewire/update'));
     app()->instance('originalRequest', Request::create('/admin/users'));

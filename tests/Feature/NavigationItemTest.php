@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use Illuminate\Http\Request;
 use Zdearo\LivewirePanels\Navigation\NavigationItem;
+use Zdearo\LivewirePanels\Panel\Panel;
+use Zdearo\LivewirePanels\Panel\PanelManager;
 
 it('configures a navigation item descriptor', function (): void {
     $item = NavigationItem::make('Inbox')
@@ -66,6 +68,10 @@ it('does not mark navigation items without a usable path as current', function (
         ->and(NavigationItem::make('Docs')->url('https://example.com')->isCurrent())->toBeFalse();
 });
 
+it('does not mark a root URL navigation item current on descendant paths', function (): void {
+    expect(NavigationItem::make('Home')->url('/')->isCurrentFor(Request::create('/admin/datasets/1')))->toBeFalse();
+});
+
 it('checks whether a navigation item matches the current request path', function (): void {
     expect(NavigationItem::make('Inbox')->url('/admin/inbox')->isCurrent())->toBeFalse();
 });
@@ -75,4 +81,52 @@ it('checks whether a navigation item matches the original request path when avai
     app()->instance('originalRequest', Request::create('/admin/inbox'));
 
     expect(NavigationItem::make('Inbox')->url('/admin/inbox')->isCurrent())->toBeTrue();
+});
+
+it('marks section navigation items current on descendant page paths', function (): void {
+    app(PanelManager::class)->setCurrentPanel(
+        Panel::make()
+            ->id('admin')
+            ->path('admin'),
+    );
+
+    app()->instance('request', Request::create('/admin/datasets/1'));
+
+    expect(NavigationItem::make('Datasets')->url('/admin/datasets')->isCurrent())->toBeTrue();
+});
+
+it('does not mark the panel root navigation item current on descendant page paths', function (): void {
+    app(PanelManager::class)->setCurrentPanel(
+        Panel::make()
+            ->id('admin')
+            ->path('admin'),
+    );
+
+    app()->instance('request', Request::create('/admin/datasets/1'));
+
+    expect(NavigationItem::make('Dashboard')->url('/admin')->isCurrent())->toBeFalse();
+});
+
+it('does not mark a root panel navigation item current on descendant page paths', function (): void {
+    app(PanelManager::class)->setCurrentPanel(
+        Panel::make()
+            ->id('admin')
+            ->path(''),
+    );
+
+    app()->instance('request', Request::create('/datasets/1'));
+
+    expect(NavigationItem::make('Dashboard')->url('/')->isCurrent())->toBeFalse();
+});
+
+it('marks section navigation items current on descendant page paths for root panels', function (): void {
+    app(PanelManager::class)->setCurrentPanel(
+        Panel::make()
+            ->id('admin')
+            ->path(''),
+    );
+
+    app()->instance('request', Request::create('/datasets/1'));
+
+    expect(NavigationItem::make('Datasets')->url('/datasets')->isCurrent())->toBeTrue();
 });

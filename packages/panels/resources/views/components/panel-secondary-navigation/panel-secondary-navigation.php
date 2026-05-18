@@ -66,19 +66,7 @@ return new class extends Component
 
     public function navigationItemIsCurrent(NavigationItem $item): bool
     {
-        $url = $item->displayUrl();
-
-        if ($url === null) {
-            return false;
-        }
-
-        $path = parse_url($url, PHP_URL_PATH);
-
-        if (! is_string($path) || $path === '') {
-            return false;
-        }
-
-        return $this->currentRequest()->is(ltrim($path, '/'));
+        return $item->isCurrentFor($this->currentRequest(), $this->currentPanel());
     }
 
     private function currentRequest(): Request

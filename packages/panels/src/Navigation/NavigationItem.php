@@ -7,6 +7,8 @@ namespace Zdearo\LivewirePanels\Navigation;
 use Closure;
 use Illuminate\Http\Request;
 use UnexpectedValueException;
+use Zdearo\LivewirePanels\Facades\Panels;
+use Zdearo\LivewirePanels\Panel\Panel;
 use Zdearo\LivewirePanels\Support\Concerns\EvaluatesClosures;
 use Zdearo\LivewirePanels\Support\Http\CurrentRequestResolver;
 
@@ -164,6 +166,14 @@ final class NavigationItem
 
     public function isCurrent(): bool
     {
+        return $this->isCurrentFor(
+            $this->currentRequest(),
+            Panels::currentPanel(),
+        );
+    }
+
+    public function isCurrentFor(Request $request, ?Panel $panel = null): bool
+    {
         $url = $this->displayUrl();
 
         if ($url === null) {
@@ -176,11 +186,45 @@ final class NavigationItem
             return false;
         }
 
-        return $this->currentRequest()->is(ltrim($path, '/'));
+        $path = ltrim($path, '/');
+
+        if ($request->is($path)) {
+            return true;
+        }
+
+        if (! $this->canMatchDescendantPaths($path, $panel)) {
+            return false;
+        }
+
+        return $request->is($path.'/*');
     }
 
     private function currentRequest(): Request
     {
         return app(CurrentRequestResolver::class)->resolve(request());
+    }
+
+    private function canMatchDescendantPaths(string $path, ?Panel $panel): bool
+    {
+        if ($path === '') {
+            return false;
+        }
+
+        if ($panel === null) {
+            return true;
+        }
+
+        return $this->segmentCount($path) > $this->segmentCount($panel->path);
+    }
+
+    private function segmentCount(string $path): int
+    {
+        $path = trim($path, '/');
+
+        if ($path === '') {
+            return 0;
+        }
+
+        return count(explode('/', $path));
     }
 }
