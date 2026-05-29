@@ -182,6 +182,7 @@ it('renders panel navigation icons through Blade Icons component slots', functio
         ->assertSeeHtml('data-blade-icon="heroicon-o-home"')
         ->assertSeeHtml('data-blade-icon="heroicon-o-briefcase"')
         ->assertSeeHtml('data-blade-icon="heroicon-o-chevron-down"')
+        ->assertSeeHtml('class="me-2 size-5 shrink-0"')
         ->assertSeeHtml('data-blade-icon="heroicon-o-arrow-right-start-on-rectangle"');
 });
 

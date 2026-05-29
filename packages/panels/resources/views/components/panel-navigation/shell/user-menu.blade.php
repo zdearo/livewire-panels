@@ -21,7 +21,7 @@
                         <x-slot name="icon">
                             <x-livewire-panels::icon
                                 :alias="\Zdearo\LivewirePanels\Icons\PanelsIconAlias::USER_MENU_LOGOUT_BUTTON"
-                                class="me-2"
+                                class="me-2 size-5 shrink-0"
                                 data-flux-menu-item-icon
                             />
                         </x-slot>
@@ -55,7 +55,7 @@
                         <x-slot name="icon">
                             <x-livewire-panels::icon
                                 :alias="\Zdearo\LivewirePanels\Icons\PanelsIconAlias::USER_MENU_LOGOUT_BUTTON"
-                                class="me-2"
+                                class="me-2 size-5 shrink-0"
                                 data-flux-menu-item-icon
                             />
                         </x-slot>
