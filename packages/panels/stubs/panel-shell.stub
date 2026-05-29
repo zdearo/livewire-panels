@@ -12,13 +12,13 @@ use Zdearo\LivewirePanels\Shell\DefaultPanelShell;
 final class {{ class }} extends DefaultPanelShell
 {
     #[\Override]
-    public function sidebarBrand(Panel $panel): View|Htmlable|string|null
+    public function sidebarBrand(Panel $panel): View
     {
         return parent::sidebarBrand($panel);
     }
 
     #[\Override]
-    public function topbarBrand(Panel $panel): View|Htmlable|string|null
+    public function topbarBrand(Panel $panel): View
     {
         return parent::topbarBrand($panel);
     }
