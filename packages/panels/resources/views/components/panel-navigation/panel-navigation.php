@@ -133,6 +133,13 @@ return new class extends Component
         return $item->isCurrentFor($this->currentRequest(), $this->currentPanel());
     }
 
+    public function navigationItemUsesSpa(NavigationItem $item): bool
+    {
+        $panel = $this->currentPanel();
+
+        return $item->usesSpaNavigation($panel instanceof Panel ? $panel->spaNavigation : true);
+    }
+
     public function groupUrl(NavigationGroup $group): string
     {
         return $group->items[0]->displayUrl() ?? '#';

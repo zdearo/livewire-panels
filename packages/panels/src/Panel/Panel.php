@@ -44,6 +44,8 @@ final class Panel
 
     public private(set) bool $isDefault = false;
 
+    public private(set) bool $spaNavigation = true;
+
     /**
      * @var NavigationMode|Closure(): (NavigationMode|string)
      */
@@ -227,6 +229,13 @@ final class Panel
         }
 
         return $mode;
+    }
+
+    public function spaNavigation(bool $condition = true): self
+    {
+        $this->spaNavigation = $condition;
+
+        return $this;
     }
 
     /**

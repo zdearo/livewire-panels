@@ -63,6 +63,13 @@ it('resolves navigation item visibility lazily', function (): void {
         ->and(NavigationItem::make('Inbox')->visible(fn (): bool => true)->hidden(fn (): bool => false)->isVisible())->toBeTrue();
 });
 
+it('uses spa navigation unless the item overrides it', function (): void {
+    expect(NavigationItem::make('Inbox')->usesSpaNavigation())->toBeTrue()
+        ->and(NavigationItem::make('Inbox')->usesSpaNavigation(default: false))->toBeFalse()
+        ->and(NavigationItem::make('Inbox')->spa()->usesSpaNavigation(default: false))->toBeTrue()
+        ->and(NavigationItem::make('Inbox')->spa(false)->usesSpaNavigation())->toBeFalse();
+});
+
 it('does not mark navigation items without a usable path as current', function (): void {
     expect(NavigationItem::make('Inbox')->isCurrent())->toBeFalse()
         ->and(NavigationItem::make('Docs')->url('https://example.com')->isCurrent())->toBeFalse();

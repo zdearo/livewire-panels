@@ -37,6 +37,8 @@ final class NavigationItem
 
     public private(set) int $sort = 0;
 
+    public private(set) ?bool $spa = null;
+
     /**
      * @var bool|Closure(): bool
      */
@@ -136,6 +138,18 @@ final class NavigationItem
         $this->sort = $sort;
 
         return $this;
+    }
+
+    public function spa(bool $condition = true): self
+    {
+        $this->spa = $condition;
+
+        return $this;
+    }
+
+    public function usesSpaNavigation(bool $default = true): bool
+    {
+        return $this->spa ?? $default;
     }
 
     /**

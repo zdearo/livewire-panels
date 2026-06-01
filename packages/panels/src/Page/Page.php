@@ -43,11 +43,16 @@ final class Page
         ?string $icon = null,
         ?string $group = null,
         int $sort = 0,
+        ?bool $spa = null,
     ): static {
         $this->navigation = NavigationItem::make($label)
             ->icon($icon)
             ->group($group)
             ->sort($sort);
+
+        if ($spa !== null) {
+            $this->navigation->spa($spa);
+        }
 
         return $this;
     }

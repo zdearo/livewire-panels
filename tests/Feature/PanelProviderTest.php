@@ -85,6 +85,13 @@ it('uses sidebar navigation mode by default', function (): void {
     expect($panel->navigationMode)->toBe(NavigationMode::Sidebar);
 });
 
+it('uses spa navigation by default', function (): void {
+    $panel = Panel::make();
+
+    expect($panel->spaNavigation)->toBeTrue()
+        ->and($panel->spaNavigation(false)->spaNavigation)->toBeFalse();
+});
+
 it('can configure the panel navigation mode', function (): void {
     $panel = Panel::make()
         ->navigationMode(NavigationMode::TopbarWithSidebar);

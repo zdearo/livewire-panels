@@ -39,6 +39,13 @@ it('can configure a panel page navigation item with a lazy label', function (): 
     expect($page->navigation?->displayLabel())->toBe('Users');
 });
 
+it('can configure whether a panel page navigation item uses spa navigation', function (): void {
+    $page = Page::make('/users', 'pages::admin.users')
+        ->navigation('Users', spa: false);
+
+    expect($page->navigation?->usesSpaNavigation())->toBeFalse();
+});
+
 it('can create a page group from the page descriptor API', function (): void {
     $group = Page::group('/settings')
         ->name('settings')

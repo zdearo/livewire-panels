@@ -26,7 +26,12 @@
 
             <flux:sidebar.nav>
                 @foreach($navigationItems as $navigationItem)
-                    <flux:sidebar.item :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$this->navigationItemIsCurrent($navigationItem)">
+                    <flux:sidebar.item
+                        :wire:navigate="$this->navigationItemUsesSpa($navigationItem)"
+                        :badge="$navigationItem->displayBadge()"
+                        :href="$navigationItem->displayUrl() ?? '#'"
+                        :current="$this->navigationItemIsCurrent($navigationItem)"
+                    >
                         @if($navigationItem->icon !== null && $navigationItem->icon !== '')
                             <x-slot name="icon">
                                 <x-icon
@@ -52,7 +57,12 @@
                         @endif
 
                         @foreach($navigationGroup->items as $navigationItem)
-                            <flux:sidebar.item :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$this->navigationItemIsCurrent($navigationItem)">
+                            <flux:sidebar.item
+                                :wire:navigate="$this->navigationItemUsesSpa($navigationItem)"
+                                :badge="$navigationItem->displayBadge()"
+                                :href="$navigationItem->displayUrl() ?? '#'"
+                                :current="$this->navigationItemIsCurrent($navigationItem)"
+                            >
                                 @if($navigationItem->icon !== null && $navigationItem->icon !== '')
                                     <x-slot name="icon">
                                         <x-icon
@@ -120,7 +130,12 @@
 
             <flux:navbar class="-mb-px max-lg:hidden">
                 @foreach($navigationItems as $navigationItem)
-                    <flux:navbar.item :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$this->navigationItemIsCurrent($navigationItem)">
+                    <flux:navbar.item
+                        :wire:navigate="$this->navigationItemUsesSpa($navigationItem)"
+                        :badge="$navigationItem->displayBadge()"
+                        :href="$navigationItem->displayUrl() ?? '#'"
+                        :current="$this->navigationItemIsCurrent($navigationItem)"
+                    >
                         @if($navigationItem->icon !== null && $navigationItem->icon !== '')
                             <x-slot name="icon">
                                 <x-icon :name="$navigationItem->icon" class="size-5" />
@@ -157,7 +172,11 @@
 
                             <flux:navmenu>
                                 @foreach($navigationGroup->items as $navigationItem)
-                                    <flux:navmenu.item :href="$navigationItem->displayUrl() ?? '#'" :current="$this->navigationItemIsCurrent($navigationItem)">
+                                    <flux:navmenu.item
+                                        :wire:navigate="$this->navigationItemUsesSpa($navigationItem)"
+                                        :href="$navigationItem->displayUrl() ?? '#'"
+                                        :current="$this->navigationItemIsCurrent($navigationItem)"
+                                    >
                                         {{ $navigationItem->displayLabel() }}
                                     </flux:navmenu.item>
                                 @endforeach
@@ -165,6 +184,7 @@
                         </flux:dropdown>
                     @else
                         <flux:navbar.item
+                            :wire:navigate="$this->navigationItemUsesSpa($navigationGroup->items[0])"
                             :href="$this->groupUrl($navigationGroup)"
                             :current="$activeGroup?->id === $navigationGroup->id"
                         >
@@ -194,7 +214,12 @@
 
             <flux:sidebar.nav>
                 @foreach($navigationItems as $navigationItem)
-                    <flux:sidebar.item :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$this->navigationItemIsCurrent($navigationItem)">
+                    <flux:sidebar.item
+                        :wire:navigate="$this->navigationItemUsesSpa($navigationItem)"
+                        :badge="$navigationItem->displayBadge()"
+                        :href="$navigationItem->displayUrl() ?? '#'"
+                        :current="$this->navigationItemIsCurrent($navigationItem)"
+                    >
                         @if($navigationItem->icon !== null && $navigationItem->icon !== '')
                             <x-slot name="icon">
                                 <x-icon
@@ -220,7 +245,12 @@
                         @endif
 
                         @foreach($navigationGroup->items as $navigationItem)
-                            <flux:sidebar.item :badge="$navigationItem->displayBadge()" :href="$navigationItem->displayUrl() ?? '#'" :current="$this->navigationItemIsCurrent($navigationItem)">
+                            <flux:sidebar.item
+                                :wire:navigate="$this->navigationItemUsesSpa($navigationItem)"
+                                :badge="$navigationItem->displayBadge()"
+                                :href="$navigationItem->displayUrl() ?? '#'"
+                                :current="$this->navigationItemIsCurrent($navigationItem)"
+                            >
                                 @if($navigationItem->icon !== null && $navigationItem->icon !== '')
                                     <x-slot name="icon">
                                         <x-icon

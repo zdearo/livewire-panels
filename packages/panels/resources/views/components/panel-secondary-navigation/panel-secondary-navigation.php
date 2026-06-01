@@ -69,6 +69,13 @@ return new class extends Component
         return $item->isCurrentFor($this->currentRequest(), $this->currentPanel());
     }
 
+    public function navigationItemUsesSpa(NavigationItem $item): bool
+    {
+        $panel = $this->currentPanel();
+
+        return $item->usesSpaNavigation($panel instanceof Panel ? $panel->spaNavigation : true);
+    }
+
     private function currentRequest(): Request
     {
         if ($this->currentPath === '') {

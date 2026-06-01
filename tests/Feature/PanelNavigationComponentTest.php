@@ -41,6 +41,64 @@ it('renders the sidebar navigation mode by default', function (): void {
         ->assertDontSee('Hidden');
 });
 
+it('renders navigation item links with spa navigation by default', function (): void {
+    app(PanelManager::class)->setCurrentPanel(
+        Panel::make()
+            ->id('admin')
+            ->path('admin')
+            ->name('Admin')
+            ->navigation(NavigationItem::make('Settings')->url('/admin/settings')),
+    );
+
+    Livewire::test('livewire-panels::panel-navigation')
+        ->assertSee('Settings')
+        ->assertSeeHtml('wire:navigate');
+});
+
+it('does not render spa navigation when the navigation item opts out', function (): void {
+    app(PanelManager::class)->setCurrentPanel(
+        Panel::make()
+            ->id('admin')
+            ->path('admin')
+            ->name('Admin')
+            ->navigation(NavigationItem::make('Settings')->url('/admin/settings')->spa(false)),
+    );
+
+    Livewire::test('livewire-panels::panel-navigation')
+        ->assertSee('Settings')
+        ->assertDontSeeHtml('wire:navigate');
+});
+
+it('does not render spa navigation when the panel default is disabled', function (): void {
+    app(PanelManager::class)->setCurrentPanel(
+        Panel::make()
+            ->id('admin')
+            ->path('admin')
+            ->name('Admin')
+            ->spaNavigation(false)
+            ->navigation(NavigationItem::make('Settings')->url('/admin/settings')),
+    );
+
+    Livewire::test('livewire-panels::panel-navigation')
+        ->assertSee('Settings')
+        ->assertDontSeeHtml('wire:navigate');
+});
+
+it('uses the panel spa navigation default unless the navigation item overrides it', function (): void {
+    app(PanelManager::class)->setCurrentPanel(
+        Panel::make()
+            ->id('admin')
+            ->path('admin')
+            ->name('Admin')
+            ->spaNavigation(false)
+            ->navigation(NavigationItem::make('Settings')->url('/admin/settings')->spa()),
+    );
+
+    Livewire::test('livewire-panels::panel-navigation')
+        ->assertSee('Settings')
+        ->assertSeeHtml('wire:navigate');
+});
+
 it('renders a custom panel shell', function (): void {
     app(PanelManager::class)->setCurrentPanel(
         navigationTestingPanel()->shell(CustomPanelShell::class),
