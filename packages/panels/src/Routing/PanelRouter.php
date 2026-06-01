@@ -22,14 +22,11 @@ final class PanelRouter
     {
         $middleware = array_values(array_unique([
             'web',
-            ...$panel->middleware,
             SetCurrentPanel::class.':'.$panel->id,
             SetCurrentTenant::class.':'.$panel->id,
+            ...($panel->hasAuthentication() ? [AuthenticatePanel::class.':'.$panel->id] : []),
+            ...$panel->middleware,
         ]));
-
-        if ($panel->hasAuthentication()) {
-            $middleware[] = AuthenticatePanel::class.':'.$panel->id;
-        }
 
         $this->routeRegistrar($panel, $middleware)
             ->group(function () use ($panel): void {

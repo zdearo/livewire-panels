@@ -3,10 +3,13 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use Zdearo\LivewirePanels\Middleware\AuthenticatePanel;
 use Zdearo\LivewirePanels\Middleware\SetCurrentPanel;
+use Zdearo\LivewirePanels\Middleware\SetCurrentTenant;
 use Zdearo\LivewirePanels\Page\Page;
 use Zdearo\LivewirePanels\Panel\Panel;
 use Zdearo\LivewirePanels\Panel\PanelProvider;
+use Zdearo\LivewirePanels\Tenant\Tenant;
 
 it('automatically registers panel routes inside the panel route group', function (): void {
     app()->register(RouteTestingPanelProvider::class);
@@ -45,6 +48,24 @@ it('always registers panel routes inside the web middleware group', function ():
     expect($route)
         ->not->toBeNull()
         ->gatherMiddleware()->toContain('web', SetCurrentPanel::class.':admin');
+});
+
+it('registers package middleware before configured panel middleware', function (): void {
+    app()->register(OrderedMiddlewareTestingPanelProvider::class);
+    app()->boot();
+
+    $route = Route::getRoutes()->getByName('admin.dashboard');
+
+    expect($route)
+        ->not->toBeNull()
+        ->gatherMiddleware()->toBe([
+            'web',
+            SetCurrentPanel::class.':admin',
+            SetCurrentTenant::class.':admin',
+            AuthenticatePanel::class.':admin',
+            'auth',
+            'throttle:60,1',
+        ]);
 });
 
 it('registers panel routes on a configured subdomain using the app url host', function (): void {
@@ -158,6 +179,21 @@ final class PanelWithoutMiddlewareTestingPanelProvider extends PanelProvider
     }
 }
 
+final class OrderedMiddlewareTestingPanelProvider extends PanelProvider
+{
+    public function panel(Panel $panel): Panel
+    {
+        return $panel
+            ->id('admin')
+            ->path('admin/{company}')
+            ->name('Admin')
+            ->tenant(Tenant::make(OrderedMiddlewareTenant::class)->routeParameter('company'))
+            ->authenticatables(OrderedMiddlewareUser::class)
+            ->middleware(['web', 'auth', 'throttle:60,1'])
+            ->page(Page::make('/', 'pages::admin.dashboard')->name('dashboard'));
+    }
+}
+
 final class SubdomainPanelTestingProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -170,6 +206,10 @@ final class SubdomainPanelTestingProvider extends PanelProvider
             ->page(Page::make('/', 'pages::admin.dashboard')->name('dashboard'));
     }
 }
+
+final class OrderedMiddlewareTenant {}
+
+final class OrderedMiddlewareUser {}
 
 final class GroupedPageRouteTestingPanelProvider extends PanelProvider
 {
