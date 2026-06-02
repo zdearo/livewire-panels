@@ -46,6 +46,27 @@ it('can configure whether a panel page navigation item uses spa navigation', fun
     expect($page->navigation?->usesSpaNavigation())->toBeFalse();
 });
 
+it('can configure panel page navigation visibility from the page descriptor', function (): void {
+    $page = Page::make('/users', 'pages::admin.users')
+        ->navigation('Users')
+        ->visible(fn (): bool => false);
+
+    expect($page->navigation?->isVisible())->toBeFalse();
+});
+
+it('can configure panel page navigation hidden state from the page descriptor', function (): void {
+    $page = Page::make('/users', 'pages::admin.users')
+        ->navigation('Users')
+        ->hidden(fn (): bool => true);
+
+    expect($page->navigation?->isVisible())->toBeFalse();
+});
+
+it('requires page navigation before configuring page navigation visibility', function (): void {
+    expect(fn () => Page::make('/users', 'pages::admin.users')->visible())
+        ->toThrow(LogicException::class, 'Page navigation must be configured before visibility can be configured.');
+});
+
 it('can create a page group from the page descriptor API', function (): void {
     $group = Page::group('/settings')
         ->name('settings')

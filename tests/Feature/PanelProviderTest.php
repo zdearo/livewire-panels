@@ -280,6 +280,32 @@ it('excludes hidden navigation items and groups from the navigation contract', f
         ->toHaveCount(2);
 });
 
+it('excludes hidden page navigation items from the navigation contract', function (): void {
+    $panel = Panel::make()
+        ->id('admin')
+        ->path('admin')
+        ->name('Admin')
+        ->pages([
+            Page::make('/', 'pages::admin.dashboard')
+                ->navigation('Dashboard')
+                ->visible(fn (): bool => true),
+            Page::make('/users', 'pages::admin.users')
+                ->navigation('Users')
+                ->visible(fn (): bool => false),
+            Page::make('/settings', 'pages::admin.settings')
+                ->navigation('Settings')
+                ->hidden(fn (): bool => true),
+        ]);
+
+    $navigation = $panel->navigationContract();
+
+    expect($navigation->items())
+        ->toHaveCount(1)
+        ->sequence(fn ($item) => $item->label->toBe('Dashboard'))
+        ->and($navigation->allItems())
+        ->toHaveCount(1);
+});
+
 it('fails when a navigation item references an undeclared group', function (): void {
     $panel = Panel::make()
         ->id('admin')

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Zdearo\LivewirePanels\Page;
 
 use Closure;
+use LogicException;
 use Zdearo\LivewirePanels\Navigation\NavigationItem;
 
 final class Page
@@ -55,5 +56,34 @@ final class Page
         }
 
         return $this;
+    }
+
+    /**
+     * @param  bool|Closure(): bool  $condition
+     */
+    public function visible(bool|Closure $condition = true): static
+    {
+        $this->configuredNavigation()->visible($condition);
+
+        return $this;
+    }
+
+    /**
+     * @param  bool|Closure(): bool  $condition
+     */
+    public function hidden(bool|Closure $condition = true): static
+    {
+        $this->configuredNavigation()->hidden($condition);
+
+        return $this;
+    }
+
+    private function configuredNavigation(): NavigationItem
+    {
+        if ($this->navigation === null) {
+            throw new LogicException('Page navigation must be configured before visibility can be configured.');
+        }
+
+        return $this->navigation;
     }
 }
