@@ -16,6 +16,7 @@ use Zdearo\LivewirePanels\Page\Page;
 use Zdearo\LivewirePanels\Panel\Panel;
 use Zdearo\LivewirePanels\Panel\PanelManager;
 use Zdearo\LivewirePanels\Shell\PanelShell;
+use Zdearo\LivewirePanels\Tenant\Tenant;
 
 it('registers the panel navigation as a Livewire component', function (): void {
     expect(app('livewire')->exists('livewire-panels::panel-navigation'))->toBeTrue();
@@ -419,6 +420,41 @@ it('marks a section navigation item current on descendant page paths without act
                         Page::make('/{dataset}', 'pages::admin.datasets.show')
                             ->name('datasets.show'),
                     ]),
+            ]),
+    );
+
+    $component = panelNavigationComponent();
+
+    expect($component->navigationItemIsCurrent($component->navigationItems()[0]))->toBeFalse()
+        ->and($component->navigationItemIsCurrent($component->navigationItems()[1]))->toBeTrue();
+});
+
+it('marks only the most specific page navigation item current when sibling paths overlap', function (): void {
+    requestPath('/app/acme/company/users');
+
+    Route::get('/app/{company}/company', fn (): string => 'ok')->name('app.company');
+    Route::get('/app/{company}/company/users', fn (): string => 'ok')->name('app.company.users');
+
+    $manager = app(PanelManager::class);
+    $manager->setCurrentTenant(new class
+    {
+        public function getRouteKey(): string
+        {
+            return 'acme';
+        }
+    });
+    $manager->setCurrentPanel(
+        Panel::make()
+            ->id('app')
+            ->path('app/{company}')
+            ->tenant(Tenant::make(stdClass::class)->routeParameter('company'))
+            ->pages([
+                Page::make('/company', 'pages::app.company')
+                    ->name('company')
+                    ->navigation('Company'),
+                Page::make('/company/users', 'pages::app.company.users')
+                    ->name('company.users')
+                    ->navigation('Users'),
             ]),
     );
 

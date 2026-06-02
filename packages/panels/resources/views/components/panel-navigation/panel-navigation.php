@@ -24,6 +24,8 @@ return new class extends Component
 
     public string $currentPath = '';
 
+    private ?NavigationContract $resolvedNavigationContract = null;
+
     public function mount(): void
     {
         if ($this->currentPath === '') {
@@ -51,13 +53,13 @@ return new class extends Component
 
     public function navigationContract(): ?NavigationContract
     {
-        return $this->currentPanel()?->navigationContract();
+        return $this->resolvedNavigationContract ??= $this->currentPanel()?->navigationContract();
     }
 
     #[On('livewire-panels::refresh-navigation')]
     public function refreshNavigation(): void
     {
-        //
+        $this->resolvedNavigationContract = null;
     }
 
     public function shell(): PanelShell
@@ -130,7 +132,11 @@ return new class extends Component
 
     public function navigationItemIsCurrent(NavigationItem $item): bool
     {
-        return $item->isCurrentFor($this->currentRequest(), $this->currentPanel());
+        return $this->navigationContract()?->itemIsCurrentFor(
+            $item,
+            $this->currentRequest(),
+            $this->currentPanel(),
+        ) ?? false;
     }
 
     public function navigationItemUsesSpa(NavigationItem $item): bool

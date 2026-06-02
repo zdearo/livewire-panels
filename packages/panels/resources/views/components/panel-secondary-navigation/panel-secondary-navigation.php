@@ -7,6 +7,7 @@ use Livewire\Attributes\On;
 use Livewire\Component;
 use Zdearo\LivewirePanels\Enums\NavigationMode;
 use Zdearo\LivewirePanels\Facades\Panels;
+use Zdearo\LivewirePanels\Navigation\NavigationContract;
 use Zdearo\LivewirePanels\Navigation\NavigationGroup;
 use Zdearo\LivewirePanels\Navigation\NavigationItem;
 use Zdearo\LivewirePanels\Panel\Panel;
@@ -15,6 +16,8 @@ use Zdearo\LivewirePanels\Support\Http\CurrentRequestResolver;
 return new class extends Component
 {
     public string $currentPath = '';
+
+    private ?NavigationContract $resolvedNavigationContract = null;
 
     public function mount(): void
     {
@@ -44,12 +47,17 @@ return new class extends Component
     #[On('livewire-panels::refresh-navigation')]
     public function refreshNavigation(): void
     {
-        //
+        $this->resolvedNavigationContract = null;
+    }
+
+    public function navigationContract(): ?NavigationContract
+    {
+        return $this->resolvedNavigationContract ??= $this->currentPanel()?->navigationContract();
     }
 
     public function activeGroup(): ?NavigationGroup
     {
-        $navigation = $this->currentPanel()?->navigationContract();
+        $navigation = $this->navigationContract();
 
         if ($navigation === null) {
             return null;
@@ -66,7 +74,11 @@ return new class extends Component
 
     public function navigationItemIsCurrent(NavigationItem $item): bool
     {
-        return $item->isCurrentFor($this->currentRequest(), $this->currentPanel());
+        return $this->navigationContract()?->itemIsCurrentFor(
+            $item,
+            $this->currentRequest(),
+            $this->currentPanel(),
+        ) ?? false;
     }
 
     public function navigationItemUsesSpa(NavigationItem $item): bool

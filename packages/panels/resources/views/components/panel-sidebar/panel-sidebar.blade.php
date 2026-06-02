@@ -17,7 +17,7 @@
                     :wire:navigate="$this->navigationItemUsesSpa($navigationItem)"
                     :badge="$navigationItem->displayBadge()"
                     :href="$navigationItem->displayUrl() ?? '#'"
-                    :current="$navigationItem->isCurrent()"
+                    :current="$this->navigationItemIsCurrent($navigationItem)"
                 >
                     @if($navigationItem->icon !== null && $navigationItem->icon !== '')
                         <x-slot name="icon">
@@ -48,7 +48,7 @@
                             :wire:navigate="$this->navigationItemUsesSpa($navigationItem)"
                             :badge="$navigationItem->displayBadge()"
                             :href="$navigationItem->displayUrl() ?? '#'"
-                            :current="$navigationItem->isCurrent()"
+                            :current="$this->navigationItemIsCurrent($navigationItem)"
                         >
                             @if($navigationItem->icon !== null && $navigationItem->icon !== '')
                                 <x-slot name="icon">
