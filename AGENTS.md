@@ -471,13 +471,6 @@ packages/panels/resources/views/components/panel-navigation/panel-navigation.php
 packages/panels/resources/views/components/panel-navigation/panel-navigation.blade.php
 ```
 
-The older sidebar-only component remains available in:
-
-```txt
-packages/panels/resources/views/components/panel-sidebar/panel-sidebar.php
-packages/panels/resources/views/components/panel-sidebar/panel-sidebar.blade.php
-```
-
 The package registers the Livewire namespace `livewire-panels` against `packages/panels/resources/views/components`, and the panel layout wraps the page slot with:
 
 ```blade
