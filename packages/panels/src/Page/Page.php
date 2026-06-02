@@ -59,6 +59,17 @@ final class Page
     }
 
     /**
+     * @param  string|Closure(): string|null  $url
+     */
+    public function navigationUrl(string|Closure|null $url): static
+    {
+        $this->configuredNavigation('Page navigation must be configured before its URL can be configured.')
+            ->url($url);
+
+        return $this;
+    }
+
+    /**
      * @param  bool|Closure(): bool  $condition
      */
     public function visible(bool|Closure $condition = true): static
@@ -78,10 +89,11 @@ final class Page
         return $this;
     }
 
-    private function configuredNavigation(): NavigationItem
-    {
+    private function configuredNavigation(
+        string $message = 'Page navigation must be configured before visibility can be configured.',
+    ): NavigationItem {
         if ($this->navigation === null) {
-            throw new LogicException('Page navigation must be configured before visibility can be configured.');
+            throw new LogicException($message);
         }
 
         return $this->navigation;

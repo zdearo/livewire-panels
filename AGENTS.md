@@ -342,6 +342,17 @@ Page::make('/users', 'pages::admin.users')
     ->navigation('Users', icon: 'heroicon-o-users', group: 'management', sort: 20);
 ```
 
+Navigation item click URLs and active-state URLs are separate. `NavigationItem::url()` defines the href used when the item is clicked. `NavigationItem::activeUrl()` optionally defines the URL used by current-state matching. When `activeUrl()` is omitted, current-state matching falls back to `url()`.
+
+For page navigation items, the package sets the active-state URL to the actual page URL automatically. Use `Page::navigationUrl()` when the item should click somewhere else while staying active for the page and its descendants:
+
+```php
+Page::make('/leads', 'pages::app.leads.index')
+    ->name('leads.index')
+    ->navigation('Leads')
+    ->navigationUrl(fn (): string => Panels::route('leads.overview'));
+```
+
 Panel providers run during Laravel provider registration, so application services such as the translator may not be available yet. Do not call `__()` directly in panel definitions. Navigation labels are translated by the package when rendered, and labels may be lazy closures when dynamic translation is needed:
 
 ```php
@@ -358,7 +369,7 @@ Good lazy candidates currently supported:
 
 - `Panel::name()`, resolved through `displayName()`.
 - `Panel::navigationMode()`, resolved through `displayNavigationMode()` during navigation rendering.
-- `NavigationItem::make()`, `url()`, `badge()`, `visible()`, and `hidden()`.
+- `NavigationItem::make()`, `url()`, `activeUrl()`, `badge()`, `visible()`, and `hidden()`.
 - `NavigationGroup::label()`, `visible()`, and `hidden()`.
 - Panel shell slot overrides: `sidebarBrand()`, `topbarBrand()`, `mobileSidebarBrand()`, `sidebarFooter()`, `topbarEnd()`, and `mobileHeaderEnd()`.
 

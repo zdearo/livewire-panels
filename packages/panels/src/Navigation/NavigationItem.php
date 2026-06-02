@@ -26,6 +26,11 @@ final class NavigationItem
      */
     public private(set) string|Closure|null $url = null;
 
+    /**
+     * @var string|Closure(): string|null
+     */
+    public private(set) string|Closure|null $activeUrl = null;
+
     public private(set) ?string $icon = null;
 
     /**
@@ -92,6 +97,31 @@ final class NavigationItem
         }
 
         throw new UnexpectedValueException('Navigation item URLs must resolve to strings or null.');
+    }
+
+    /**
+     * @param  string|Closure(): string|null  $url
+     */
+    public function activeUrl(string|Closure|null $url): self
+    {
+        $this->activeUrl = $url;
+
+        return $this;
+    }
+
+    public function displayActiveUrl(): ?string
+    {
+        if ($this->activeUrl === null) {
+            return $this->displayUrl();
+        }
+
+        $url = $this->evaluate($this->activeUrl);
+
+        if ($url === null || is_string($url)) {
+            return $url;
+        }
+
+        throw new UnexpectedValueException('Navigation item active URLs must resolve to strings or null.');
     }
 
     public function icon(?string $icon): self
@@ -188,7 +218,7 @@ final class NavigationItem
 
     public function isCurrentFor(Request $request, ?Panel $panel = null): bool
     {
-        $url = $this->displayUrl();
+        $url = $this->displayActiveUrl();
 
         if ($url === null) {
             return false;

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Http\Request;
 use Zdearo\LivewirePanels\Enums\NavigationMode;
 use Zdearo\LivewirePanels\Navigation\NavigationContract;
 use Zdearo\LivewirePanels\Navigation\NavigationGroup;
@@ -304,6 +305,29 @@ it('excludes hidden page navigation items from the navigation contract', functio
         ->sequence(fn ($item) => $item->label->toBe('Dashboard'))
         ->and($navigation->allItems())
         ->toHaveCount(1);
+});
+
+it('keeps page navigation active state based on the page URL when the click URL is customized', function (): void {
+    $panel = Panel::make()
+        ->id('app')
+        ->path('')
+        ->name('App')
+        ->pages([
+            Page::make('/leads', 'pages::app.leads.index')
+                ->name('leads.index')
+                ->navigation('Leads')
+                ->navigationUrl(fn (): string => '/leads/overview'),
+        ]);
+
+    $navigation = $panel->navigationContract();
+    $item = $navigation->items()[0];
+
+    expect($item)
+        ->displayUrl()->toBe('/leads/overview')
+        ->displayActiveUrl()->toBe('/leads')
+        ->and($navigation->itemIsCurrentFor($item, Request::create('/leads'), $panel))->toBeTrue()
+        ->and($navigation->itemIsCurrentFor($item, Request::create('/leads/settings'), $panel))->toBeTrue()
+        ->and($navigation->itemIsCurrentFor($item, Request::create('/leads/view/1'), $panel))->toBeTrue();
 });
 
 it('fails when a navigation item references an undeclared group', function (): void {

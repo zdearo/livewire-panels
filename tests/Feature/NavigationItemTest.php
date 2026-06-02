@@ -40,6 +40,29 @@ it('resolves navigation item urls and badges lazily', function (): void {
         ->displayBadge()->toBe('12');
 });
 
+it('uses a separate active URL when checking current state', function (): void {
+    $item = NavigationItem::make('Leads')
+        ->url('/leads/overview')
+        ->activeUrl('/leads');
+
+    expect($item)
+        ->displayUrl()->toBe('/leads/overview')
+        ->displayActiveUrl()->toBe('/leads')
+        ->and($item->isCurrentFor(Request::create('/leads')))->toBeTrue()
+        ->and($item->isCurrentFor(Request::create('/leads/settings')))->toBeTrue()
+        ->and($item->isCurrentFor(Request::create('/leads/overview')))->toBeTrue();
+});
+
+it('falls back to the click URL when no active URL is configured', function (): void {
+    $item = NavigationItem::make('Leads')
+        ->url('/leads/overview');
+
+    expect($item)
+        ->displayActiveUrl()->toBe('/leads/overview')
+        ->and($item->isCurrentFor(Request::create('/leads')))->toBeFalse()
+        ->and($item->isCurrentFor(Request::create('/leads/overview')))->toBeTrue();
+});
+
 it('fails when lazy navigation item values resolve to unsupported types', function (): void {
     expect(fn () => NavigationItem::make(fn (): array => [])->displayLabel())
         ->toThrow(UnexpectedValueException::class, 'Navigation item labels must resolve to strings.')

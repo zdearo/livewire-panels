@@ -123,9 +123,14 @@ final readonly class NavigationBuilder
             }
 
             $item = clone $page->navigation;
+            $pageUrl = $this->pageUrl($panel, $page, $pathPrefix, $namePrefix);
 
             if ($item->url === null) {
-                $item->url($this->pageUrl($panel, $page, $pathPrefix, $namePrefix));
+                $item->url($pageUrl);
+            }
+
+            if ($item->activeUrl === null) {
+                $item->activeUrl($pageUrl);
             }
 
             $items[] = $item;

@@ -81,7 +81,7 @@ final readonly class NavigationContract
 
     private function pathSpecificity(NavigationItem $item): int
     {
-        $url = $item->displayUrl();
+        $url = $item->displayActiveUrl();
 
         if ($url === null) {
             return -1;

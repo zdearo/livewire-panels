@@ -46,6 +46,17 @@ it('can configure whether a panel page navigation item uses spa navigation', fun
     expect($page->navigation?->usesSpaNavigation())->toBeFalse();
 });
 
+it('can configure a panel page navigation click URL without defining active state', function (): void {
+    $page = Page::make('/users', 'pages::admin.users')
+        ->navigation('Users')
+        ->navigationUrl(fn (): string => '/admin/users/overview');
+
+    expect($page->navigation)
+        ->url->toBeInstanceOf(Closure::class)
+        ->displayUrl()->toBe('/admin/users/overview')
+        ->displayActiveUrl()->toBe('/admin/users/overview');
+});
+
 it('can configure panel page navigation visibility from the page descriptor', function (): void {
     $page = Page::make('/users', 'pages::admin.users')
         ->navigation('Users')
@@ -65,6 +76,11 @@ it('can configure panel page navigation hidden state from the page descriptor', 
 it('requires page navigation before configuring page navigation visibility', function (): void {
     expect(fn () => Page::make('/users', 'pages::admin.users')->visible())
         ->toThrow(LogicException::class, 'Page navigation must be configured before visibility can be configured.');
+});
+
+it('requires page navigation before configuring a page navigation click URL', function (): void {
+    expect(fn () => Page::make('/users', 'pages::admin.users')->navigationUrl('/admin/users/overview'))
+        ->toThrow(LogicException::class, 'Page navigation must be configured before its URL can be configured.');
 });
 
 it('can create a page group from the page descriptor API', function (): void {
