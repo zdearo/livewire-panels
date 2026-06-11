@@ -60,21 +60,79 @@ it('binds a fake original route request during Livewire requests', function (): 
         ->and($request->route()?->getName())->toBe('admin.users');
 });
 
-it('provides a panel stylesheet source for the consuming app build', function (): void {
+it('provides a structural panel stylesheet source for the consuming app build', function (): void {
     $sourcePath = __DIR__.'/../../packages/panels/resources/css/panels.css';
 
     expect($sourcePath)
         ->toBeFile()
         ->and(File::get($sourcePath))
         ->not->toContain("@import 'tailwindcss'")
+        ->not->toContain('@import "tailwindcss"')
         ->not->toContain('vendor/livewire/flux')
+        ->not->toContain('panels-theme.css')
+        ->not->toContain('bg-zinc')
+        ->not->toContain('border-zinc')
+        ->not->toContain('text-zinc')
+        ->not->toContain('bg-white')
+        ->not->toContain('dark:bg-zinc')
+        ->not->toContain('text-white')
+        ->not->toContain('dark:text-white')
+        ->not->toContain('border-white')
+        ->not->toContain('font-family')
+        ->not->toContain('-webkit-font-smoothing')
+        ->not->toContain('-moz-osx-font-smoothing')
+        ->not->toContain('background-color')
+        ->not->toContain('border-color')
+        ->not->toContain('var(--color-zinc')
+        ->not->toContain('margin-inline: 0')
+        ->not->toContain('max-width: none')
         ->toContain('[data-livewire-panels-layout="panel"]')
         ->toContain('[data-livewire-panels-navigation]')
         ->toContain('[data-livewire-panels-secondary-navigation-shell]')
         ->toContain('display: contents;')
-        ->toContain('[data-livewire-panels-layout="panel"]:has([data-livewire-panels-primary-sidebar]) [data-livewire-panels-content]')
         ->toContain('[data-livewire-panels-primary-sidebar][data-flux-sidebar-collapsed-desktop]')
         ->toContain('cursor: default;');
+});
+
+it('provides an optional default panel theme stylesheet', function (): void {
+    $themePath = __DIR__.'/../../packages/panels/resources/css/panels-theme.css';
+
+    expect($themePath)
+        ->toBeFile()
+        ->and(File::get($themePath))
+        ->not->toContain("@import 'tailwindcss'")
+        ->not->toContain('vendor/livewire/flux')
+        ->toContain('[data-livewire-panels-body]')
+        ->toContain('[data-livewire-panels-primary-sidebar]')
+        ->toContain('[data-livewire-panels-topbar]')
+        ->toContain('[data-livewire-panels-user-menu-name]')
+        ->toContain('var(--color-zinc-50)')
+        ->toContain('var(--color-zinc-900)');
+});
+
+it('keeps package theme classes out of panel Blade views', function (): void {
+    $viewRoot = __DIR__.'/../../packages/panels/resources/views';
+    $forbiddenFragments = [
+        'bg-zinc-',
+        'dark:bg-zinc-',
+        'border-zinc-',
+        'dark:border-zinc-',
+        'text-zinc-',
+        'dark:text-zinc-',
+        'bg-white',
+        'dark:text-white',
+        'fonts.bunny.net/css?family=inter',
+        'antialiased',
+    ];
+
+    foreach (File::allFiles($viewRoot) as $viewFile) {
+        $contents = File::get($viewFile->getPathname());
+
+        foreach ($forbiddenFragments as $fragment) {
+            expect($contents)
+                ->not->toContain($fragment);
+        }
+    }
 });
 
 it('wraps the panel layout with the package app layout', function (): void {
@@ -85,7 +143,10 @@ it('wraps the panel layout with the package app layout', function (): void {
         ->toContain('data-livewire-panels-layout="app"')
         ->not->toContain('vite:resources/css/app.css|resources/js/app.js')
         ->not->toContain('/vendor/livewire-panels/panels.css')
-        ->toContain('class="min-h-screen bg-white dark:bg-zinc-800 antialiased"')
+        ->toContain('data-livewire-panels-body')
+        ->not->toContain('bg-white dark:bg-zinc-800')
+        ->not->toContain('max-w-7xl')
+        ->not->toContain('mx-auto')
         ->toContain('data-livewire-panels-layout="panel"')
         ->toContain('Panel body');
 });

@@ -476,11 +476,31 @@ Panels::route('users');
 
 ## CSS And Vite
 
-The generated panel CSS imports Tailwind, Flux, and the package panel stylesheet:
+The generated panel CSS imports Tailwind, Flux, and both package stylesheets:
 
 ```css
 @import 'tailwindcss';
 @import '../../../vendor/livewire/flux/dist/flux.css';
+@import '../../../vendor/zdearo/livewire-panels/packages/panels/resources/css/panels.css';
+@import '../../../vendor/zdearo/livewire-panels/packages/panels/resources/css/panels-theme.css';
+
+@source '../../../vendor/zdearo/livewire-panels/packages/panels/resources/views/**/*.blade.php';
+@source '../../views/**/*.blade.php';
+@source '../../js/**/*.js';
+
+@custom-variant dark (&:where(.dark, .dark *));
+```
+
+`panels.css` is the required panel infrastructure layer. It keeps the Livewire and Flux shell layout working correctly.
+
+`panels-theme.css` is the optional default package skin. Remove it when a consuming app wants another Flux-compatible theme package to own the visual appearance.
+
+For example, an app using `zdearo/flux-themes` can import the theme and keep only the structural panel CSS:
+
+```css
+@import 'tailwindcss';
+@import '../../../vendor/livewire/flux/dist/flux.css';
+@import '../../../vendor/zdearo/flux-themes/resources/themes/atelier.css';
 @import '../../../vendor/zdearo/livewire-panels/packages/panels/resources/css/panels.css';
 
 @source '../../../vendor/zdearo/livewire-panels/packages/panels/resources/views/**/*.blade.php';

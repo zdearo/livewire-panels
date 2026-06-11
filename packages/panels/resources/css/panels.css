@@ -1,8 +1,6 @@
 [data-livewire-panels-body] {
     min-height: 100vh;
     margin: 0;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
 }
 
 [data-livewire-panels-layout="panel"] {
@@ -17,10 +15,6 @@
     display: contents;
 }
 
-[data-livewire-panels-layout="panel"]:has([data-livewire-panels-primary-sidebar]) [data-livewire-panels-content] {
-    max-width: none;
-    margin-inline: 0;
-}
 
 [data-livewire-panels-primary-sidebar] {
     min-height: 100vh;

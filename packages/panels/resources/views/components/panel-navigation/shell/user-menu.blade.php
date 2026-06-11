@@ -1,69 +1,67 @@
 @if($variant === 'sidebar')
-    <flux:dropdown position="top" align="start" class="max-lg:hidden" data-livewire-panels-user-menu>
-        <flux:sidebar.profile :name="$userName" />
+<flux:dropdown position="top" align="start" class="max-lg:hidden" data-livewire-panels-user-menu>
+   <flux:sidebar.profile :name="$userName" />
 
-        <flux:menu>
-            <div class="px-2 py-1.5" data-livewire-panels-user-menu-identity>
-                <div class="truncate text-sm font-medium text-zinc-800 dark:text-white">{{ $userName }}</div>
+   <flux:menu>
+      <div class="px-2 py-1.5" data-livewire-panels-user-menu-identity>
+         <div class="truncate text-sm font-medium" data-livewire-panels-user-menu-name>{{ $userName }}</div>
 
-                @if($userEmail !== null)
-                    <div class="truncate text-xs text-zinc-500 dark:text-zinc-400">{{ $userEmail }}</div>
-                @endif
-            </div>
+         @if($userEmail !== null)
+         <div class="truncate text-xs" data-livewire-panels-user-menu-email>{{ $userEmail }}</div>
+         @endif
+      </div>
 
-            @if($logoutUrl !== null)
-                <flux:menu.separator />
+      @if($logoutUrl !== null)
+      <flux:menu.separator />
 
-                <form method="POST" action="{{ $logoutUrl }}">
-                    @csrf
+      <form method="POST" action="{{ $logoutUrl }}">
+         @csrf
 
-                    <flux:menu.item as="button" type="submit">
-                        <x-slot name="icon">
-                            <x-livewire-panels::icon
-                                :alias="\Zdearo\LivewirePanels\Icons\PanelsIconAlias::USER_MENU_LOGOUT_BUTTON"
-                                class="me-2 size-5 shrink-0"
-                                data-flux-menu-item-icon
-                            />
-                        </x-slot>
+         <flux:menu.item as="button" type="submit">
+            <x-slot name="icon">
+               <x-livewire-panels::icon
+                  :alias="\Zdearo\LivewirePanels\Icons\PanelsIconAlias::USER_MENU_LOGOUT_BUTTON"
+                  class="me-2 size-5 shrink-0"
+                  data-flux-menu-item-icon />
+            </x-slot>
 
-                        {{ __('Logout') }}
-                    </flux:menu.item>
-                </form>
-            @endif
-        </flux:menu>
-    </flux:dropdown>
+            {{ __('Logout') }}
+         </flux:menu.item>
+      </form>
+      @endif
+   </flux:menu>
+</flux:dropdown>
 @else
-    <flux:dropdown position="top" align="end" data-livewire-panels-user-menu>
-        <flux:profile :name="$userName" />
+<flux:dropdown position="top" align="end" data-livewire-panels-user-menu>
+   <flux:profile :name="$userName" />
 
-        <flux:menu>
-            <div class="px-2 py-1.5" data-livewire-panels-user-menu-identity>
-                <div class="truncate text-sm font-medium text-zinc-800 dark:text-white">{{ $userName }}</div>
+   <flux:menu>
+      <div class="px-2 py-1.5" data-livewire-panels-user-menu-identity>
+         <div class="truncate text-sm font-medium" data-livewire-panels-user-menu-name>{{ $userName }}</div>
 
-                @if($userEmail !== null)
-                    <div class="truncate text-xs text-zinc-500 dark:text-zinc-400">{{ $userEmail }}</div>
-                @endif
-            </div>
+         @if($userEmail !== null)
+         <div class="truncate text-xs" data-livewire-panels-user-menu-email>{{ $userEmail }}</div>
+         @endif
+      </div>
 
-            @if($logoutUrl !== null)
-                <flux:menu.separator />
+      @if($logoutUrl !== null)
+      <flux:menu.separator />
 
-                <form method="POST" action="{{ $logoutUrl }}">
-                    @csrf
+      <form method="POST" action="{{ $logoutUrl }}">
+         @csrf
 
-                    <flux:menu.item as="button" type="submit">
-                        <x-slot name="icon">
-                            <x-livewire-panels::icon
-                                :alias="\Zdearo\LivewirePanels\Icons\PanelsIconAlias::USER_MENU_LOGOUT_BUTTON"
-                                class="me-2 size-5 shrink-0"
-                                data-flux-menu-item-icon
-                            />
-                        </x-slot>
+         <flux:menu.item as="button" type="submit">
+            <x-slot name="icon">
+               <x-livewire-panels::icon
+                  :alias="\Zdearo\LivewirePanels\Icons\PanelsIconAlias::USER_MENU_LOGOUT_BUTTON"
+                  class="me-2 size-5 shrink-0"
+                  data-flux-menu-item-icon />
+            </x-slot>
 
-                        {{ __('Logout') }}
-                    </flux:menu.item>
-                </form>
-            @endif
-        </flux:menu>
-    </flux:dropdown>
+            {{ __('Logout') }}
+         </flux:menu.item>
+      </form>
+      @endif
+   </flux:menu>
+</flux:dropdown>
 @endif

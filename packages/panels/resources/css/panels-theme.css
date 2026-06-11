@@ -1,0 +1,63 @@
+[data-livewire-panels-body] {
+    background-color: var(--color-white);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.dark [data-livewire-panels-body] {
+    background-color: var(--color-zinc-800);
+}
+
+[data-livewire-panels-primary-sidebar],
+[data-livewire-panels-mobile-sidebar],
+[data-livewire-panels-topbar] {
+    background-color: var(--color-zinc-50);
+    border-color: var(--color-zinc-200);
+}
+
+.dark [data-livewire-panels-primary-sidebar],
+.dark [data-livewire-panels-mobile-sidebar],
+.dark [data-livewire-panels-topbar] {
+    background-color: var(--color-zinc-900);
+    border-color: var(--color-zinc-700);
+}
+
+[data-livewire-panels-primary-sidebar],
+[data-livewire-panels-mobile-sidebar] {
+    border-inline-end-width: 1px;
+}
+
+[data-livewire-panels-topbar] {
+    border-bottom-width: 1px;
+}
+
+[data-livewire-panels-primary-sidebar] [data-livewire-panels-navigation-icon],
+[data-livewire-panels-mobile-sidebar] [data-livewire-panels-navigation-icon] {
+    color: var(--color-zinc-400);
+}
+
+.dark [data-livewire-panels-primary-sidebar] [data-livewire-panels-navigation-icon],
+.dark [data-livewire-panels-mobile-sidebar] [data-livewire-panels-navigation-icon] {
+    color: color-mix(in oklab, var(--color-white) 80%, transparent);
+}
+
+[data-flux-sidebar-item]:hover [data-livewire-panels-navigation-icon],
+[data-flux-sidebar-group-dropdown] > button:hover [data-livewire-panels-navigation-icon] {
+    color: currentColor;
+}
+
+[data-livewire-panels-user-menu-name] {
+    color: var(--color-zinc-800);
+}
+
+.dark [data-livewire-panels-user-menu-name] {
+    color: var(--color-white);
+}
+
+[data-livewire-panels-user-menu-email] {
+    color: var(--color-zinc-500);
+}
+
+.dark [data-livewire-panels-user-menu-email] {
+    color: var(--color-zinc-400);
+}

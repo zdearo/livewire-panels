@@ -83,6 +83,8 @@ it('creates the first panel provider and registers it as default', function (): 
         ->toContain("@import 'tailwindcss';")
         ->toContain("@import '../../../vendor/livewire/flux/dist/flux.css';")
         ->toContain("@import '../../../vendor/zdearo/livewire-panels/packages/panels/resources/css/panels.css';")
+        ->toContain("@import '../../../vendor/zdearo/livewire-panels/packages/panels/resources/css/panels-theme.css';")
+        ->toContain("@import '../../../vendor/zdearo/livewire-panels/packages/panels/resources/css/panels.css';\n@import '../../../vendor/zdearo/livewire-panels/packages/panels/resources/css/panels-theme.css';")
         ->toContain("@source '../../../vendor/zdearo/livewire-panels/packages/panels/resources/views/**/*.blade.php';");
 
     expect(File::get(base_path('vite.config.js')))
