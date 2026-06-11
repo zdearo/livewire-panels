@@ -81,24 +81,12 @@ final readonly class NavigationContract
 
     private function pathSpecificity(NavigationItem $item): int
     {
-        $url = $item->displayActiveUrl();
-
-        if ($url === null) {
-            return -1;
-        }
-
-        $path = parse_url($url, PHP_URL_PATH);
-
-        if (! is_string($path)) {
-            return -1;
-        }
-
-        $path = trim($path, '/');
+        $path = trim((string) parse_url((string) $item->displayActiveUrl(), PHP_URL_PATH), '/');
 
         if ($path === '') {
             return 0;
         }
 
-        return count(explode('/', $path));
+        return substr_count($path, '/') + 1;
     }
 }

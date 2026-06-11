@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Http\Request;
+use Zdearo\LivewirePanels\Navigation\NavigationContract;
 use Zdearo\LivewirePanels\Navigation\NavigationItem;
 use Zdearo\LivewirePanels\Panel\Panel;
 use Zdearo\LivewirePanels\Panel\PanelManager;
@@ -68,6 +69,8 @@ it('fails when lazy navigation item values resolve to unsupported types', functi
         ->toThrow(UnexpectedValueException::class, 'Navigation item labels must resolve to strings.')
         ->and(fn () => NavigationItem::make('Inbox')->url(fn (): array => [])->displayUrl())
         ->toThrow(UnexpectedValueException::class, 'Navigation item URLs must resolve to strings or null.')
+        ->and(fn () => NavigationItem::make('Inbox')->activeUrl(fn (): array => [])->displayActiveUrl())
+        ->toThrow(UnexpectedValueException::class, 'Navigation item active URLs must resolve to strings or null.')
         ->and(fn () => NavigationItem::make('Inbox')->badge(fn (): array => [])->displayBadge())
         ->toThrow(UnexpectedValueException::class, 'Navigation item badges must resolve to strings, integers, or null.');
 });
@@ -100,6 +103,13 @@ it('does not mark navigation items without a usable path as current', function (
 
 it('does not mark a root URL navigation item current on descendant paths', function (): void {
     expect(NavigationItem::make('Home')->url('/')->isCurrentFor(Request::create('/admin/datasets/1')))->toBeFalse();
+});
+
+it('resolves the root navigation item as current for the root request', function (): void {
+    $item = NavigationItem::make('Home')->url('/');
+    $navigation = new NavigationContract([$item], []);
+
+    expect($navigation->currentItemFor(Request::create('/')))->toBe($item);
 });
 
 it('checks whether a navigation item matches the current request path', function (): void {

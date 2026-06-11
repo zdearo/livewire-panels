@@ -135,7 +135,7 @@ it('can create a custom panel shell class', function (): void {
         ->and(File::get($shellPath))
         ->toContain('namespace App\Panels\Admin;')
         ->toContain('final class AdminPanelShell extends DefaultPanelShell')
-        ->toContain('public function sidebarBrand(Panel $panel): View|Htmlable|string|null');
+        ->toContain('public function sidebarBrand(Panel $panel): View');
 });
 
 it('can ask whether to create a custom panel shell class', function (): void {

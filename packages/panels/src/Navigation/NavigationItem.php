@@ -205,7 +205,7 @@ final class NavigationItem
     public function isVisible(): bool
     {
         return (bool) $this->evaluate($this->isVisible)
-            && ! (bool) $this->evaluate($this->isHidden);
+           && ! (bool) $this->evaluate($this->isHidden);
     }
 
     public function isCurrent(): bool
@@ -232,6 +232,10 @@ final class NavigationItem
 
         $path = ltrim($path, '/');
 
+        if ($path === '') {
+            return $request->is('/');
+        }
+
         if ($request->is($path)) {
             return true;
         }
@@ -250,10 +254,6 @@ final class NavigationItem
 
     private function canMatchDescendantPaths(string $path, ?Panel $panel): bool
     {
-        if ($path === '') {
-            return false;
-        }
-
         if ($panel === null) {
             return true;
         }
